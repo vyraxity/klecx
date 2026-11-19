@@ -16,6 +16,7 @@ Each step = one PR. Implement **only** the step you were asked for. Follow its _
 
 ## Workflow
 
+- **The repository is `vyraxity/klecx`** (moved from the owner's personal account on 2026-11-19). **All work goes there**: clone it, branch from its `dev`, push and open PRs only against `vyraxity/klecx`. The old personal repository `OlaOluwalekan/quickbot` is retired: never push, branch or open PRs there (its leftover PR #146 and branch `claude/sweet-newton-4spvyo` stay as they are). If a session starts with only the old repository attached, add `vyraxity/klecx` and work in that clone instead.
 - The owner uses **Google Antigravity** to implement a step and opens a PR. **Claude reviews the PR** against the guides and the rules below, fixes problems, and pushes to **that PR's branch**.
 - **`dev` is the default branch.** Create new branches from the latest `origin/dev` (e.g. `fix/F1-2-member-capabilities`, `step/8-1-plan-catalog`).
 - **Never merge PRs and never push to `dev` or `main`.** The owner merges. Don't open a PR unless asked.
