@@ -35,6 +35,17 @@ export const envSchema = z
       .enum(["true", "false"])
       .default("false")
       .transform((v) => v === "true"),
+    // Step 8.2 — billing provider. Test mode: CREEM_API_BASE=https://test-api.creem.io with a test key.
+    BILLING_PROVIDER: emptyToUndefined(z.enum(["creem"]).optional()),
+    CREEM_API_KEY: emptyToUndefined(z.string().min(10).optional()),
+    CREEM_API_BASE: emptyToUndefined(z.string().url().optional()),
+    CREEM_WEBHOOK_SECRET: emptyToUndefined(z.string().min(8).optional()),
+    CREEM_PRODUCT_LITE_MONTH: emptyToUndefined(z.string().startsWith("prod_").optional()),
+    CREEM_PRODUCT_LITE_YEAR: emptyToUndefined(z.string().startsWith("prod_").optional()),
+    CREEM_PRODUCT_STANDARD_MONTH: emptyToUndefined(z.string().startsWith("prod_").optional()),
+    CREEM_PRODUCT_STANDARD_YEAR: emptyToUndefined(z.string().startsWith("prod_").optional()),
+    CREEM_PRODUCT_PRO_MONTH: emptyToUndefined(z.string().startsWith("prod_").optional()),
+    CREEM_PRODUCT_PRO_YEAR: emptyToUndefined(z.string().startsWith("prod_").optional()),
     GITHUB_CLIENT_ID: z.string().optional(),
     GITHUB_CLIENT_SECRET: z.string().optional(),
     GOOGLE_CLIENT_ID: z.string().optional(),
@@ -92,6 +103,31 @@ export const envSchema = z
           path: ["UPSTASH_REDIS_REST_TOKEN"],
           message: "UPSTASH_REDIS_REST_TOKEN is required in production",
         });
+      }
+
+      // Billing on in production needs the provider, its key and every product (Step 8.2).
+      // TODO(8.3): also require CREEM_WEBHOOK_SECRET.
+      if (data.BILLING_ENABLED) {
+        const requiredForBilling: Array<keyof typeof data> = [
+          "BILLING_PROVIDER",
+          "CREEM_API_KEY",
+          "CREEM_API_BASE",
+          "CREEM_PRODUCT_LITE_MONTH",
+          "CREEM_PRODUCT_LITE_YEAR",
+          "CREEM_PRODUCT_STANDARD_MONTH",
+          "CREEM_PRODUCT_STANDARD_YEAR",
+          "CREEM_PRODUCT_PRO_MONTH",
+          "CREEM_PRODUCT_PRO_YEAR",
+        ];
+        for (const field of requiredForBilling) {
+          if (!data[field]) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: [field],
+              message: `${String(field)} is required in production when BILLING_ENABLED=true`,
+            });
+          }
+        }
       }
 
       const requiredInProd: Array<keyof typeof data> = [

@@ -122,5 +122,10 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "overrides": {
+    "@prisma/config": {
+      "effect": "^3.22.5"
+    }
   }
 }
