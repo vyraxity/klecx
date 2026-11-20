@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PLANS, PlanKey } from "@/server/billing/plans";
 import { useSiteConfig } from "@/components/providers/site-config-provider";
+import { isImageGenerationEnabled, visiblePlanFeatures } from "@/lib/features/image-generation";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function MarketingPricingTable({
@@ -19,6 +20,7 @@ export function MarketingPricingTable({
   const t = useTranslations("Marketing.pricing");
   const tPlans = useTranslations();
   const { billingEnabled } = useSiteConfig();
+  const imagesOn = isImageGenerationEnabled();
   const [billingCycle, setBillingCycle] = React.useState<"month" | "year">("month");
 
   const planKeys: PlanKey[] = ["FREE", "LITE", "STANDARD", "PRO"];
@@ -144,7 +146,7 @@ export function MarketingPricingTable({
                       {t("includedHeading")}
                     </div>
                     <ul className="space-y-2 text-xs">
-                      {plan.features.map((featureKey) => (
+                      {visiblePlanFeatures(plan.features).map((featureKey) => (
                         <li key={featureKey} className="flex items-start gap-2 text-fg/90">
                           <Check className="h-3.5 w-3.5 text-accent shrink-0 mt-0.5" />
                           <span>{tPlans(featureKey)}</span>
@@ -202,15 +204,22 @@ export function MarketingPricingTable({
             <HelpCircle className="h-4 w-4 text-accent" />
             <span>{t("footnoteTitle")}</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1 text-xs">
+          <div
+            className={cn(
+              "grid grid-cols-1 gap-4 pt-1 text-xs",
+              imagesOn ? "sm:grid-cols-3" : "sm:grid-cols-2"
+            )}
+          >
             <div className="p-3 rounded-xl bg-surface border border-border/60 space-y-1">
               <span className="font-semibold text-fg">{t("standardTurnTitle")}</span>
               <p className="text-[11px] text-fg-subtle">{t("standardTurnDesc")}</p>
             </div>
-            <div className="p-3 rounded-xl bg-surface border border-border/60 space-y-1">
-              <span className="font-semibold text-fg">{t("imageGenTitle")}</span>
-              <p className="text-[11px] text-fg-subtle">{t("imageGenDesc")}</p>
-            </div>
+            {imagesOn && (
+              <div className="p-3 rounded-xl bg-surface border border-border/60 space-y-1">
+                <span className="font-semibold text-fg">{t("imageGenTitle")}</span>
+                <p className="text-[11px] text-fg-subtle">{t("imageGenDesc")}</p>
+              </div>
+            )}
             <div className="p-3 rounded-xl bg-surface border border-border/60 space-y-1">
               <span className="font-semibold text-fg">{t("groundingTitle")}</span>
               <p className="text-[11px] text-fg-subtle">{t("groundingDesc")}</p>

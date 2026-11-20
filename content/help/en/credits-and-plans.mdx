@@ -3,13 +3,13 @@ title: "Credits & Plans"
 category: "billing-account"
 description: "How credits work, what things typically cost, daily limits and what each plan includes."
 keywords: ["credits", "plans", "pricing", "cost", "daily limit", "free plan", "subscription"]
-version: 2
-updated: "2026-11-18"
+version: 3
+updated: "2026-11-20"
 ---
 
 # Credits & Plans
 
-Everything Klecx does with AI uses **credits**: answers, side questions, document reviews, images, web searches and voice transcription. Each model option shows its typical cost before you send.
+Everything Klecx does with AI uses **credits**: answers, side questions, document reviews, {{#images}}images, {{/images}}web searches and voice transcription. Each model option shows its typical cost before you send.
 
 ## How Credits Work
 
@@ -23,7 +23,7 @@ Everything Klecx does with AI uses **credits**: answers, side questions, documen
 |---|---|
 | A message with **Fast & Efficient** | ≈ {{credits.fast}} credits |
 | A message with **Standard Reasoning** | ≈ {{credits.standard}} credits |
-| An image (**Create Image**) | ≈ {{credits.image}} credits |
+{{#images}}| An image (**Create Image**) | ≈ {{credits.image}} credits |{{/images}}
 | Each web search Klecx runs | + {{credits.search}} credits |
 
 Long prompts, long answers and large attachments cost more; short ones cost less. A document review shows the most it can cost before you start.
@@ -46,7 +46,7 @@ To protect your balance from a runaway day, each plan has a daily spending cap, 
 |---|---|---|---|---|
 | Price per month | {{plan.FREE.price}} | {{plan.LITE.price}} | {{plan.STANDARD.price}} | {{plan.PRO.price}} |
 | Credits per month | {{plan.FREE.credits}} | {{plan.LITE.credits}} | {{plan.STANDARD.credits}} | {{plan.PRO.credits}} |
-| Models | Fast & Efficient | + Standard Reasoning, images | + Standard Reasoning, images | + Standard Reasoning, images |
+| Models | Fast & Efficient | + Standard Reasoning{{#images}}, images{{/images}} | + Standard Reasoning{{#images}}, images{{/images}} | + Standard Reasoning{{#images}}, images{{/images}} |
 | People you can collaborate with (across all your workspaces) | {{plan.FREE.members}} | {{plan.LITE.members}} | {{plan.STANDARD.members}} | {{plan.PRO.members}} |
 | Attachments per workspace | {{plan.FREE.attachments}} ({{plan.FREE.maxFileMB}} MB each) | {{plan.LITE.attachments}} ({{plan.LITE.maxFileMB}} MB each) | {{plan.STANDARD.attachments}} ({{plan.STANDARD.maxFileMB}} MB each) | {{plan.PRO.attachments}} ({{plan.PRO.maxFileMB}} MB each) |
 | Downloads | Markdown | Markdown, PDF, Word | Markdown, PDF, Word | Markdown, PDF, Word |
@@ -63,7 +63,7 @@ Every account starts on the **Free** plan with {{plan.FREE.credits}} credits:
 | Attachments per workspace | {{plan.FREE.attachments}} ({{plan.FREE.maxFileMB}} MB each) |
 | Downloads | Markdown |
 
-Paid plans (Lite, Standard and Pro) are launching soon. They add more credits, the Standard Reasoning model, image creation, PDF and Word downloads, and (on Standard and Pro) collaboration. See the [pricing page](/pricing) for what each plan will include.
+Paid plans (Lite, Standard and Pro) are launching soon. They add more credits, the Standard Reasoning model, {{#images}}image creation, {{/images}}PDF and Word downloads, and (on Standard and Pro) collaboration. See the [pricing page](/pricing) for what each plan will include.
 {{/billing}}
 
 ## Running Out of Credits

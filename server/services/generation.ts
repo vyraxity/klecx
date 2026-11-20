@@ -39,6 +39,7 @@ import {
 } from "@/server/ai";
 import { PLANS, PlanKey } from "@/server/billing/plans";
 import { getEntitlements, entitlementsForPlan } from "@/server/billing/entitlements";
+import { isImageGenerationEnabled } from "@/lib/features/image-generation";
 import { getUserPreferences } from "@/server/services/user-preferences";
 import { buildContext, estimateTokens } from "@/server/ai/context-builder";
 import { PROMPT_VERSION } from "@/server/ai/prompts/system";
@@ -1055,6 +1056,15 @@ export async function createAndStreamGeneration(
 
   // 4. Determine Kind, Validate Moderation, Plan Access & Model
   const kind = input.kind === "IMAGE" ? "IMAGE" : "TEXT";
+
+  // Text-only launch: no image generation (or regeneration) while the switch is off.
+  if (
+    !isImageGenerationEnabled() &&
+    (kind === "IMAGE" ||
+      (input.modelKey && isModelKey(input.modelKey) && getModel(input.modelKey).kind === "IMAGE"))
+  ) {
+    throw Errors.forbidden("Image generation is not available", "image_generation_disabled");
+  }
 
   // Step 5.4: For IMAGE prompts, run abuse & moderation checks BEFORE reserving credits
   if (kind === "IMAGE") {

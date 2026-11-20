@@ -22,6 +22,7 @@ import {
   Square,
 } from "lucide-react";
 import { toast } from "sonner";
+import { isImageGenerationEnabled } from "@/lib/features/image-generation";
 import { cn } from "@/lib/utils";
 import { QueryClientContext, useQuery } from "@tanstack/react-query";
 import { useUiStore } from "@/lib/stores/ui";
@@ -160,6 +161,8 @@ export function Composer({
   const clearDraft = useUiStore((s) => s.clearDraft);
 
   const { entitlements, isSuccess: entitlementsLoaded } = useEntitlements();
+  // Text-only launch: no image mode while image generation is switched off.
+  const imagesOn = isImageGenerationEnabled();
   // Only treat images and models as locked once the real entitlements have
   // loaded (the hook falls back to Free meanwhile). The server re-checks.
   const imageGateReason = entitlementsLoaded ? getGateReason(entitlements, "images") : null;
@@ -179,7 +182,7 @@ export function Composer({
   // Composer state
   const [prompt, setPrompt] = React.useState<string>(() => savedDraft || "");
   const [mode, setMode] = React.useState<"text" | "image">(
-    storeChatMode || "text",
+    imagesOn ? storeChatMode || "text" : "text",
   );
   const [selectedModel, setSelectedModel] = React.useState<string>("text-economy");
   const clientModels = React.useMemo(
@@ -223,14 +226,14 @@ export function Composer({
 
   const handleModeChange = React.useCallback(
     (nextMode: "text" | "image") => {
-      if (nextMode === "image" && imageGateReason) {
+      if (nextMode === "image" && (!imagesOn || imageGateReason)) {
         return;
       }
       setMode(nextMode);
       setStoreChatMode(nextMode);
       setImageLockedNotice(false);
     },
-    [setStoreChatMode, imageGateReason]
+    [setStoreChatMode, imageGateReason, imagesOn]
   );
 
   // F4.3: apply a prefill (starter template) whenever its nonce changes: set
@@ -253,14 +256,16 @@ export function Composer({
       }
     }
 
-    if (prefill.mode === "image" && isImagePlanLocked) {
+    if (prefill.mode === "image" && !imagesOn) {
+      handleModeChange("text");
+    } else if (prefill.mode === "image" && isImagePlanLocked) {
       // Keep the prompt, stay in Chat, and say why.
       handleModeChange("text");
       setImageLockedNotice(true);
     } else {
       handleModeChange(prefill.mode);
     }
-  }, [prefill, isImagePlanLocked, adjustHeight, handleModeChange]);
+  }, [prefill, isImagePlanLocked, imagesOn, adjustHeight, handleModeChange]);
 
   // Auto-focus support
   React.useEffect(() => {
@@ -1099,7 +1104,8 @@ export function Composer({
       <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border/50 mt-1">
         {/* Left Action Group: Mode + Attach + Voice + Model + Queue */}
         <div className="flex flex-wrap items-center gap-1.5">
-          {/* Mode Switch (Text / Image) */}
+          {/* Mode Switch (Text / Image), hidden while image generation is off */}
+          {imagesOn && (
           <div className="flex items-center gap-0.5 rounded-xl bg-surface-2 p-0.5">
             <button
               type="button"
@@ -1137,6 +1143,7 @@ export function Composer({
               </button>
             </Gated>
           </div>
+          )}
 
           {/* Hidden File Input (Attach to message) */}
           <input

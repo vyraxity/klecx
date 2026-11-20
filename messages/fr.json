@@ -2,6 +2,7 @@
   "Metadata": {
     "title": "Klecx | Votre espace de travail et studio de collaboration basés sur l’IA",
     "description": "Obtenez des réponses IA en temps réel, générez des visuels de qualité studio et accélérez votre flux de travail avec Klecx.",
+    "descriptionTextOnly": "Obtenez des réponses IA en temps réel, conservez chaque version et accélérez votre flux de travail avec Klecx.",
     "ogImageAlt": "Aperçu de l'espace de travail {appName}",
     "root": {
       "title": "Klecx — Espaces de travail, pas des fils",
@@ -1170,7 +1171,8 @@
       "items": {
         "creditDef": {
           "q": "Qu'est-ce qu'un crédit et comment fonctionne-t-il ?",
-          "a": "Les crédits reflètent le coût de calcul réel : ≈ 2 crédits pour un message classique avec le modèle Rapide, ≈ 7 avec le modèle Standard et ≈ 34 par image. Lorsque Klecx effectue une recherche web, chaque recherche ajoute 3 crédits."
+          "a": "Les crédits reflètent le coût de calcul réel : ≈ 2 crédits pour un message classique avec le modèle Rapide, ≈ 7 avec le modèle Standard et ≈ 34 par image. Lorsque Klecx effectue une recherche web, chaque recherche ajoute 3 crédits.",
+          "aTextOnly": "Les crédits reflètent le coût de calcul réel : ≈ 2 crédits pour un message classique avec le modèle Rapide et ≈ 7 avec le modèle Standard. Lorsque Klecx effectue une recherche web, chaque recherche ajoute 3 crédits."
         },
         "rollover": {
           "q": "Les crédits non utilisés sont-ils reportés au mois suivant ?",
@@ -1948,6 +1950,7 @@
       "email_not_verified": "L'adresse e-mail doit d'abord être vérifiée.",
       "empty_document": "Il n'y a aucun texte à relire.",
       "empty_file": "L'enregistrement est vide.",
+      "image_generation_disabled": "La génération d'images n'est pas disponible.",
       "internal_error": "Un problème est survenu de notre côté. Veuillez réessayer.",
       "invalid_audio_format": "Cet enregistrement n'est pas dans un format audio pris en charge.",
       "subscription_exists": "Vous avez déjà un abonnement actif.",

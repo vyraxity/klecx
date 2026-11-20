@@ -155,30 +155,3 @@ Known gap: the credit hold before an answer covers the base cost only (decided 2
 
 **If nothing is decided:** stays at A.
 
----
-
-## 7. Image generation and Creem's Gen AI rules
-
-- **Found:** 2026-11-19, Step 8.2 (reading docs.creem.io).
-- **Where:** the `image-standard` model in `server/ai/registry.ts` / `lib/ai/model-catalog.ts`; `PLANS.*.limits.images` and `models` in `server/billing/plans.ts`.
-
-**The situation.** Creem's account-review pages (Account Reviews → Restricted products, Gen AI Requirements, AI Wrapper Compliance, read 2026-11-19) say that every product or feature that **generates or edits images or video** must, before going live and for as long as it sells on Creem:
-
-1. run paid generations on **Creem Customer Credits** (a Creem credit wallet per user; every generation spends from it), and
-2. send **every image prompt through the Creem Moderation API**, with each credit spend carrying the ID of the moderation result that cleared it.
-
-Products that only generate text (or audio) are exempt. Creem also lists Generative AI products as *restricted*: they need prior payment-processor history and "an established and proven track record". A store that stops using the required products can be restricted or offboarded, and payouts frozen.
-
-**Today.** Lite, Standard and Pro include image generation (`image-standard`, `limits.images: true`). Klecx keeps its own credit ledger (`server/services/credits.ts`); nothing calls Creem Customer Credits or the Moderation API. Billing is off (`BILLING_ENABLED=false`), so nothing is sold yet.
-
-**Why it's open.** Keeping image generation for paid plans means building both Creem integrations (moderation call before each image, and either moving image spending to Creem's credit wallet or mirroring it there) before the store review. Turning it off for launch keeps the review to a text-only product, which the guide (§4.2 "Launch text-first") already recommends, but takes a listed feature away from paid plans and changes plan copy, help articles and the pricing page.
-
-**Options.**
-
-| | Option | Effect |
-|---|---|---|
-| A | Launch text-first (guide §4.2) | Turn image generation off for every plan behind a flag before the Creem review (Step 8.6); update plan features, pricing page and help in `en`/`es`/`fr`. Bring it back later with B. |
-| B | Integrate Creem Customer Credits + Moderation API for images | Moderation call before every image generation; image credits spent from (or mirrored to) the Creem wallet with the moderation ID. More work, needs a design for two credit ledgers. |
-| C | Keep images, don't integrate | Not allowed by Creem's rules: risks rejection (final for that store) or offboarding later. |
-
-**If nothing is decided:** stays as today while billing is off. Must be decided before Step 8.6 (store review).
