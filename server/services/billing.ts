@@ -94,8 +94,13 @@ export async function startCheckout(
   }
 
   const provider = requireProvider(requestId, "checkout");
+  // Recorded before the provider call: its id comes back on the webhooks as
+  // `request_id` and ties the payment to this person (Step 8.3).
   const checkoutRequestId = randomUUID();
-  const { url } = await providerCall(requestId, "checkout", () =>
+  await db.billingCheckout.create({
+    data: { id: checkoutRequestId, userId, plan: input.plan, interval: input.interval },
+  });
+  const { url, checkoutId } = await providerCall(requestId, "checkout", () =>
     provider.createCheckout({
       userId,
       email: user.email,
@@ -106,6 +111,10 @@ export async function startCheckout(
       successUrl: new URL(CHECKOUT_SUCCESS_PATH, env.APP_URL).toString(),
     })
   );
+  await db.billingCheckout.update({
+    where: { id: checkoutRequestId },
+    data: { providerCheckoutId: checkoutId },
+  });
   return { url };
 }
 

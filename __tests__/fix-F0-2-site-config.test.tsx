@@ -166,6 +166,17 @@ describe("Step F0.2 — Site configuration: emails, company identity, links from
         excerpt: "use PostgreSQL instead",
         actionUrl: "https://klecx.vyraxity.com/workspaces/wksp-1#annotation-1",
       },
+      "subscription-changed": {
+        kind: "cancel_scheduled",
+        periodEnd: "2026-12-20T00:00:00.000Z",
+        actionUrl: "https://klecx.vyraxity.com/pricing",
+      },
+      "billing-alert": {
+        reason: "dispute_created",
+        eventType: "dispute.created",
+        eventId: "evt_1",
+        userId: "user_1",
+      },
       welcome: {
         name: "Ada",
       },

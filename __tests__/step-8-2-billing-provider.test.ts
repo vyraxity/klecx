@@ -100,6 +100,7 @@ describe("Step 8.2 — env", () => {
     BILLING_PROVIDER: "creem",
     CREEM_API_KEY: "creem_live_key_123",
     CREEM_API_BASE: "https://api.creem.io",
+    CREEM_WEBHOOK_SECRET: "whsec_live_123",
     CREEM_PRODUCT_LITE_MONTH: "prod_1",
     CREEM_PRODUCT_LITE_YEAR: "prod_2",
     CREEM_PRODUCT_STANDARD_MONTH: "prod_3",
@@ -275,6 +276,9 @@ describe("Step 8.2 — billing endpoints", () => {
     },
     verifyWebhook() {
       throw new WebhookSignatureError();
+    },
+    planForProduct() {
+      return null;
     },
   };
 

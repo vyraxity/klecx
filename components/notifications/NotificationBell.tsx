@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { PLAN_MANAGE_HREF } from "@/lib/billing/links";
+import { isSubscriptionChangeKind } from "@/lib/billing/subscription-changes";
 import {
   Bell,
   Check,
@@ -73,7 +75,7 @@ export function formatNotificationPresentation(
   const href = typeof p.href === "string" ? p.href : null;
 
   const title = (key: string) => t(`items.${key}.title`);
-  const desc = (key: string, variant = "description", values?: Record<string, string | number>) =>
+  const desc = (key: string, variant = "description", values?: Record<string, string | number | Date>) =>
     t(`items.${key}.${variant}`, values);
   const role = (value: unknown) => {
     const raw = text(value);
@@ -156,16 +158,29 @@ export function formatNotificationPresentation(
       return {
         title: title(item.type),
         description: desc(item.type),
-        href: href || "/settings",
+        href: href || PLAN_MANAGE_HREF,
         icon: <CreditCard className="h-4 w-4 text-danger" />,
       };
-    case "SUBSCRIPTION_CHANGED":
+    case "SUBSCRIPTION_CHANGED": {
+      // Step 8.3: one text per billing change (`payload.kind`).
+      const kind = isSubscriptionChangeKind(p.kind) ? p.kind : null;
+      const periodEnd = typeof p.periodEnd === "string" ? new Date(p.periodEnd) : null;
+      const description = !kind
+        ? desc(item.type)
+        : kind === "cancel_scheduled" && periodEnd && !Number.isNaN(periodEnd.getTime())
+          ? desc(item.type, "cancel_scheduledDate", { date: periodEnd })
+          : desc(item.type, kind);
       return {
         title: title(item.type),
-        description: desc(item.type),
-        href: href || "/settings",
-        icon: <CreditCard className="h-4 w-4 text-accent" />,
+        description,
+        href: href || PLAN_MANAGE_HREF,
+        icon: (
+          <CreditCard
+            className={`h-4 w-4 ${kind === "disputed" || kind === "ended" ? "text-warning" : "text-accent"}`}
+          />
+        ),
       };
+    }
     case "NEW_SIGN_IN": {
       const browser = text(p.browser);
       const os = text(p.os);

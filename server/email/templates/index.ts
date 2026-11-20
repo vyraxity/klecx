@@ -15,3 +15,4 @@ export * from "./support-notification";
 export * from "./ownership-transfer";
 export * from "./member-limits";
 export * from "./mentioned";
+export * from "./billing";

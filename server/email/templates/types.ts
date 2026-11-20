@@ -1,4 +1,5 @@
 import "server-only";
+import type { SubscriptionChangeKind } from "@/lib/billing/subscription-changes";
 
 export type EmailTranslator = (
   key: string,
@@ -123,6 +124,22 @@ export interface WelcomeEmailData {
   name?: string;
 }
 
+
+export interface SubscriptionChangedData {
+  kind: SubscriptionChangeKind;
+  /** ISO date the paid plan ends (`cancel_scheduled`). */
+  periodEnd?: string | null;
+  actionUrl: string;
+}
+
+/** Step 8.3: internal alert to the billing inbox. Ids only. */
+export interface BillingAlertData {
+  reason: string;
+  eventType: string;
+  eventId: string;
+  userId: string | null;
+}
+
 export interface EmailTemplateMap {
   "verify-email": VerifyEmailData;
   "reset-password": ResetPasswordData;
@@ -141,6 +158,8 @@ export interface EmailTemplateMap {
   "member-suspended": MemberSuspendedData;
   "member-restored": MemberRestoredData;
   mentioned: MentionedData;
+  "subscription-changed": SubscriptionChangedData;
+  "billing-alert": BillingAlertData;
 }
 
 export type EmailTemplateName = keyof EmailTemplateMap;

@@ -105,13 +105,14 @@ export const envSchema = z
         });
       }
 
-      // Billing on in production needs the provider, its key and every product (Step 8.2).
-      // TODO(8.3): also require CREEM_WEBHOOK_SECRET.
+      // Billing on in production needs the provider, its key, the webhook secret
+      // (Step 8.3) and every product (Step 8.2).
       if (data.BILLING_ENABLED) {
         const requiredForBilling: Array<keyof typeof data> = [
           "BILLING_PROVIDER",
           "CREEM_API_KEY",
           "CREEM_API_BASE",
+          "CREEM_WEBHOOK_SECRET",
           "CREEM_PRODUCT_LITE_MONTH",
           "CREEM_PRODUCT_LITE_YEAR",
           "CREEM_PRODUCT_STANDARD_MONTH",

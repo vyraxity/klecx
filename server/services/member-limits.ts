@@ -8,9 +8,9 @@ import type { Actor } from "@/server/auth/session";
 import type { Prisma } from "../db/generated/client";
 
 // Over-limit suspension service (quick_implementation_fix_for_v2.md §2.5, Step F1.3).
-// Built now, triggered later:
-// TODO(8.3/8.4): call startOverLimitGrace on downgrade/expiry, enforceMemberLimit
-// when the grace period ends, and restoreWithinLimit on (re-)subscription.
+// The billing webhook (Step 8.3, `planChanged` effect in server/services/billing-webhook.ts)
+// calls startOverLimitGrace when the owner's plan drops and restoreWithinLimit when it rises.
+// TODO(8.4): call enforceMemberLimit for owners whose grace period has ended.
 //
 // The member limit counts **distinct people across all of the owner's
 // workspaces and projects** (owner decided 2026-11-14, Step 8.1): someone who

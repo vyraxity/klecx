@@ -21,11 +21,13 @@ import {
   type NotificationItemDto,
 } from "./NotificationBell";
 import type { NotificationType } from "@/lib/schemas/notification";
+import { useSiteConfig } from "@/components/providers/site-config-provider";
 
-// PAYMENT_FAILED, SUBSCRIPTION_CHANGED and EXPORT_READY are reserved types with
-// no sender yet (no billing webhook; exports are synchronous downloads), so they
-// are not offered here until something emits them.
+// EXPORT_READY is a reserved type with no sender yet (exports are synchronous
+// downloads), so it is not offered here. PAYMENT_FAILED and SUBSCRIPTION_CHANGED
+// come from the billing webhook (Step 8.3) and are offered while billing is on.
 // Labels: Notifications.labels.<TYPE>; descriptions: Notifications.types.<TYPE>.
+const BILLING_TYPES = new Set<NotificationType>(["PAYMENT_FAILED", "SUBSCRIPTION_CHANGED"]);
 const OFFERED_TYPES: NotificationType[] = [
   "INVITE_RECEIVED",
   "INVITE_ACCEPTED",
@@ -34,6 +36,8 @@ const OFFERED_TYPES: NotificationType[] = [
   "SHARE_CREATED",
   "CREDITS_LOW",
   "CREDITS_EXHAUSTED",
+  "PAYMENT_FAILED",
+  "SUBSCRIPTION_CHANGED",
   "NEW_SIGN_IN",
   "QUESTIONS_ANSWERED",
   "OWNERSHIP_TRANSFER_REQUESTED",
@@ -47,6 +51,7 @@ const OFFERED_TYPES: NotificationType[] = [
 
 export function NotificationsSettingsView() {
   const t = useTranslations("Notifications");
+  const { billingEnabled } = useSiteConfig();
   const format = useFormatter();
   const [prefs, setPrefs] = React.useState<
     Record<string, { inApp: boolean; email: boolean }>
@@ -204,7 +209,7 @@ export function NotificationsSettingsView() {
               </div>
             </div>
 
-            {OFFERED_TYPES.map((type) => {
+            {OFFERED_TYPES.filter((type) => billingEnabled || !BILLING_TYPES.has(type)).map((type) => {
               const meta = {
                 type,
                 label: t(`labels.${type}`),

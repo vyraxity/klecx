@@ -561,6 +561,62 @@
       "button": "Abrir Klecx",
       "helpNotice": "¿Necesitas ayuda para empezar? Visita nuestro Centro de ayuda en {helpUrl} o contacta a soporte en {supportEmail}.",
       "disclaimer": "Has recibido este correo electrónico porque te registraste en Klecx."
+    },
+    "subscriptionChanged": {
+      "greeting": "Hola,",
+      "button": "Ver tu plan",
+      "disclaimer": "Recibes este correo porque se refiere a tu suscripción. Los recibos y las facturas los envía nuestro proveedor de pagos.",
+      "activated": {
+        "subject": "Tu plan de pago está activo",
+        "heading": "Bienvenido a tu nuevo plan",
+        "body": "Tu pago se ha completado y tu plan está activo. Los créditos de tu plan se han añadido a tu cuenta."
+      },
+      "payment_received": {
+        "subject": "Pago recibido: tus créditos se han renovado",
+        "heading": "Pago recibido",
+        "body": "Tu suscripción se ha renovado. Los créditos de tu plan para el nuevo periodo se han añadido a tu cuenta."
+      },
+      "cancel_scheduled": {
+        "subject": "Tu suscripción va a terminar",
+        "heading": "Cancelación programada",
+        "body": "Tu suscripción está cancelada. Conservas tu plan hasta el final del periodo pagado y después tu cuenta pasa al plan Free.",
+        "bodyWithDate": "Tu suscripción está cancelada. Conservas tu plan hasta el {date, date, long} y después tu cuenta pasa al plan Free."
+      },
+      "ended": {
+        "subject": "Tu suscripción ha terminado",
+        "heading": "Suscripción terminada",
+        "body": "Tu plan de pago ha terminado y tu cuenta está ahora en el plan Free. Tus espacios de trabajo y tu contenido se conservan."
+      },
+      "paused": {
+        "subject": "Tu suscripción está en pausa",
+        "heading": "Suscripción en pausa",
+        "body": "Tu suscripción está en pausa. Mientras tanto, tu cuenta usa el plan Free."
+      },
+      "refunded": {
+        "subject": "Hemos emitido tu reembolso",
+        "heading": "Reembolso emitido",
+        "body": "Hemos reembolsado tu pago. Tu plan de pago ha terminado y se han retirado los créditos no usados de ese pago. Tu cuenta está ahora en el plan Free."
+      },
+      "refunded_partial": {
+        "subject": "Hemos emitido un reembolso parcial",
+        "heading": "Reembolso parcial emitido",
+        "body": "Hemos reembolsado parte de tu pago. Se ha retirado la parte correspondiente de los créditos no usados de ese pago. Tu plan sigue activo."
+      },
+      "disputed": {
+        "subject": "Tu cuenta está en pausa durante una disputa de pago",
+        "heading": "Disputa de pago abierta",
+        "body": "Se ha abierto una disputa sobre uno de tus pagos. Mientras siga abierta, la generación con IA de tu cuenta está en pausa. Si no querías abrirla, contacta con nuestro equipo de soporte."
+      }
+    },
+    "billingAlert": {
+      "subject": "Alerta de facturación: {reason}",
+      "heading": "Un evento de facturación necesita revisión",
+      "greeting": "Hola,",
+      "body": "Hay que revisar un webhook de facturación. Los detalles están en la tabla de eventos de facturación.",
+      "reason": "Motivo: {reason}",
+      "event": "Evento: {type} ({id})",
+      "user": "Usuario: {userId}",
+      "disclaimer": "Alerta interna enviada al buzón de facturación."
     }
   },
   "AppShell": {
@@ -2311,7 +2367,9 @@
       "MEMBER_LIMIT_EXCEEDED": "Límite de colaboradores superado",
       "MEMBER_SUSPENDED": "Acceso cambiado a solo lectura",
       "MEMBER_RESTORED": "Acceso restaurado",
-      "MENTIONED": "Menciones"
+      "MENTIONED": "Menciones",
+      "PAYMENT_FAILED": "Pago fallido",
+      "SUBSCRIPTION_CHANGED": "Cambios en la suscripción"
     },
     "types": {
       "INVITE_RECEIVED": "Cuando alguien te invita a colaborar en un espacio de trabajo o proyecto.",
@@ -2329,7 +2387,9 @@
       "MEMBER_LIMIT_EXCEEDED": "Cuando el plan de un propietario ya no cubre a todos los colaboradores.",
       "MEMBER_SUSPENDED": "Cuando tu acceso pasa a solo lectura por un límite del plan.",
       "MEMBER_RESTORED": "Cuando recuperas tu acceso completo.",
-      "MENTIONED": "Cuando alguien te menciona en un comentario."
+      "MENTIONED": "Cuando alguien te menciona en un comentario.",
+      "PAYMENT_FAILED": "Cuando falla el pago de una suscripción.",
+      "SUBSCRIPTION_CHANGED": "Cuando tu plan empieza, se renueva, se cancela, se reembolsa o se pausa."
     },
     "roles": {
       "OWNER": "Propietario",
@@ -2389,7 +2449,16 @@
       },
       "SUBSCRIPTION_CHANGED": {
         "title": "Suscripción actualizada",
-        "description": "Tu plan de suscripción se ha actualizado."
+        "description": "Tu plan de suscripción se ha actualizado.",
+        "activated": "Tu plan de pago está activo y sus créditos se han añadido.",
+        "payment_received": "Pago recibido. Los créditos de tu plan se han renovado.",
+        "cancel_scheduled": "Tu suscripción está cancelada. Conservas tu plan hasta el final del periodo pagado.",
+        "cancel_scheduledDate": "Tu suscripción está cancelada. Conservas tu plan hasta el {date, date, medium}.",
+        "ended": "Tu plan de pago ha terminado. Tu cuenta está en el plan Free.",
+        "paused": "Tu suscripción está en pausa. Mientras tanto, tu cuenta usa el plan Free.",
+        "refunded": "Tu pago se ha reembolsado y tu plan de pago ha terminado.",
+        "refunded_partial": "Se ha reembolsado parte de tu pago. Tu plan sigue activo.",
+        "disputed": "Hay una disputa de pago abierta. La generación con IA está en pausa en tu cuenta."
       },
       "NEW_SIGN_IN": {
         "title": "Nuevo inicio de sesión detectado",
