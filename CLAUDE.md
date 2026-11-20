@@ -56,6 +56,8 @@ npm run verify
 
 `verify` runs everything (it needs Docker for Postgres). Use `npm run db:migrate` to create migrations (`--create-only` when hand-editing SQL). Never edit a migration that's already merged. `check:i18n` exists once interlude F5.1 is merged.
 
+**Dependency override** (2026-11-20): `package.json` → `overrides` pins `effect` under `@prisma/config` to `^3.22.5`, because every Prisma 7 release ships `effect@3.20.0` (high advisory GHSA-7589-6fvf-x4pw, which fails `check:audit`). Remove the override when a Prisma release depends on a fixed `effect` (≥ 3.22.1).
+
 CI and `verify` fail when `schema.prisma` and the migrations disagree (`prisma migrate diff --exit-code`). If that check fails, the schema was changed without a migration (or with `prisma db push`): create the missing migration.
 
 **Open review items carried forward from F2.2 (PR #111, 2026-11-10), F2.4 (PR #113, 2026-11-10), F2.5 (PR #114, 2026-11-11), F2.6 (PR #115, 2026-11-11), F2.7 (PR #116, 2026-11-11), F3.3 (PR #120, 2026-11-13), Step 8.1 (2026-11-19), Step 8.2 (2026-11-19), F5.1 (PR #131, 2026-11-16), F5.2 (PR #134, 2026-11-16), F5.4 (2026-11-18), F5.5 (2026-11-18), F5.8 (2026-11-16) and F5.9 (2026-11-18).** When reviewing the step named in each item, check whether it's fixed; if not, fix it in that step's PR. Once that step's review is done and the item is fixed, **delete the item from this file** (and delete this whole block when it's empty).
