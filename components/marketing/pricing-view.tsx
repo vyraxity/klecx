@@ -10,6 +10,7 @@ import {
 import { useSiteConfig } from "@/components/providers/site-config-provider";
 import { PLANS, getDailyCapForPlan } from "@/server/billing/plans";
 import { PLAN_ORDER } from "@/lib/entitlements/shared";
+import { isImageGenerationEnabled } from "@/lib/features/image-generation";
 
 export function PricingView() {
   const t = useTranslations("Marketing.pricingPage");
@@ -82,6 +83,7 @@ export function PricingView() {
                   <td className="p-4">{tc("economyStandard")}</td>
                   <td className="p-4">{tc("economyStandard")}</td>
                 </tr>
+                {isImageGenerationEnabled() && (
                 <tr>
                   <td className="p-4 font-medium text-fg">{tc("imageSynthesis")}</td>
                   <td className="p-4 text-fg-subtle">{tc("no")}</td>
@@ -89,6 +91,7 @@ export function PricingView() {
                   <td className="p-4 text-success font-medium">{tc("yesApprox")}</td>
                   <td className="p-4 text-success font-medium">{tc("yesApprox")}</td>
                 </tr>
+                )}
                 <tr>
                   <td className="p-4 font-medium text-fg">{tc("attachments")}</td>
                   <td className="p-4">{tc("files3")}</td>

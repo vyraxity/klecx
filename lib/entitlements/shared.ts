@@ -1,4 +1,5 @@
 import { PLANS, type PlanKey, type PlanLimits } from "@/server/billing/plans";
+import { isImageGenerationEnabled } from "@/lib/features/image-generation";
 
 export type SharedModelKey =
   | "text-economy"
@@ -92,7 +93,10 @@ export function entitlementsForPlan(plan: PlanKey): Entitlements {
   const normalizedPlan: PlanKey = plan in PLANS ? plan : "FREE";
   const def = PLANS[normalizedPlan];
 
-  const allowedModels = ALL_MODEL_KEYS.filter((m) => def.models.includes(m));
+  const imagesOn = isImageGenerationEnabled();
+  const allowedModels = ALL_MODEL_KEYS.filter(
+    (m) => def.models.includes(m) && (imagesOn || m !== "image-standard")
+  );
 
   return {
     plan: normalizedPlan,
@@ -100,9 +104,10 @@ export function entitlementsForPlan(plan: PlanKey): Entitlements {
     limits: {
       ...def.limits,
       exportFormats: [...def.limits.exportFormats],
+      images: imagesOn && def.limits.images,
     },
     features: {
-      images: Boolean(def.limits.images),
+      images: imagesOn && Boolean(def.limits.images),
       webSearch: Boolean(def.limits.grounding),
       documentReview: true,
       voiceInput: def.limits.voiceSecondsPerDay > 0,

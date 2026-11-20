@@ -32,8 +32,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
-  STARTER_CATEGORIES,
-  STARTER_TEMPLATES,
+  visibleStarterCategories,
+  visibleStarterTemplates,
   type StarterTemplate,
   type TemplateCategory,
 } from "@/lib/templates/starter-library";
@@ -41,6 +41,7 @@ import { Button } from "@/components/ui/button";
 import { useEntitlements } from "@/lib/api/hooks/entitlements";
 import { getGateReason } from "@/lib/entitlements/shared";
 import { Gated } from "@/components/ui/gated";
+import { isImageGenerationEnabled } from "@/lib/features/image-generation";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
   PenLine,
@@ -86,7 +87,9 @@ export function StarterLibrary({ onUseTemplate }: StarterLibraryProps) {
     React.useState<TemplateCategory>("write");
 
   const filteredTemplates = React.useMemo(() => {
-    return STARTER_TEMPLATES.filter((t) => t.category === activeCategory);
+    return visibleStarterTemplates(isImageGenerationEnabled()).filter(
+      (t) => t.category === activeCategory
+    );
   }, [activeCategory]);
 
   return (
@@ -103,7 +106,7 @@ export function StarterLibrary({ onUseTemplate }: StarterLibraryProps) {
 
       {/* Category Tabs */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-        {STARTER_CATEGORIES.map((cat) => {
+        {visibleStarterCategories(isImageGenerationEnabled()).map((cat) => {
           const Icon = ICON_MAP[cat.iconName] || Sparkles;
           const isActive = activeCategory === cat.id;
 

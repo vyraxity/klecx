@@ -26,6 +26,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { isImageGenerationEnabled } from "@/lib/features/image-generation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -340,6 +341,8 @@ export function ResponseCard({
       ? t("modelEconomy")
       : t("modelStandard");
 
+  // Text-only launch: an existing image answer can't be regenerated while image generation is off.
+  const canRegenerateKind = response.kind !== "IMAGE" || isImageGenerationEnabled();
   const isImageResponse =
     response.kind === "IMAGE" ||
     (displayedContent.startsWith("http") &&
@@ -895,7 +898,7 @@ export function ResponseCard({
                   <span className="text-danger text-xs font-medium">
                     {t("imageFailed")}
                   </span>
-                  {onRegenerate && (
+                  {onRegenerate && canRegenerateKind && (
                     <Gated reason={regenerateGateReason}>
                       <Button
                         type="button"
@@ -1014,7 +1017,7 @@ export function ResponseCard({
                   </Button>
 
                   {/* Regenerate */}
-                  {onRegenerate && (
+                  {onRegenerate && canRegenerateKind && (
                     <Gated reason={regenerateGateReason}>
                       <Button
                         type="button"

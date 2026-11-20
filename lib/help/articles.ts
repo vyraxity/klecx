@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { getSiteConfig } from "@/server/config/site";
 import { PLANS, getDailyCapForPlan, type PlanKey } from "@/server/billing/plans";
+import { isImageGenerationEnabled } from "@/lib/features/image-generation";
 import { GROUNDING_SURCHARGE_CREDITS, MODEL_CATALOG } from "@/lib/ai/model-catalog";
 import { MAX_WORKSPACE_DOCUMENTS } from "@/lib/documents/workspace-document-types";
 import {
@@ -76,9 +77,23 @@ export function applyBillingSections(raw: string, billingEnabled: boolean): stri
     );
 }
 
+/**
+ * Text about image generation (text-only launch): `{{#images}}…{{/images}}` is kept
+ * only while image generation is on (`isImageGenerationEnabled()`). Works inline
+ * (inside a sentence or a table row) and around whole lines.
+ */
+export function applyImageSections(raw: string, imagesEnabled: boolean): string {
+  return raw.replace(
+    /\{\{#images\}\}([\s\S]*?)\{\{\/images\}\}(\r?\n)?/g,
+    (_, body: string, newline: string | undefined) =>
+      imagesEnabled ? body + (newline ?? "") : ""
+  );
+}
+
 export function replaceHelpTokens(raw: string, locale: string = "en"): string {
   const site = getSiteConfig();
   raw = applyBillingSections(raw, site.billingEnabled);
+  raw = applyImageSections(raw, isImageGenerationEnabled());
   const replacements: Record<string, string> = {
     "%%SUPPORT_EMAIL%%": site.emails.support,
     "{{supportEmail}}": site.emails.support,

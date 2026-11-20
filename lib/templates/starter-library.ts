@@ -236,3 +236,13 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     promptKey: "prompts.concept-art",
   },
 ];
+
+/** Starter categories shown now: no "Create image" while image generation is off. */
+export function visibleStarterCategories(imagesEnabled: boolean) {
+  return imagesEnabled ? STARTER_CATEGORIES : STARTER_CATEGORIES.filter((c) => c.id !== "image");
+}
+
+/** Starter templates shown now: no image starters while image generation is off. */
+export function visibleStarterTemplates(imagesEnabled: boolean) {
+  return imagesEnabled ? STARTER_TEMPLATES : STARTER_TEMPLATES.filter((t) => t.mode !== "image");
+}

@@ -2,6 +2,7 @@
   "Metadata": {
     "title": "Klecx | Tu espacio de trabajo y estudio de colaboración con IA",
     "description": "Obtén respuestas de IA en tiempo real, genera imágenes de calidad de estudio y acelera tu flujo de trabajo con Klecx.",
+    "descriptionTextOnly": "Obtén respuestas de IA en tiempo real, conserva cada versión y acelera tu flujo de trabajo con Klecx.",
     "ogImageAlt": "Vista previa del espacio de trabajo de {appName}",
     "root": {
       "title": "Klecx — Espacios de trabajo, no hilos",
@@ -1170,7 +1171,8 @@
       "items": {
         "creditDef": {
           "q": "¿Qué es un crédito y cómo funciona?",
-          "a": "Los créditos representan el coste computacional real: ≈ 2 créditos por un mensaje típico con el modelo Rápido, ≈ 7 con el modelo Estándar y ≈ 34 por imagen. Cuando Klecx busca en la web, cada búsqueda añade 3 créditos."
+          "a": "Los créditos representan el coste computacional real: ≈ 2 créditos por un mensaje típico con el modelo Rápido, ≈ 7 con el modelo Estándar y ≈ 34 por imagen. Cuando Klecx busca en la web, cada búsqueda añade 3 créditos.",
+          "aTextOnly": "Los créditos representan el coste computacional real: ≈ 2 créditos por un mensaje típico con el modelo Rápido y ≈ 7 con el modelo Estándar. Cuando Klecx busca en la web, cada búsqueda añade 3 créditos."
         },
         "rollover": {
           "q": "¿Los créditos no utilizados se acumulan para el mes siguiente?",
@@ -1948,6 +1950,7 @@
       "email_not_verified": "Primero hay que verificar la dirección de correo.",
       "empty_document": "No hay texto que revisar.",
       "empty_file": "La grabación está vacía.",
+      "image_generation_disabled": "La generación de imágenes no está disponible.",
       "internal_error": "Algo salió mal por nuestra parte. Inténtalo de nuevo.",
       "invalid_audio_format": "Esta grabación no está en un formato de audio compatible.",
       "subscription_exists": "Ya tienes una suscripción activa.",

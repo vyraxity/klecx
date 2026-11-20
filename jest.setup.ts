@@ -12,6 +12,9 @@ delete process.env.COMPANY_WEBSITE;
 delete process.env.SOCIAL_X_URL;
 delete process.env.SOCIAL_GITHUB_URL;
 delete process.env.BILLING_ENABLED;
+// Image generation is off in production (text-only launch); the existing image tests keep
+// the code working with it on. Tests of the off state set it to "false" themselves.
+process.env.NEXT_PUBLIC_IMAGE_GENERATION_ENABLED = 'true';
 process.env.CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || 'test_cloudinary_cloud';
 process.env.CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY || 'test_cloudinary_key';
 process.env.CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET || 'test_cloudinary_secret';

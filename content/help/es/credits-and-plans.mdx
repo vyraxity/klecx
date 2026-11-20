@@ -3,13 +3,13 @@ title: "Créditos y planes"
 category: "billing-account"
 description: "Cómo funcionan los créditos, cuánto cuestan las cosas normalmente, límites diarios y qué incluye cada plan."
 keywords: ["créditos", "planes", "precios", "coste", "límite diario", "plan gratuito", "suscripción"]
-sourceVersion: 2
-updated: "2026-11-18"
+sourceVersion: 3
+updated: "2026-11-20"
 ---
 
 # Créditos y planes
 
-Todo lo que hace Klecx con IA usa **créditos**: respuestas, preguntas al margen, revisiones de documentos, imágenes, búsquedas web y transcripción de voz. Cada opción de modelo muestra su coste típico antes de enviar.
+Todo lo que hace Klecx con IA usa **créditos**: respuestas, preguntas al margen, revisiones de documentos, {{#images}}imágenes, {{/images}}búsquedas web y transcripción de voz. Cada opción de modelo muestra su coste típico antes de enviar.
 
 ## Cómo funcionan los créditos
 
@@ -23,7 +23,7 @@ Todo lo que hace Klecx con IA usa **créditos**: respuestas, preguntas al margen
 |---|---|
 | Un mensaje con **Rápido y Eficiente** | ≈ {{credits.fast}} créditos |
 | Un mensaje con **Razonamiento Estándar** | ≈ {{credits.standard}} créditos |
-| Una imagen (**Crear Imagen**) | ≈ {{credits.image}} créditos |
+{{#images}}| Una imagen (**Crear Imagen**) | ≈ {{credits.image}} créditos |{{/images}}
 | Cada búsqueda web que hace Klecx | + {{credits.search}} créditos |
 
 Los mensajes largos, las respuestas largas y los adjuntos grandes cuestan más; los cortos, menos. Una revisión de documento muestra su coste máximo antes de empezar.
@@ -46,7 +46,7 @@ Para proteger tu saldo de un día descontrolado, cada plan tiene un tope de gast
 |---|---|---|---|---|
 | Precio al mes | {{plan.FREE.price}} | {{plan.LITE.price}} | {{plan.STANDARD.price}} | {{plan.PRO.price}} |
 | Créditos al mes | {{plan.FREE.credits}} | {{plan.LITE.credits}} | {{plan.STANDARD.credits}} | {{plan.PRO.credits}} |
-| Modelos | Rápido y Eficiente | + Razonamiento Estándar, imágenes | + Razonamiento Estándar, imágenes | + Razonamiento Estándar, imágenes |
+| Modelos | Rápido y Eficiente | + Razonamiento Estándar{{#images}}, imágenes{{/images}} | + Razonamiento Estándar{{#images}}, imágenes{{/images}} | + Razonamiento Estándar{{#images}}, imágenes{{/images}} |
 | Personas con las que puedes colaborar (en todos tus espacios) | {{plan.FREE.members}} | {{plan.LITE.members}} | {{plan.STANDARD.members}} | {{plan.PRO.members}} |
 | Adjuntos por espacio | {{plan.FREE.attachments}} ({{plan.FREE.maxFileMB}} MB cada uno) | {{plan.LITE.attachments}} ({{plan.LITE.maxFileMB}} MB cada uno) | {{plan.STANDARD.attachments}} ({{plan.STANDARD.maxFileMB}} MB cada uno) | {{plan.PRO.attachments}} ({{plan.PRO.maxFileMB}} MB cada uno) |
 | Descargas | Markdown | Markdown, PDF, Word | Markdown, PDF, Word | Markdown, PDF, Word |
@@ -63,7 +63,7 @@ Todas las cuentas empiezan en el plan **Free** con {{plan.FREE.credits}} crédit
 | Adjuntos por espacio | {{plan.FREE.attachments}} ({{plan.FREE.maxFileMB}} MB cada uno) |
 | Descargas | Markdown |
 
-Los planes de pago (Lite, Standard y Pro) llegarán pronto. Añaden más créditos, el modelo Razonamiento Estándar, la creación de imágenes, las descargas en PDF y Word, y (en Standard y Pro) la colaboración. Consulta la [página de precios](/pricing) para ver qué incluirá cada plan.
+Los planes de pago (Lite, Standard y Pro) llegarán pronto. Añaden más créditos, el modelo Razonamiento Estándar, {{#images}}la creación de imágenes, {{/images}}las descargas en PDF y Word, y (en Standard y Pro) la colaboración. Consulta la [página de precios](/pricing) para ver qué incluirá cada plan.
 {{/billing}}
 
 ## Quedarse sin créditos

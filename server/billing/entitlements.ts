@@ -89,7 +89,9 @@ export function entitlementsForPlan(plan: PlanKey): Entitlements {
   const allowedModels = (Object.keys(MODELS) as ModelKey[]).filter(
     (key) =>
       !INTERNAL_MODEL_KEYS.includes(key) &&
-      planRank >= (PLAN_RANKS[MODELS[key].minPlan] ?? 0)
+      planRank >= (PLAN_RANKS[MODELS[key].minPlan] ?? 0) &&
+      // Text-only launch: no image model while image generation is off.
+      (base.features.images || MODELS[key].kind !== "IMAGE")
   );
 
   return {
