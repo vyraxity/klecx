@@ -24,6 +24,9 @@ export function CreditsCard({ credits, showPlanAction = true }: CreditsCardProps
   const { billingEnabled } = useSiteConfig();
   const plan = credits.plan in PLANS ? credits.plan : "FREE";
   const isFree = plan === "FREE";
+  // Step 8.4: when the next allowance starts. Shown in UTC, like the grant periods,
+  // so the server and browser render the same date.
+  const resetsAt = credits.resetsAt ? new Date(credits.resetsAt) : null;
 
   return (
     <section className="w-full rounded-2xl border border-border bg-surface p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -44,6 +47,13 @@ export function CreditsCard({ credits, showPlanAction = true }: CreditsCardProps
             </span>{" "}
             {tHome("creditsRemaining", { count: credits.balance })}
           </p>
+          {resetsAt && (
+            <p className="text-[11px] text-muted mt-0.5">
+              {tHome("creditsResetsOn", {
+                date: format.dateTime(resetsAt, { dateStyle: "medium", timeZone: "UTC" }),
+              })}
+            </p>
+          )}
         </div>
       </div>
 

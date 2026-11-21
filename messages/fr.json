@@ -253,7 +253,8 @@
       "FAILED_TO_CREATE_USER": "Votre compte n'a pas pu être créé. Veuillez réessayer.",
       "FAILED_TO_CREATE_SESSION": "La connexion a échoué. Veuillez réessayer.",
       "SOCIAL_ACCOUNT_ALREADY_LINKED": "Ce compte de connexion est déjà lié à un autre utilisateur.",
-      "CREDENTIAL_ACCOUNT_NOT_FOUND": "Ce compte n'utilise pas de mot de passe. Connectez-vous avec votre fournisseur."
+      "CREDENTIAL_ACCOUNT_NOT_FOUND": "Ce compte n'utilise pas de mot de passe. Connectez-vous avec votre fournisseur.",
+      "DISPOSABLE_EMAIL": "Ce service de messagerie n'est pas accepté. Inscrivez-vous avec une adresse e-mail permanente."
     }
   },
   "Chat": {
@@ -708,7 +709,8 @@
       "settings": "Paramètres",
       "explore": "Explorer",
       "create": "Créer"
-    }
+    },
+    "creditsResetsOn": "Les crédits sont renouvelés le {date}"
   },
   "Templates": {
     "catWrite": "Écrire",

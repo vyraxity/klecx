@@ -19,7 +19,16 @@ export function renderSupportNotification(
   const screenshotsText = links.length
     ? `\n\nScreenshots (links expire in 7 days):\n${links.map((l, i) => `${i + 1}. ${l}`).join("\n")}`
     : "";
-  const bodyText = `A new support request has been submitted by ${data.senderEmail}.\n\nTopic: ${data.topic}\nTicket ID: ${data.ticketId}\nUser ID: ${data.userId ?? "Anonymous"}\n\nMessage:\n${data.message}${screenshotsText}`;
+  const refund = data.refundEligibility;
+  const refundLines = refund
+    ? [
+        `Refund eligible: ${refund.eligible ? "yes" : "no"} (rule: ${refund.rule ?? "no payment"})`,
+        `Payment #${refund.paymentNumber}, ${refund.daysSincePayment ?? "-"} day(s) ago, ${refund.creditsUsedPct ?? "-"} % of its credits used`,
+        `Earlier refunds: ${refund.previousRefunds}`,
+      ]
+    : [];
+  const refundText = refundLines.length ? `\n\nRefund policy check:\n${refundLines.join("\n")}` : "";
+  const bodyText = `A new support request has been submitted by ${data.senderEmail}.\n\nTopic: ${data.topic}\nTicket ID: ${data.ticketId}\nUser ID: ${data.userId ?? "Anonymous"}${refundText}\n\nMessage:\n${data.message}${screenshotsText}`;
 
   const bodyHtml = `
     <p style="margin: 0 0 12px 0;">A new support request has been submitted.</p>
@@ -28,6 +37,12 @@ export function renderSupportNotification(
       <tr><td style="padding: 4px 8px; font-weight: 600;">From:</td><td style="padding: 4px 8px;">${escapeHtml(data.senderEmail)}</td></tr>
       <tr><td style="padding: 4px 8px; font-weight: 600;">User ID:</td><td style="padding: 4px 8px; font-family: monospace;">${escapeHtml(data.userId ?? "Anonymous")}</td></tr>
       <tr><td style="padding: 4px 8px; font-weight: 600;">Topic:</td><td style="padding: 4px 8px;">${escapeHtml(data.topic)}</td></tr>
+      ${refundLines
+        .map(
+          (line, i) =>
+            `<tr><td style="padding: 4px 8px; font-weight: 600;">${i === 0 ? "Refund check:" : ""}</td><td style="padding: 4px 8px;">${escapeHtml(line)}</td></tr>`
+        )
+        .join("")}
     </table>
     <div style="background-color: #f4f4f5; border-left: 3px solid #6366f1; padding: 12px 16px; margin: 16px 0; border-radius: 4px; font-size: 13px; color: #27272a;">
       <p style="margin: 0 0 4px 0; font-weight: 600;">Message Content:</p>

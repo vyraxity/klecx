@@ -2,6 +2,7 @@ import "server-only";
 import { db } from "@/server/db/client";
 import type { Actor } from "@/server/auth/session";
 import { getAccountByUserId } from "@/server/services/credits";
+import { ensureCurrentGrantForUser } from "@/server/billing/grants";
 import { getEntitlements } from "@/server/billing/entitlements";
 import type { PlanKey } from "@/server/billing/plans";
 
@@ -60,31 +61,43 @@ function truncateSnippet(text: string, maxLength = 160): string {
   return cleaned.slice(0, maxLength).trim() + "…";
 }
 
-function nextMonthResetIso(now = new Date()): string {
-  return new Date(now.getFullYear(), now.getMonth() + 1, 1).toISOString();
-}
-
 function toHomeCredits(
   account: { planBalance: number; topupBalance: number } | null,
-  plan: PlanKey
+  plan: PlanKey,
+  resetsAt: Date | null
 ): HomeCredits {
   return {
     plan,
     balance: (account?.planBalance ?? 0) + (account?.topupBalance ?? 0),
-    resetsAt: nextMonthResetIso(),
+    resetsAt: resetsAt?.toISOString() ?? null,
   };
+}
+
+/**
+ * Step 8.4: grants the allowance of the current period first, so the balance
+ * shown is the one the person can spend, and returns when it next resets.
+ */
+async function currentGrant(userId: string): Promise<Date | null> {
+  try {
+    return (await ensureCurrentGrantForUser(userId)).resetsAt;
+  } catch (e) {
+    console.error({ home: "ensure_current_grant", err: e instanceof Error ? e.message : "unknown" });
+    return null;
+  }
 }
 
 /** Credits summary only (Settings), without the rest of the home dashboard. */
 export async function getHomeCredits(userId: string): Promise<HomeCredits> {
+  const resetsAt = await currentGrant(userId);
   const [account, entitlements] = await Promise.all([
     getAccountByUserId(userId).catch(() => null),
     getEntitlements(userId),
   ]);
-  return toHomeCredits(account, entitlements.plan);
+  return toHomeCredits(account, entitlements.plan, resetsAt);
 }
 
 export async function getHomeData(actor: Actor): Promise<HomeData> {
+  const resetsAt = await currentGrant(actor.userId);
 
   // Run independent database fetches in parallel
   const [userRecord, creditAccount, entitlements, recentRows, projectRows, sharedRows, workspaceCount, projectCount] =
@@ -270,7 +283,7 @@ export async function getHomeData(actor: Actor): Promise<HomeData> {
     recent,
     projects,
     sharedWithMe,
-    credits: toHomeCredits(creditAccount, entitlements.plan),
+    credits: toHomeCredits(creditAccount, entitlements.plan, resetsAt),
     onboarding: {
       emailVerified: Boolean(userRecord?.emailVerified),
       usernameChosen,

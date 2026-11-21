@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "@/server/db/client";
-import { getEntitlements } from "@/server/billing/entitlements";
+import { entitlementsForPlan, getEntitlements } from "@/server/billing/entitlements";
+import type { PlanKey } from "@/server/billing/plans";
 import { notify } from "@/server/services/notify";
 import { Errors } from "@/server/http/errors";
 import { requireWorkspace, requireProject } from "@/server/authz/access";
@@ -10,7 +11,8 @@ import type { Prisma } from "../db/generated/client";
 // Over-limit suspension service (quick_implementation_fix_for_v2.md §2.5, Step F1.3).
 // The billing webhook (Step 8.3, `planChanged` effect in server/services/billing-webhook.ts)
 // calls startOverLimitGrace when the owner's plan drops and restoreWithinLimit when it rises.
-// TODO(8.4): call enforceMemberLimit for owners whose grace period has ended.
+// Step 8.4: `enforceEndedGrace` runs enforceMemberLimit once after the grace ends,
+// lazily from `ensureCurrentGrant` (credits.ts); the job runner takes it over in 10.3.
 //
 // The member limit counts **distinct people across all of the owner's
 // workspaces and projects** (owner decided 2026-11-14, Step 8.1): someone who
@@ -262,7 +264,7 @@ export async function startOverLimitGrace(ownerId: string, newLimit: number) {
 
   const grace = await db.memberLimitGrace.upsert({
     where: { ownerId },
-    update: { limit: newLimit, graceEndsAt },
+    update: { limit: newLimit, graceEndsAt, enforcedAt: null },
     create: { ownerId, limit: newLimit, graceEndsAt },
   });
 
@@ -382,6 +384,53 @@ export async function restoreWithinLimit(ownerId: string, limitOverride?: number
   await db.memberLimitGrace.deleteMany({ where: { ownerId } });
 
   return { restoredCount: restored.length };
+}
+
+/**
+ * Collaborator limits after the owner's plan changed (Step 8.3 webhook, Step 8.4
+ * lazy plan end): a smaller limit starts the 14-day grace when the owner has
+ * more people than it allows (unless a grace for that limit or lower already
+ * runs); a larger one brings suspended people back.
+ */
+export async function applyMemberLimitForPlanChange(
+  ownerId: string,
+  before: PlanKey,
+  after: PlanKey
+): Promise<void> {
+  const beforeLimit = entitlementsForPlan(before).limits.members;
+  const afterLimit = entitlementsForPlan(after).limits.members;
+  if (afterLimit < beforeLimit) {
+    const [collaborators, grace] = await Promise.all([
+      getOwnerCollaborators(ownerId),
+      db.memberLimitGrace.findUnique({ where: { ownerId }, select: { limit: true } }),
+    ]);
+    if (collaborators.keys.size > afterLimit && (!grace || grace.limit > afterLimit)) {
+      await startOverLimitGrace(ownerId, afterLimit);
+    }
+  } else if (afterLimit > beforeLimit) {
+    await restoreWithinLimit(ownerId, afterLimit);
+  }
+}
+
+/**
+ * Runs `enforceMemberLimit` once for an owner whose grace period has ended
+ * (Step 8.4). The grace row is claimed first (`enforcedAt`), so concurrent
+ * callers never suspend or notify twice. Returns whether it ran.
+ */
+export async function enforceEndedGrace(ownerId: string, now: Date = new Date()): Promise<boolean> {
+  const claimed = await db.memberLimitGrace.updateMany({
+    where: { ownerId, enforcedAt: null, graceEndsAt: { lte: now } },
+    data: { enforcedAt: now },
+  });
+  if (claimed.count === 0) return false;
+  try {
+    await enforceMemberLimit(ownerId);
+  } catch (e) {
+    // Let a later call try again.
+    await db.memberLimitGrace.updateMany({ where: { ownerId }, data: { enforcedAt: null } });
+    throw e;
+  }
+  return true;
 }
 
 /**

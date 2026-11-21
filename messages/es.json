@@ -253,7 +253,8 @@
       "FAILED_TO_CREATE_USER": "No se pudo crear tu cuenta. Inténtalo de nuevo.",
       "FAILED_TO_CREATE_SESSION": "No se pudo iniciar sesión. Inténtalo de nuevo.",
       "SOCIAL_ACCOUNT_ALREADY_LINKED": "Esta cuenta de inicio de sesión ya está vinculada a otro usuario.",
-      "CREDENTIAL_ACCOUNT_NOT_FOUND": "Esta cuenta no usa contraseña. Inicia sesión con tu proveedor."
+      "CREDENTIAL_ACCOUNT_NOT_FOUND": "Esta cuenta no usa contraseña. Inicia sesión con tu proveedor.",
+      "DISPOSABLE_EMAIL": "Este servicio de correo no se acepta. Regístrate con una dirección de correo permanente."
     }
   },
   "Chat": {
@@ -708,7 +709,8 @@
       "settings": "Ajustes",
       "explore": "Explorar",
       "create": "Crear"
-    }
+    },
+    "creditsResetsOn": "Los créditos se renuevan el {date}"
   },
   "Templates": {
     "catWrite": "Escribir",
