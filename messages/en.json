@@ -253,7 +253,8 @@
       "FAILED_TO_CREATE_USER": "Your account couldn't be created. Please try again.",
       "FAILED_TO_CREATE_SESSION": "You couldn't be signed in. Please try again.",
       "SOCIAL_ACCOUNT_ALREADY_LINKED": "This sign-in account is already linked to another user.",
-      "CREDENTIAL_ACCOUNT_NOT_FOUND": "This account doesn't use a password. Sign in with your provider instead."
+      "CREDENTIAL_ACCOUNT_NOT_FOUND": "This account doesn't use a password. Sign in with your provider instead.",
+      "DISPOSABLE_EMAIL": "This email service isn't accepted. Please sign up with a permanent email address."
     }
   },
   "Chat": {
@@ -708,7 +709,8 @@
       "settings": "Settings",
       "explore": "Explore",
       "create": "Create"
-    }
+    },
+    "creditsResetsOn": "Credits reset on {date}"
   },
   "Templates": {
     "catWrite": "Write",

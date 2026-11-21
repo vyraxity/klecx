@@ -155,3 +155,39 @@ Known gap: the credit hold before an answer covers the base cost only (decided 2
 
 **If nothing is decided:** stays at A.
 
+
+---
+
+## 7. A backup grant for monthly paid plans when Creem's payment message is lost
+
+- **Found:** 2026-11-21, Step 8.4.
+- **Where:** `server/billing/grants.ts` (`decideGrant`), `server/billing/handlers.ts` (`subscription.paid`).
+
+**The situation.** The guide suggests a "lazy safety net" that grants a monthly plan's credits even when the `subscription.paid` webhook never arrives. Klecx only learns a new billing period (its start and end dates) from Creem's webhooks, so a backup grant can't tell "the renewal was paid but the message is lost" from "the message is just late". When the late message arrives, it would grant the month a second time (the two grants have different ledger keys).
+
+**Today.** Monthly paid plans get credits **only** from `subscription.paid` (Creem retries a failed delivery 4 more times over about 6 h, and Klecx answers 500 when processing fails so the retry runs again). Yearly plans get months 2–12 from the lazy grant, which is safe because the period dates are already known. If a payment message is ever lost for good, support adds the month's credits by hand (`adjust()` in `server/services/credits.ts`; see `ADMIN_CONSOLE.md`).
+
+**Options.**
+
+| | Option | Effect |
+|---|---|---|
+| A | Webhook only (today) | No double grants. A lost message needs a manual fix. |
+| B | Backup after a delay | If the subscription is active and no grant came within e.g. 24 h of the expected renewal (`currentPeriodEnd`), grant with a key per subscription + period, and make `subscription.paid` skip its grant when that period was already granted (refunds then have to find the grant by period instead of by transaction). More code and more cases to test. |
+| C | Ask Creem | Fetch the subscription from Creem's API when a renewal is overdue and grant only if it shows a new paid period. Needs a provider call on that path. |
+
+**If nothing is decided:** stays at A.
+
+---
+
+## 8. Top-up credit packs (future feature)
+
+- **Found:** 2026-11-21, Step 8.4 (the guide marks top-ups "optional, post-launch").
+- **Where:** `CreditAccount.topupBalance` and `grantTopup()` exist (`server/services/credits.ts`); nothing sells or grants top-ups.
+
+**The situation.** A one-time Creem product (e.g. 500 credits) that someone on a paid plan buys when the monthly allowance runs out. Top-up credits would be spent after the plan allowance and, to keep the schema simple, stay available while the account is active (per-pack expiry would need a table of packs).
+
+**Today.** Not built. Rule 9: no page, FAQ, help article or Terms section mentions top-ups.
+
+**To build it:** a Creem one-time product per pack (and its `CREEM_PRODUCT_*` id), `checkout.completed` for that product → `grantTopup()`, a buy button where credits run low, the refund rule for packs, how long unused packs stay valid (ask a lawyer), and the copy in `en`, `es`, `fr`.
+
+**If nothing is decided:** stays unbuilt and unmentioned.

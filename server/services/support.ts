@@ -3,6 +3,7 @@ import { db } from "@/server/db/client";
 import { Errors } from "@/server/http/errors";
 import { getSiteConfig } from "@/server/config/site";
 import { sendEmail } from "@/server/email/send";
+import { getRefundEligibilityForUser } from "@/server/billing/refunds";
 import type { Actor } from "@/server/auth/session";
 import type { SupportTicketInput } from "@/lib/schemas/support";
 import {
@@ -17,6 +18,26 @@ import {
  */
 function stripControlCharacters(str: string): string {
   return str.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+}
+
+/** Billing requests from a signed-in subscriber carry the refund policy check (Step 8.4). */
+async function billingRefundCheck(actor: Actor | null, topic: string) {
+  if (!actor || topic !== "billing") return undefined;
+  try {
+    const result = await getRefundEligibilityForUser(actor.userId);
+    if (!result) return undefined;
+    return {
+      eligible: result.eligible,
+      rule: result.rule,
+      creditsUsedPct: result.creditsUsedPct,
+      daysSincePayment: result.daysSincePayment,
+      paymentNumber: result.paymentNumber,
+      previousRefunds: result.previousRefunds,
+    };
+  } catch (err) {
+    console.error("[SupportService] Refund eligibility failed:", err instanceof Error ? err.message : "unknown");
+    return undefined;
+  }
 }
 
 export async function createSupportTicket(
@@ -90,6 +111,7 @@ export async function createSupportTicket(
         : undefined,
       // Signed links that expire after 7 days; never the files themselves.
       screenshotLinks: await supportScreenshotLinks(attachments),
+      refundEligibility: await billingRefundCheck(actor, cleanTopic),
     });
   } catch (err) {
     console.error("[SupportService] Failed to send support team notification email:", err);

@@ -2,7 +2,6 @@ import "server-only";
 import { db } from "@/server/db/client";
 import { getSiteConfig } from "@/server/config/site";
 import { sendEmail } from "@/server/email/send";
-import { entitlementsForPlan } from "@/server/billing/entitlements";
 import { getBillingProvider } from "@/server/billing/get-provider";
 import { applyBillingEvent, type Effect, type EventOutcome } from "@/server/billing/handlers";
 import {
@@ -12,11 +11,7 @@ import {
   type NormalizedEvent,
 } from "@/server/billing/provider";
 import { notify } from "@/server/services/notify";
-import {
-  getOwnerCollaborators,
-  restoreWithinLimit,
-  startOverLimitGrace,
-} from "@/server/services/member-limits";
+import { applyMemberLimitForPlanChange } from "@/server/services/member-limits";
 import type { Prisma } from "@/server/db/generated/client";
 
 /**
@@ -147,25 +142,10 @@ async function runEffect(effect: Effect, event: NormalizedEvent, provider: Billi
       await notify(effect.userId, effect.type, effect.payload, { dedupeKey: effect.dedupeKey });
       return;
 
-    case "planChanged": {
-      // Collaborator limits follow the owner's plan (F1.3): a smaller limit starts
-      // the 14-day grace when the owner has more people than it allows; a larger
-      // one brings suspended people back.
-      const before = entitlementsForPlan(effect.before).limits.members;
-      const after = entitlementsForPlan(effect.after).limits.members;
-      if (after < before) {
-        const [collaborators, grace] = await Promise.all([
-          getOwnerCollaborators(effect.userId),
-          db.memberLimitGrace.findUnique({ where: { ownerId: effect.userId }, select: { limit: true } }),
-        ]);
-        if (collaborators.keys.size > after && (!grace || grace.limit > after)) {
-          await startOverLimitGrace(effect.userId, after);
-        }
-      } else if (after > before) {
-        await restoreWithinLimit(effect.userId, after);
-      }
+    case "planChanged":
+      // Collaborator limits follow the owner's plan (F1.3).
+      await applyMemberLimitForPlanChange(effect.userId, effect.before, effect.after);
       return;
-    }
 
     case "cancelNow":
       try {
