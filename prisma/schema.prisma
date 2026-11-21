@@ -73,6 +73,7 @@ model User {
   receivedTransfers    OwnershipTransfer[] @relation("TransfersReceived")
   memberLimitGrace     MemberLimitGrace?
   subscription         Subscription?
+  billingCheckouts     BillingCheckout[]
   annotationMentions   AnnotationMention[]
   workspaceNotes       WorkspaceNote[]     @relation("WorkspaceNoteCreator")
   documentRevisionsEdited DocumentRevision[]
@@ -987,9 +988,28 @@ model BillingEvent {
   /// RECEIVED | PROCESSED | IGNORED | FAILED
   status          String    @default("RECEIVED")
   error           String?
+  /// The person the event was applied to (Step 8.3); null until resolved. Kept after account deletion.
+  userId          String?   @map("user_id")
   receivedAt      DateTime  @default(now()) @map("received_at")
   processedAt     DateTime? @map("processed_at")
 
   @@unique([provider, providerEventId])
+  @@index([userId, receivedAt])
   @@map("billing_events")
+}
+
+/// A hosted checkout we started (Step 8.3). Its id is the `request_id` sent to
+/// the provider, so a webhook can be traced back to the buyer without trusting an email.
+model BillingCheckout {
+  id                 String   @id
+  userId             String   @map("user_id")
+  plan               PlanKey
+  /// "month" | "year"
+  interval           String
+  providerCheckoutId String?  @map("provider_checkout_id")
+  createdAt          DateTime @default(now()) @map("created_at")
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("billing_checkouts")
 }

@@ -9,6 +9,8 @@ import {
   type NotificationType,
 } from "@/lib/schemas/notification";
 import type { Prisma, NotifStatus, EmailStatus } from "@/server/db/generated/client";
+import { PLAN_MANAGE_HREF } from "@/lib/billing/links";
+import { isSubscriptionChangeKind } from "@/lib/billing/subscription-changes";
 
 export { NOTIFICATION_TYPES, type NotificationType };
 
@@ -207,9 +209,22 @@ function resolveDefaultEmailMapping(
         template: "payment-failed",
         data: {
           reason: payload.reason as string | undefined,
-          retryUrl: (payload.retryUrl as string) || `${appUrl}/settings`,
+          retryUrl: (payload.retryUrl as string) || `${appUrl}${PLAN_MANAGE_HREF}`,
         },
       };
+    case "SUBSCRIPTION_CHANGED": {
+      // Step 8.3: one email per billing webhook change (`kind`).
+      const kind = payload.kind;
+      if (!isSubscriptionChangeKind(kind)) return null;
+      return {
+        template: "subscription-changed",
+        data: {
+          kind,
+          periodEnd: (payload.periodEnd as string | null | undefined) ?? null,
+          actionUrl: `${appUrl}${PLAN_MANAGE_HREF}`,
+        },
+      };
+    }
     case "NEW_SIGN_IN":
       return {
         template: "new-sign-in",

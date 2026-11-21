@@ -561,6 +561,62 @@
       "button": "Ouvrir Klecx",
       "helpNotice": "Besoin d'aide pour démarrer ? Consultez notre Centre d'aide sur {helpUrl} ou contactez l'assistance à {supportEmail}.",
       "disclaimer": "Vous avez reçu cet e-mail car vous vous êtes inscrit sur Klecx."
+    },
+    "subscriptionChanged": {
+      "greeting": "Bonjour,",
+      "button": "Voir votre offre",
+      "disclaimer": "Vous recevez cet e-mail car il concerne votre abonnement. Les reçus et les factures sont envoyés par notre prestataire de paiement.",
+      "activated": {
+        "subject": "Votre offre payante est active",
+        "heading": "Bienvenue dans votre nouvelle offre",
+        "body": "Votre paiement a été accepté et votre offre est active. Les crédits de votre offre ont été ajoutés à votre compte."
+      },
+      "payment_received": {
+        "subject": "Paiement reçu : vos crédits sont renouvelés",
+        "heading": "Paiement reçu",
+        "body": "Votre abonnement a été renouvelé. Les crédits de votre offre pour la nouvelle période ont été ajoutés à votre compte."
+      },
+      "cancel_scheduled": {
+        "subject": "Votre abonnement va prendre fin",
+        "heading": "Résiliation programmée",
+        "body": "Votre abonnement est résilié. Vous gardez votre offre jusqu'à la fin de la période payée, puis votre compte passe à l'offre Free.",
+        "bodyWithDate": "Votre abonnement est résilié. Vous gardez votre offre jusqu'au {date, date, long}, puis votre compte passe à l'offre Free."
+      },
+      "ended": {
+        "subject": "Votre abonnement a pris fin",
+        "heading": "Abonnement terminé",
+        "body": "Votre offre payante a pris fin et votre compte est maintenant sur l'offre Free. Vos espaces de travail et votre contenu sont conservés."
+      },
+      "paused": {
+        "subject": "Votre abonnement est en pause",
+        "heading": "Abonnement en pause",
+        "body": "Votre abonnement est en pause. En attendant, votre compte utilise l'offre Free."
+      },
+      "refunded": {
+        "subject": "Votre remboursement a été effectué",
+        "heading": "Remboursement effectué",
+        "body": "Nous avons remboursé votre paiement. Votre offre payante a pris fin et les crédits non utilisés de ce paiement ont été retirés. Votre compte est maintenant sur l'offre Free."
+      },
+      "refunded_partial": {
+        "subject": "Un remboursement partiel a été effectué",
+        "heading": "Remboursement partiel effectué",
+        "body": "Nous avons remboursé une partie de votre paiement. La part correspondante des crédits non utilisés de ce paiement a été retirée. Votre offre reste active."
+      },
+      "disputed": {
+        "subject": "Votre compte est en pause pendant un litige de paiement",
+        "heading": "Litige de paiement ouvert",
+        "body": "Un litige a été ouvert sur l'un de vos paiements. Tant qu'il est ouvert, la génération par IA est en pause sur votre compte. Si vous ne vouliez pas l'ouvrir, contactez notre équipe d'assistance."
+      }
+    },
+    "billingAlert": {
+      "subject": "Alerte de facturation : {reason}",
+      "heading": "Un événement de facturation demande une vérification",
+      "greeting": "Bonjour,",
+      "body": "Un webhook de facturation doit être vérifié. Les détails sont dans la table des événements de facturation.",
+      "reason": "Motif : {reason}",
+      "event": "Événement : {type} ({id})",
+      "user": "Utilisateur : {userId}",
+      "disclaimer": "Alerte interne envoyée à la boîte de facturation."
     }
   },
   "AppShell": {
@@ -2311,7 +2367,9 @@
       "MEMBER_LIMIT_EXCEEDED": "Limite de collaborateurs dépassée",
       "MEMBER_SUSPENDED": "Accès passé en lecture seule",
       "MEMBER_RESTORED": "Accès rétabli",
-      "MENTIONED": "Mentions"
+      "MENTIONED": "Mentions",
+      "PAYMENT_FAILED": "Échec de paiement",
+      "SUBSCRIPTION_CHANGED": "Changements d'abonnement"
     },
     "types": {
       "INVITE_RECEIVED": "Quand quelqu'un vous invite à collaborer sur un espace de travail ou un projet.",
@@ -2329,7 +2387,9 @@
       "MEMBER_LIMIT_EXCEEDED": "Quand l'offre d'un propriétaire ne couvre plus tous les collaborateurs.",
       "MEMBER_SUSPENDED": "Quand votre accès passe en lecture seule à cause d'une limite de l'offre.",
       "MEMBER_RESTORED": "Quand vous retrouvez votre accès complet.",
-      "MENTIONED": "Quand quelqu'un vous mentionne dans un commentaire."
+      "MENTIONED": "Quand quelqu'un vous mentionne dans un commentaire.",
+      "PAYMENT_FAILED": "Quand le paiement d'un abonnement échoue.",
+      "SUBSCRIPTION_CHANGED": "Quand votre offre démarre, est renouvelée, résiliée, remboursée ou mise en pause."
     },
     "roles": {
       "OWNER": "Propriétaire",
@@ -2389,7 +2449,16 @@
       },
       "SUBSCRIPTION_CHANGED": {
         "title": "Abonnement mis à jour",
-        "description": "Votre offre d'abonnement a été mise à jour."
+        "description": "Votre offre d'abonnement a été mise à jour.",
+        "activated": "Votre offre payante est active et ses crédits ont été ajoutés.",
+        "payment_received": "Paiement reçu. Les crédits de votre offre ont été renouvelés.",
+        "cancel_scheduled": "Votre abonnement est résilié. Vous gardez votre offre jusqu'à la fin de la période payée.",
+        "cancel_scheduledDate": "Votre abonnement est résilié. Vous gardez votre offre jusqu'au {date, date, medium}.",
+        "ended": "Votre offre payante a pris fin. Votre compte est sur l'offre Free.",
+        "paused": "Votre abonnement est en pause. En attendant, votre compte utilise l'offre Free.",
+        "refunded": "Votre paiement a été remboursé et votre offre payante a pris fin.",
+        "refunded_partial": "Une partie de votre paiement a été remboursée. Votre offre reste active.",
+        "disputed": "Un litige de paiement est ouvert. La génération par IA est en pause sur votre compte."
       },
       "NEW_SIGN_IN": {
         "title": "Nouvelle connexion détectée",

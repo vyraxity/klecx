@@ -33,6 +33,7 @@ import {
 } from "./templates/member-limits";
 import { renderMentioned } from "./templates/mentioned";
 import { renderWelcome } from "./templates/welcome";
+import { renderBillingAlert, renderSubscriptionChanged } from "./templates/billing";
 
 export type {
   EmailTemplateMap,
@@ -183,6 +184,14 @@ export async function renderEmail<T extends EmailTemplateName>(
         t,
         to
       );
+    case "subscription-changed":
+      return renderSubscriptionChanged(
+        data as EmailTemplateMap["subscription-changed"],
+        t,
+        to
+      );
+    case "billing-alert":
+      return renderBillingAlert(data as EmailTemplateMap["billing-alert"], t, to);
     default: {
       const exhaustiveCheck: never = template;
       throw new Error(`Unknown email template: ${exhaustiveCheck}`);

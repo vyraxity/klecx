@@ -1,12 +1,16 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import {
+  BILLING_INTERVALS,
   BillingProviderError,
+  PAID_PLANS,
   WebhookSignatureError,
+  type BillingEventData,
   type BillingInterval,
   type BillingProvider,
   type NormalizedEvent,
   type PaidPlanKey,
+  type ProviderSubscriptionStatus,
 } from "@/server/billing/provider";
 
 /**
@@ -49,6 +53,92 @@ export function creemProductId(
 }
 
 type FetchLike = typeof fetch;
+
+type Json = Record<string, unknown>;
+const asObject = (v: unknown): Json | null => (v && typeof v === "object" && !Array.isArray(v) ? (v as Json) : null);
+const asString = (v: unknown): string | null => (typeof v === "string" && v.length > 0 ? v : null);
+const asNumber = (v: unknown): number | null => (typeof v === "number" && Number.isFinite(v) ? v : null);
+/** Creem sends related objects either expanded (`{ id, … }`) or as a bare id. */
+const idOf = (v: unknown): string | null => asString(v) ?? asString(asObject(v)?.id);
+function asDate(v: unknown): Date | null {
+  if (typeof v !== "string" && typeof v !== "number") return null;
+  const d = new Date(v);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+const CREEM_STATUSES: Record<string, ProviderSubscriptionStatus> = {
+  active: "active",
+  trialing: "trialing",
+  past_due: "past_due",
+  unpaid: "unpaid",
+  paused: "paused",
+  scheduled_cancel: "scheduled_cancel",
+  canceled: "canceled",
+  cancelled: "canceled",
+  expired: "expired",
+};
+
+function readSubscription(v: unknown): BillingEventData["subscription"] {
+  const o = asObject(v);
+  const id = idOf(v);
+  if (!id) return null;
+  return {
+    id,
+    status: CREEM_STATUSES[asString(o?.status) ?? ""] ?? "unknown",
+    productId: idOf(o?.product),
+    currentPeriodStart: asDate(o?.current_period_start_date),
+    currentPeriodEnd: asDate(o?.current_period_end_date),
+    canceledAt: asDate(o?.canceled_at),
+  };
+}
+
+function readTransaction(v: unknown): BillingEventData["transaction"] {
+  const o = asObject(v);
+  const id = idOf(v);
+  if (!id) return null;
+  return {
+    id,
+    amountPaid: asNumber(o?.amount_paid) ?? asNumber(o?.amount),
+    refundedAmount: asNumber(o?.refunded_amount),
+  };
+}
+
+/**
+ * Reads the fields the state machine needs out of a Creem event object
+ * (docs.creem.io `code/webhooks`, read 2026-11-20). `checkout.completed` carries
+ * a checkout (`request_id`, `metadata`, `customer`, `subscription`, `order`);
+ * `subscription.*` a subscription (`last_transaction` on paid/canceled/expired);
+ * `refund.created` a refund (`refund_amount`, `reason`, `transaction`,
+ * `subscription`, `checkout`); `dispute.created` a dispute.
+ */
+export function readCreemEventData(type: string, object: unknown): BillingEventData {
+  const o = asObject(object) ?? {};
+  const isSubscription = type.startsWith("subscription.");
+  const checkout = type === "checkout.completed" ? o : asObject(o.checkout);
+  const metadata = asObject(o.metadata) ?? asObject(checkout?.metadata) ?? {};
+
+  const subscription = isSubscription ? readSubscription(o) : readSubscription(o.subscription);
+  const transaction = isSubscription
+    ? readTransaction(o.last_transaction ?? o.last_transaction_id)
+    : type === "checkout.completed"
+      ? readTransaction(asObject(o.order)?.transaction)
+      : readTransaction(o.transaction);
+
+  return {
+    requestId: asString(o.request_id) ?? asString(checkout?.request_id),
+    metadataUserId: asString(metadata.userId),
+    metadataPlan: asString(metadata.plan),
+    metadataInterval: asString(metadata.interval),
+    customerId: idOf(o.customer) ?? (isSubscription ? null : idOf(asObject(o.subscription)?.customer)),
+    subscription,
+    transaction,
+    refund:
+      type === "refund.created" && idOf(o)
+        ? { id: idOf(o)!, amount: asNumber(o.refund_amount), reason: asString(o.reason) }
+        : null,
+    dispute: type === "dispute.created" && idOf(o) ? { id: idOf(o)! } : null,
+  };
+}
 
 export function createCreemProvider(config: CreemConfig, fetchImpl: FetchLike = fetch): BillingProvider {
   const base = config.apiBase.replace(/\/+$/, "");
@@ -152,8 +242,18 @@ export function createCreemProvider(config: CreemConfig, fetchImpl: FetchLike = 
         createdAt: Number.isNaN(createdAt.getTime()) ? new Date() : createdAt,
         object: p.object ?? null,
         payload,
+        data: readCreemEventData(p.eventType, p.object),
       };
       return event;
+    },
+
+    planForProduct(productId) {
+      for (const plan of PAID_PLANS) {
+        for (const interval of BILLING_INTERVALS) {
+          if (config.products[plan]?.[interval] === productId) return { plan, interval };
+        }
+      }
+      return null;
     },
   };
 }

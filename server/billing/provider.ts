@@ -27,6 +27,52 @@ export type CreateCheckoutInput = {
   successUrl: string;
 };
 
+/** Subscription status as the provider reports it, mapped to our words. */
+export type ProviderSubscriptionStatus =
+  | "active"
+  | "trialing"
+  | "past_due"
+  | "unpaid"
+  | "paused"
+  | "scheduled_cancel"
+  | "canceled"
+  | "expired"
+  | "unknown";
+
+/**
+ * The fields of a webhook event the state machine (Step 8.3) needs, read out
+ * of the provider's payload by the adapter. Every field is optional: which
+ * ones are present depends on the event type.
+ */
+export type BillingEventData = {
+  /** Our checkout id (`request_id`), when the event carries it. */
+  requestId: string | null;
+  /** `metadata.userId` we set at checkout. Set by our server and signed, never typed by the buyer. */
+  metadataUserId: string | null;
+  /** Plan / interval from our checkout metadata (a fallback; the product id decides first). */
+  metadataPlan: string | null;
+  metadataInterval: string | null;
+  customerId: string | null;
+  subscription: {
+    id: string;
+    status: ProviderSubscriptionStatus;
+    productId: string | null;
+    currentPeriodStart: Date | null;
+    currentPeriodEnd: Date | null;
+    canceledAt: Date | null;
+  } | null;
+  /** The payment the event is about (`subscription.paid`: the renewal; refunds and disputes: the refunded/disputed one). */
+  transaction: {
+    id: string;
+    /** Amount actually paid, in minor units. */
+    amountPaid: number | null;
+    /** Total refunded so far on this payment, in minor units. */
+    refundedAmount: number | null;
+  } | null;
+  refund: { id: string; amount: number | null; reason: string | null } | null;
+  dispute: { id: string } | null;
+};
+
 /** A verified webhook event, before the state machine (Step 8.3) reads it. */
 export type NormalizedEvent = {
   provider: string;
@@ -39,6 +85,7 @@ export type NormalizedEvent = {
   object: unknown;
   /** The whole parsed payload, for `BillingEvent.payload`. */
   payload: unknown;
+  data: BillingEventData;
 };
 
 export interface BillingProvider {
@@ -48,6 +95,8 @@ export interface BillingProvider {
   cancelSubscription(subscriptionId: string, options: { atPeriodEnd: boolean }): Promise<void>;
   /** Throws `WebhookSignatureError` when the signature is missing or wrong. */
   verifyWebhook(rawBody: string, signature: string | null): NormalizedEvent;
+  /** Product id → the plan and interval it sells; null for a product we don't know. */
+  planForProduct(productId: string): { plan: PaidPlanKey; interval: BillingInterval } | null;
 }
 
 /** The provider is not configured, or a call to it failed. Details are logged, never shown. */

@@ -434,6 +434,92 @@ export async function release(
   }
 }
 
+type DbClient = Prisma.TransactionClient | typeof db;
+
+function isLedgerKeyConflict(error: unknown): boolean {
+  const err = error as { code?: string; message?: string };
+  return err?.code === "P2002" || Boolean(err?.message?.includes("credit_ledger_idempotency_key_key"));
+}
+
+/**
+ * `grantPlan` inside the caller's transaction (Step 8.3: the webhook handler
+ * grants in the same transaction as the subscription update). Locks the account
+ * row, so a second call with the same key waits and then returns the recorded state.
+ */
+export async function grantPlanInTx(
+  tx: Prisma.TransactionClient,
+  accountId: string,
+  amount: number,
+  reason: string,
+  key: string
+): Promise<BalanceResult & { granted: boolean }> {
+  if (amount < 0) {
+    throw Errors.badRequest("Grant amount cannot be negative");
+  }
+
+  const rows = await tx.$queryRaw<{
+    id: string;
+    plan_balance: number;
+    topup_balance: number;
+  }[]>`
+    SELECT id, plan_balance, topup_balance
+    FROM credit_accounts
+    WHERE id = ${accountId}
+    FOR UPDATE
+  `;
+  const current = rows[0];
+  if (!current) throw Errors.notFound("CreditAccount");
+
+  const existing = await tx.creditLedger.findUnique({ where: { idempotencyKey: key } });
+  if (existing) {
+    return { planBalance: existing.planAfter, topupBalance: existing.topupAfter, granted: false };
+  }
+
+  // Expire leftovers if any plan balance remained
+  if (current.plan_balance > 0) {
+    await tx.creditLedger.create({
+      data: {
+        accountId,
+        type: "EXPIRE",
+        planDelta: -current.plan_balance,
+        topupDelta: 0,
+        planAfter: 0,
+        topupAfter: current.topup_balance,
+        reason: "monthly_reset",
+        idempotencyKey: `${key}:expire`,
+      },
+    });
+  }
+
+  const updated = await tx.$queryRaw<{
+    plan_balance: number;
+    topup_balance: number;
+  }[]>`
+    UPDATE credit_accounts SET
+      plan_balance = ${amount},
+      updated_at = now()
+    WHERE id = ${accountId}
+    RETURNING plan_balance, topup_balance
+  `;
+  const updatedRow = updated[0];
+  if (!updatedRow) throw Errors.notFound("CreditAccount");
+
+  await tx.creditLedger.create({
+    data: {
+      accountId,
+      type: "GRANT",
+      planDelta: amount,
+      topupDelta: 0,
+      planAfter: updatedRow.plan_balance,
+      topupAfter: updatedRow.topup_balance,
+      reason,
+      idempotencyKey: key,
+    },
+  });
+
+  return { planBalance: updatedRow.plan_balance, topupBalance: updatedRow.topup_balance, granted: true };
+}
+
 /**
  * Grants plan allowance: sets planBalance = amount after writing an EXPIRE entry for any leftover plan credits.
  */
@@ -458,84 +544,12 @@ export async function grantPlan(
   }
 
   try {
-    return await db.$transaction(async (tx) => {
-      const innerExisting = await tx.creditLedger.findUnique({
-        where: { idempotencyKey: key },
-      });
-      if (innerExisting) {
-        return {
-          planBalance: innerExisting.planAfter,
-          topupBalance: innerExisting.topupAfter,
-        };
-      }
-
-      const rows = await tx.$queryRaw<{
-        id: string;
-        plan_balance: number;
-        topup_balance: number;
-      }[]>`
-        SELECT id, plan_balance, topup_balance
-        FROM credit_accounts
-        WHERE id = ${accountId}
-        FOR UPDATE
-      `;
-      const current = rows[0];
-      if (!current) throw Errors.notFound("CreditAccount");
-
-      // Expire leftovers if any plan balance remained
-      if (current.plan_balance > 0) {
-        await tx.creditLedger.create({
-          data: {
-            accountId,
-            type: "EXPIRE",
-            planDelta: -current.plan_balance,
-            topupDelta: 0,
-            planAfter: 0,
-            topupAfter: current.topup_balance,
-            reason: "monthly_reset",
-            idempotencyKey: `${key}:expire`,
-          },
-        });
-      }
-
-      // Update plan_balance to new amount
-      const updated = await tx.$queryRaw<{
-        plan_balance: number;
-        topup_balance: number;
-      }[]>`
-        UPDATE credit_accounts SET
-          plan_balance = ${amount},
-          updated_at = now()
-        WHERE id = ${accountId}
-        RETURNING plan_balance, topup_balance
-      `;
-      const updatedRow = updated[0];
-      if (!updatedRow) throw Errors.notFound("CreditAccount");
-
-      await tx.creditLedger.create({
-        data: {
-          accountId,
-          type: "GRANT",
-          planDelta: amount,
-          topupDelta: 0,
-          planAfter: updatedRow.plan_balance,
-          topupAfter: updatedRow.topup_balance,
-          reason,
-          idempotencyKey: key,
-        },
-      });
-
-      return {
-        planBalance: updatedRow.plan_balance,
-        topupBalance: updatedRow.topup_balance,
-      };
-    });
+    const { planBalance, topupBalance } = await db.$transaction((tx) =>
+      grantPlanInTx(tx, accountId, amount, reason, key)
+    );
+    return { planBalance, topupBalance };
   } catch (error: unknown) {
-    const err = error as { code?: string; message?: string };
-    if (
-      err?.code === "P2002" ||
-      err?.message?.includes("credit_ledger_idempotency_key_key")
-    ) {
+    if (isLedgerKeyConflict(error)) {
       const recorded = await db.creditLedger.findUnique({
         where: { idempotencyKey: key },
       });
@@ -548,6 +562,71 @@ export async function grantPlan(
     }
     throw error;
   }
+}
+
+/**
+ * Takes back up to `amount` plan credits after a refund (Step 8.3), never more
+ * than the plan balance: the balance floors at 0 and top-up credits are not
+ * touched. Writes a `REFUND` ledger entry (also when nothing was left to take,
+ * so the refund is on record). Idempotent by `key`.
+ */
+export async function refundPlanCreditsInTx(
+  tx: Prisma.TransactionClient,
+  accountId: string,
+  amount: number,
+  reason: string,
+  key: string
+): Promise<BalanceResult & { removed: number }> {
+  const rows = await tx.$queryRaw<{ plan_balance: number; topup_balance: number }[]>`
+    SELECT plan_balance, topup_balance
+    FROM credit_accounts
+    WHERE id = ${accountId}
+    FOR UPDATE
+  `;
+  const current = rows[0];
+  if (!current) throw Errors.notFound("CreditAccount");
+
+  const existing = await tx.creditLedger.findUnique({ where: { idempotencyKey: key } });
+  if (existing) {
+    return { planBalance: existing.planAfter, topupBalance: existing.topupAfter, removed: -existing.planDelta };
+  }
+
+  const removed = Math.max(0, Math.min(Math.floor(amount), current.plan_balance));
+  const updated = await tx.$queryRaw<{ plan_balance: number; topup_balance: number }[]>`
+    UPDATE credit_accounts SET
+      plan_balance = plan_balance - ${removed},
+      updated_at = now()
+    WHERE id = ${accountId}
+    RETURNING plan_balance, topup_balance
+  `;
+  const row = updated[0];
+  if (!row) throw Errors.notFound("CreditAccount");
+
+  await tx.creditLedger.create({
+    data: {
+      accountId,
+      type: "REFUND",
+      planDelta: -removed,
+      topupDelta: 0,
+      planAfter: row.plan_balance,
+      topupAfter: row.topup_balance,
+      reason,
+      idempotencyKey: key,
+    },
+  });
+  return { planBalance: row.plan_balance, topupBalance: row.topup_balance, removed };
+}
+
+/** The credit account of `userId`, created (empty) when missing. */
+export async function ensureCreditAccountInTx(client: DbClient, userId: string): Promise<{ id: string }> {
+  const found = await client.creditAccount.findUnique({ where: { userId }, select: { id: true } });
+  if (found) return found;
+  return client.creditAccount.upsert({
+    where: { userId },
+    update: {},
+    create: { userId },
+    select: { id: true },
+  });
 }
 
 /**

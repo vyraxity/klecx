@@ -561,6 +561,62 @@
       "button": "Open Klecx",
       "helpNotice": "Need help getting started? Visit our Help Center at {helpUrl} or reach out to support at {supportEmail}.",
       "disclaimer": "You received this email because you signed up for Klecx."
+    },
+    "subscriptionChanged": {
+      "greeting": "Hi,",
+      "button": "View your plan",
+      "disclaimer": "You receive this email because it concerns your subscription. Receipts and invoices come from our payment provider.",
+      "activated": {
+        "subject": "Your paid plan is active",
+        "heading": "Welcome to your new plan",
+        "body": "Your payment went through and your plan is active. Your plan's credits have been added to your account."
+      },
+      "payment_received": {
+        "subject": "Payment received: your credits are renewed",
+        "heading": "Payment received",
+        "body": "Your subscription renewed. Your plan's credits for the new period have been added to your account."
+      },
+      "cancel_scheduled": {
+        "subject": "Your subscription will end",
+        "heading": "Cancellation scheduled",
+        "body": "Your subscription is cancelled. You keep your plan until the end of the period you paid for, then your account moves to the Free plan.",
+        "bodyWithDate": "Your subscription is cancelled. You keep your plan until {date, date, long}, then your account moves to the Free plan."
+      },
+      "ended": {
+        "subject": "Your subscription has ended",
+        "heading": "Subscription ended",
+        "body": "Your paid plan has ended and your account is now on the Free plan. Your workspaces and content are kept."
+      },
+      "paused": {
+        "subject": "Your subscription is paused",
+        "heading": "Subscription paused",
+        "body": "Your subscription is paused. While it is paused, your account uses the Free plan."
+      },
+      "refunded": {
+        "subject": "Your refund has been issued",
+        "heading": "Refund issued",
+        "body": "We refunded your payment. Your paid plan has ended, and the unused credits from that payment were removed. Your account is now on the Free plan."
+      },
+      "refunded_partial": {
+        "subject": "A partial refund has been issued",
+        "heading": "Partial refund issued",
+        "body": "We refunded part of your payment. The matching share of the unused credits from that payment was removed. Your plan stays active."
+      },
+      "disputed": {
+        "subject": "Your account is paused during a payment dispute",
+        "heading": "Payment dispute opened",
+        "body": "A dispute was opened on one of your payments. While it is open, AI generation on your account is paused. If you didn't mean to open it, contact our support team."
+      }
+    },
+    "billingAlert": {
+      "subject": "Billing alert: {reason}",
+      "heading": "Billing event needs attention",
+      "greeting": "Hi,",
+      "body": "A billing webhook needs a look. Details are in the billing events table.",
+      "reason": "Reason: {reason}",
+      "event": "Event: {type} ({id})",
+      "user": "User: {userId}",
+      "disclaimer": "Internal alert sent to the billing inbox."
     }
   },
   "AppShell": {
@@ -2311,7 +2367,9 @@
       "MEMBER_LIMIT_EXCEEDED": "Collaborator limit exceeded",
       "MEMBER_SUSPENDED": "Access changed to read-only",
       "MEMBER_RESTORED": "Access restored",
-      "MENTIONED": "Mentions"
+      "MENTIONED": "Mentions",
+      "PAYMENT_FAILED": "Payment failed",
+      "SUBSCRIPTION_CHANGED": "Subscription changes"
     },
     "types": {
       "INVITE_RECEIVED": "When someone invites you to collaborate on a workspace or project.",
@@ -2329,7 +2387,9 @@
       "MEMBER_LIMIT_EXCEEDED": "When an owner's plan no longer covers all collaborators.",
       "MEMBER_SUSPENDED": "When your access becomes read-only because of a plan limit.",
       "MEMBER_RESTORED": "When your full access comes back.",
-      "MENTIONED": "When someone mentions you in a comment."
+      "MENTIONED": "When someone mentions you in a comment.",
+      "PAYMENT_FAILED": "When a subscription payment fails.",
+      "SUBSCRIPTION_CHANGED": "When your plan starts, renews, is cancelled, refunded or paused."
     },
     "roles": {
       "OWNER": "Owner",
@@ -2389,7 +2449,16 @@
       },
       "SUBSCRIPTION_CHANGED": {
         "title": "Subscription updated",
-        "description": "Your subscription plan has been updated."
+        "description": "Your subscription plan has been updated.",
+        "activated": "Your paid plan is active and its credits have been added.",
+        "payment_received": "Payment received. Your plan's credits have been renewed.",
+        "cancel_scheduled": "Your subscription is cancelled. You keep your plan until the end of the paid period.",
+        "cancel_scheduledDate": "Your subscription is cancelled. You keep your plan until {date, date, medium}.",
+        "ended": "Your paid plan has ended. Your account is on the Free plan.",
+        "paused": "Your subscription is paused. Your account uses the Free plan meanwhile.",
+        "refunded": "Your payment was refunded and your paid plan has ended.",
+        "refunded_partial": "Part of your payment was refunded. Your plan stays active.",
+        "disputed": "A payment dispute is open. AI generation is paused on your account."
       },
       "NEW_SIGN_IN": {
         "title": "New sign-in detected",

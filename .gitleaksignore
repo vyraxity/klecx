@@ -4,3 +4,6 @@
 6cfdaaea7a5328448f4c0fb5a62be6e9f46cc7eb:lib/templates/starter-library.ts:generic-api-key:219
 # The previous version of this file's comment quoted that key.
 f3810472137746689a4067d5bb3ad6ce94f83e61:.gitleaksignore:generic-api-key:2
+# Step 8.3: a made-up CREEM_WEBHOOK_SECRET in the Step 8.2 env-validation test matched the
+# generic-api-key rule; it is a test fixture, not a real secret.
+5c568fae8cb9d7763d0fe99da04ba6ec80c6cdd7:__tests__/step-8-2-billing-provider.test.ts:generic-api-key:103
