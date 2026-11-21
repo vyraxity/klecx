@@ -977,7 +977,7 @@ model Subscription {
   cancelAtPeriodEnd      Boolean   @default(false) @map("cancel_at_period_end")
   /// Time of the newest provider event applied; older, out-of-order webhooks are ignored.
   lastEventAt            DateTime? @map("last_event_at")
-  /// "2026-10" style key of the last credit grant (Step 8.4).
+  /// Start day ("2026-10-05") of the last period granted by `subscription.paid` (Step 8.3/8.5).
   lastGrantPeriod        String?   @map("last_grant_period")
   createdAt              DateTime  @default(now()) @map("created_at")
   updatedAt              DateTime  @updatedAt @map("updated_at")

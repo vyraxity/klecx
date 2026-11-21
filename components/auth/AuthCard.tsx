@@ -4,6 +4,7 @@ import { AuthCardProps } from "@/types/auth";
 import Link from "next/link";
 import OAuthCard from "./OAuthCard";
 import { useTranslations } from "next-intl";
+import { subscribeIntentPath, subscribeIntentQuery } from "@/lib/billing/intent";
 
 const AuthCard = ({
   children,
@@ -11,6 +12,7 @@ const AuthCard = ({
   headerText,
   backText,
   backLink,
+  intent = null,
 }: AuthCardProps) => {
   const t = useTranslations("Auth");
 
@@ -31,7 +33,7 @@ const AuthCard = ({
         <div className="flex justify-center items-center text-xs sm:text-sm mt-4 gap-1.5 text-muted">
           <span>{backText}</span>
           <Link
-            href={`/auth/${backLink}`}
+            href={`/auth/${backLink}${subscribeIntentQuery(intent)}`}
             className="font-semibold text-accent hover:underline capitalize"
           >
             {backLink === "register" ? t("createAccountLink") : t("signInLink")}
@@ -47,7 +49,7 @@ const AuthCard = ({
           <div className="h-px bg-border flex-1" />
         </div>
 
-        <OAuthCard />
+        <OAuthCard callbackURL={intent ? subscribeIntentPath(intent.plan, intent.interval) : undefined} />
       </div>
     </div>
   );

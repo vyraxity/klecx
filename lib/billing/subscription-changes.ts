@@ -11,6 +11,7 @@ export const SUBSCRIPTION_CHANGE_KINDS = [
   "refunded",
   "refunded_partial",
   "disputed",
+  "plan_changed",
 ] as const;
 
 export type SubscriptionChangeKind = (typeof SUBSCRIPTION_CHANGE_KINDS)[number];

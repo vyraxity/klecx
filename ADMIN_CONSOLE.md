@@ -69,3 +69,13 @@ How to use this file:
 - **Found:** F5.8 / Step 8.4.
 - **Why:** today every request is only an email to `SUPPORT_EMAIL` (and a `support_tickets` row). A console view would show the ticket, the person's plan and subscription, the refund check for billing topics, and the screenshots (signed links expire after 7 days).
 - **Today:** `support_tickets`, `support_attachments` tables; `supportScreenshotLinks()` in `server/services/support-screenshots.ts`.
+
+### 12. Change a customer's plan by hand
+- **Found:** Step 8.5.
+- **Why:** downgrades aren't self-service (`OPEN_DECISIONS.md` §9); support may move someone to a smaller plan or another billing period, or fix a plan after a mistake.
+- **Today:** only in Creem's dashboard ("Modify Subscription"). The `subscription.update` webhook then syncs `Subscription.plan`, but nothing adjusts the credits or `CreditAccount.allowancePlan`. Needed: an admin action that calls the provider's plan change (`changeSubscriptionPlan()`) with the chosen proration and sets the credits deliberately (`adjust()`), with an audit entry.
+
+### 13. Checkout and activation troubleshooting
+- **Found:** Step 8.5.
+- **Why:** "I paid but my plan isn't active" (the billing page says so after 60 s). The admin needs the person's `billing_checkouts` (our checkout ids sent as `request_id`), the matching `billing_events` and their status, side by side.
+- **Today:** the `billing_checkouts` and `billing_events` tables only.

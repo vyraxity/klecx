@@ -93,6 +93,13 @@ export interface BillingProvider {
   createCheckout(input: CreateCheckoutInput): Promise<{ url: string; checkoutId: string }>;
   createPortalLink(customerId: string): Promise<{ url: string }>;
   cancelSubscription(subscriptionId: string, options: { atPeriodEnd: boolean }): Promise<void>;
+  /** Undoes a scheduled cancellation (Step 8.5). */
+  resumeSubscription(subscriptionId: string): Promise<void>;
+  /** Moves the subscription to another plan / interval now, charging the prorated difference (Step 8.5). */
+  changeSubscriptionPlan(
+    subscriptionId: string,
+    target: { plan: PaidPlanKey; interval: BillingInterval }
+  ): Promise<void>;
   /** Throws `WebhookSignatureError` when the signature is missing or wrong. */
   verifyWebhook(rawBody: string, signature: string | null): NormalizedEvent;
   /** Product id → the plan and interval it sells; null for a product we don't know. */

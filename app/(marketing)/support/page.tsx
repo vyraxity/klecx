@@ -16,8 +16,19 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function SupportPage() {
+const SUPPORT_TOPICS = ["general", "billing", "account", "bug", "feature", "other"] as const;
+
+export default async function SupportPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const t = await getTranslations("Support");
+  // Step 8.5: Settings → Billing → "Request a refund" opens the form on the Billing topic.
+  const params = (await searchParams) ?? {};
+  const topicParam = Array.isArray(params.topic) ? params.topic[0] : params.topic;
+  const initialTopic = (SUPPORT_TOPICS as readonly string[]).includes(topicParam ?? "") ? topicParam : undefined;
+  const refundRequest = initialTopic === "billing" && (Array.isArray(params.refund) ? params.refund[0] : params.refund) === "1";
   const site = getSiteConfig();
 
   return (
@@ -47,7 +58,10 @@ export default async function SupportPage() {
         </div>
 
         {/* Main Form */}
-        <SupportForm />
+        <SupportForm
+          initialTopic={initialTopic}
+          initialMessage={refundRequest ? t("refundRequestMessage") : undefined}
+        />
 
         {/* Direct Email Cards & Help Link */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">

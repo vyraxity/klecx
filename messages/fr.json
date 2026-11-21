@@ -255,7 +255,8 @@
       "SOCIAL_ACCOUNT_ALREADY_LINKED": "Ce compte de connexion est déjà lié à un autre utilisateur.",
       "CREDENTIAL_ACCOUNT_NOT_FOUND": "Ce compte n'utilise pas de mot de passe. Connectez-vous avec votre fournisseur.",
       "DISPOSABLE_EMAIL": "Ce service de messagerie n'est pas accepté. Inscrivez-vous avec une adresse e-mail permanente."
-    }
+    },
+    "planIntent": "Vous avez choisi {plan} ({interval}). Après avoir confirmé votre e-mail, vous passerez au paiement."
   },
   "Chat": {
     "newChat": "Nouvel espace de travail",
@@ -401,7 +402,8 @@
       "unknownOs": "Système inconnu",
       "deviceOn": "{browser} sur {os}",
       "deviceInfo": "{browser} • {os}"
-    }
+    },
+    "billing": "Forfait et facturation"
   },
   "Email": {
     "common": {
@@ -565,48 +567,53 @@
     },
     "subscriptionChanged": {
       "greeting": "Bonjour,",
-      "button": "Voir votre offre",
+      "button": "Voir votre forfait",
       "disclaimer": "Vous recevez cet e-mail car il concerne votre abonnement. Les reçus et les factures sont envoyés par notre prestataire de paiement.",
       "activated": {
-        "subject": "Votre offre payante est active",
-        "heading": "Bienvenue dans votre nouvelle offre",
-        "body": "Votre paiement a été accepté et votre offre est active. Les crédits de votre offre ont été ajoutés à votre compte."
+        "subject": "Votre forfait payant est actif",
+        "heading": "Bienvenue dans votre nouveau forfait",
+        "body": "Votre paiement a été accepté et votre forfait est actif. Les crédits de votre forfait ont été ajoutés à votre compte."
       },
       "payment_received": {
         "subject": "Paiement reçu : vos crédits sont renouvelés",
         "heading": "Paiement reçu",
-        "body": "Votre abonnement a été renouvelé. Les crédits de votre offre pour la nouvelle période ont été ajoutés à votre compte."
+        "body": "Votre abonnement a été renouvelé. Les crédits de votre forfait pour la nouvelle période ont été ajoutés à votre compte."
       },
       "cancel_scheduled": {
         "subject": "Votre abonnement va prendre fin",
         "heading": "Résiliation programmée",
-        "body": "Votre abonnement est résilié. Vous gardez votre offre jusqu'à la fin de la période payée, puis votre compte passe à l'offre Free.",
-        "bodyWithDate": "Votre abonnement est résilié. Vous gardez votre offre jusqu'au {date, date, long}, puis votre compte passe à l'offre Free."
+        "body": "Votre abonnement est résilié. Vous gardez votre forfait jusqu'à la fin de la période payée, puis votre compte passe au forfait Free.",
+        "bodyWithDate": "Votre abonnement est résilié. Vous gardez votre forfait jusqu'au {date, date, long}, puis votre compte passe au forfait Free."
       },
       "ended": {
         "subject": "Votre abonnement a pris fin",
         "heading": "Abonnement terminé",
-        "body": "Votre offre payante a pris fin et votre compte est maintenant sur l'offre Free. Vos espaces de travail et votre contenu sont conservés."
+        "body": "Votre forfait payant a pris fin et votre compte est maintenant sur le forfait Free. Vos espaces de travail et votre contenu sont conservés."
       },
       "paused": {
         "subject": "Votre abonnement est en pause",
         "heading": "Abonnement en pause",
-        "body": "Votre abonnement est en pause. En attendant, votre compte utilise l'offre Free."
+        "body": "Votre abonnement est en pause. En attendant, votre compte utilise le forfait Free."
       },
       "refunded": {
         "subject": "Votre remboursement a été effectué",
         "heading": "Remboursement effectué",
-        "body": "Nous avons remboursé votre paiement. Votre offre payante a pris fin et les crédits non utilisés de ce paiement ont été retirés. Votre compte est maintenant sur l'offre Free."
+        "body": "Nous avons remboursé votre paiement. Votre forfait payant a pris fin et les crédits non utilisés de ce paiement ont été retirés. Votre compte est maintenant sur le forfait Free."
       },
       "refunded_partial": {
         "subject": "Un remboursement partiel a été effectué",
         "heading": "Remboursement partiel effectué",
-        "body": "Nous avons remboursé une partie de votre paiement. La part correspondante des crédits non utilisés de ce paiement a été retirée. Votre offre reste active."
+        "body": "Nous avons remboursé une partie de votre paiement. La part correspondante des crédits non utilisés de ce paiement a été retirée. Votre forfait reste actif."
       },
       "disputed": {
         "subject": "Votre compte est en pause pendant un litige de paiement",
         "heading": "Litige de paiement ouvert",
         "body": "Un litige a été ouvert sur l'un de vos paiements. Tant qu'il est ouvert, la génération par IA est en pause sur votre compte. Si vous ne vouliez pas l'ouvrir, contactez notre équipe d'assistance."
+      },
+      "plan_changed": {
+        "subject": "Votre forfait a été amélioré",
+        "heading": "Forfait amélioré",
+        "body": "Votre forfait a été amélioré et il est actif dès maintenant. Les crédits supplémentaires du nouveau forfait pour cette période ont été ajoutés à votre solde. Notre partenaire de paiement facture la différence au prorata."
       }
     },
     "billingAlert": {
@@ -1172,11 +1179,11 @@
       "subscribeTo": "S'abonner à {name}",
       "footnoteTitle": "Équivalence des crédits en calculs réels",
       "standardTurnTitle": "Échange textuel standard",
-      "standardTurnDesc": "≈ 7 crédits par échange conversationnel classique",
+      "standardTurnDesc": "≈ {credits} crédits par échange conversationnel classique",
       "imageGenTitle": "Génération d'images IA",
-      "imageGenDesc": "≈ 34 crédits par image 1K générée",
+      "imageGenDesc": "≈ {credits} crédits par image 1K générée",
       "groundingTitle": "Recherche web connectée",
-      "groundingDesc": "+3 crédits par requête enrichie par recherche web",
+      "groundingDesc": "+{credits} crédits par requête enrichie par recherche web",
       "footnoteDisclaimer": "* Les crédits du forfait sont réinitialisés à chaque période de facturation ; les crédits inutilisés ne sont pas reportés.",
       "comparison": {
         "title": "Comparatif détaillé des forfaits",
@@ -1196,25 +1203,19 @@
         "teamMembers": "Collaborateurs (tous espaces confondus)",
         "responseVersions": "Versions de réponses",
         "inAppCancel": "Résiliation dans l'application",
-        "turn1": "1 échange",
-        "turns2": "2 échanges",
-        "turns3": "3 échanges",
-        "turns5": "5 échanges",
         "economyOnly": "Rapide",
         "economyStandard": "Rapide + Standard",
         "no": "Non",
-        "yesApprox": "Oui (≈ 34 crédits)",
-        "files3": "3 fichiers (5 Mo)",
-        "files10": "10 fichiers (15 Mo)",
-        "files25": "25 fichiers (25 Mo)",
-        "files50": "50 fichiers (50 Mo)",
+        "yesApprox": "Oui (≈ {credits} crédits)",
         "markdownOnly": "Markdown",
         "allExportFormats": "MD, PDF, DOCX",
         "collaborators": "{count, plural, =0 {Aucun} one {# personne} other {# personnes}}",
         "unlimited": "Illimitées",
         "capCredits": "{count, plural, one {# crédit} other {# crédits}}",
         "notApplicable": "—",
-        "anytime": "À tout moment, depuis les Paramètres"
+        "anytime": "À tout moment, depuis les Paramètres",
+        "filesCount": "{count, plural, one {# fichier} other {# fichiers}} ({mb} Mo)",
+        "turnsCount": "{count, plural, one {# échange} other {# échanges}}"
       },
       "priceFormat": "${price}",
       "creditsCount": "{count, plural, one {# crédit} other {# crédits}}",
@@ -1322,7 +1323,7 @@
     }
   },
   "Legal": {
-    "updatedAt": "2026-11-18",
+    "updatedAt": "2026-11-21",
     "lastUpdated": "Dernière mise à jour : {date}",
     "contents": "Sommaire",
     "languageClause": "Ce document est proposé en plusieurs langues par commodité. En cas de contradiction entre les versions, la version anglaise prévaut.",
@@ -1383,8 +1384,10 @@
           "heading": "6. Abonnements, résiliation et remboursements",
           "paragraphs": [
             "Les forfaits payants sont vendus par notre partenaire de paiement, Creem, qui agit en tant que vendeur officiel (merchant of record) : Creem est le vendeur de l'abonnement, traite votre paiement et gère les factures et les taxes sur les ventes. Ses conditions s'appliquent aussi à votre achat.",
-            "Les abonnements se renouvellent automatiquement à la fin de chaque période jusqu'à leur résiliation. Vous pouvez résilier à tout moment depuis les Paramètres ; votre forfait reste actif jusqu'à la fin de la période payée.",
-            "Remboursements : les nouveaux abonnés sont intégralement remboursés dans les 14 jours suivant leur premier paiement s'ils ont utilisé moins de 20 % des crédits de cette période. Un renouvellement est remboursé dans les 7 jours si vous n'avez utilisé aucun crédit depuis. Les doubles prélèvements et les erreurs de facturation sont toujours remboursés. Pour demander un remboursement, écrivez à {billingEmail}.",
+            "Les prix sont affichés en USD hors taxes. Les taxes sur les ventes applicables (comme la TVA) sont calculées et ajoutées au paiement par notre partenaire de paiement.",
+            "Les abonnements se renouvellent automatiquement à la fin de chaque période jusqu'à leur résiliation. Vous pouvez résilier à tout moment dans Paramètres → Forfait et facturation ; votre forfait reste actif jusqu'à la fin de la période payée. Une résiliation dans le portail client de notre partenaire de paiement met fin au forfait immédiatement.",
+            "Vous pouvez passer à un forfait supérieur à tout moment dans Paramètres → Forfait et facturation : le nouveau forfait démarre immédiatement, la différence au prorata pour le reste de la période est facturée aussitôt et les crédits supplémentaires du nouveau forfait sont ajoutés. Pour passer à un forfait inférieur ou à la facturation mensuelle, résiliez et abonnez-vous au nouveau forfait à la fin de la période en cours.",
+            "Remboursements : les nouveaux abonnés sont intégralement remboursés dans les 14 jours suivant leur premier paiement s'ils ont utilisé moins de 20 % des crédits de cette période (une fois par client). Un renouvellement est remboursé dans les 7 jours si vous n'avez utilisé aucun crédit depuis. Les doubles prélèvements et les erreurs de facturation sont toujours remboursés. Un remboursement intégral met fin au forfait payant immédiatement et retire les crédits non utilisés de ce paiement. Pour demander un remboursement, utilisez Demander un remboursement dans Paramètres → Forfait et facturation, ou écrivez à {billingEmail}.",
             "Nous pouvons modifier nos prix. Nous vous préviendrons au moins 30 jours avant qu'un nouveau prix s'applique à votre abonnement, et vous pourrez résilier avant."
           ]
         },
@@ -1881,7 +1884,8 @@
         "tooMany": "Vous pouvez joindre au maximum {max} captures.",
         "totalTooLarge": "Ces captures sont trop lourdes ensemble. Retirez-en une ou utilisez des images plus petites."
       }
-    }
+    },
+    "refundRequestMessage": "Je souhaite demander le remboursement de mon dernier paiement. Motif : "
   },
   "Status": {
     "title": "État du Système",
@@ -2056,7 +2060,11 @@
       "screenshots_too_large": "Les captures d'écran sont trop lourdes ensemble. Retirez-en une ou utilisez des images plus petites.",
       "screenshot_type_unsupported": "Les captures d'écran doivent être des images PNG, JPEG ou WebP.",
       "screenshot_unreadable": "Une capture d'écran n'a pas pu être lue. Enregistrez-la à nouveau en PNG.",
-      "screenshot_dimensions_too_large": "Une capture d'écran est trop grande : 4096 × 4096 pixels au maximum."
+      "screenshot_dimensions_too_large": "Une capture d'écran est trop grande : 4096 × 4096 pixels au maximum.",
+      "plan_change_not_supported": "Seules les améliorations sont possibles ici. Pour passer à un forfait inférieur, résiliez puis réabonnez-vous à la fin de la période.",
+      "same_plan": "C'est déjà votre forfait.",
+      "cancel_scheduled": "Votre forfait va se terminer. Gardez-le d'abord, puis changez-le.",
+      "nothing_to_resume": "Il n'y a aucune résiliation à annuler."
     }
   },
   "Gates": {
@@ -2391,7 +2399,7 @@
       "MEMBER_RESTORED": "Quand vous retrouvez votre accès complet.",
       "MENTIONED": "Quand quelqu'un vous mentionne dans un commentaire.",
       "PAYMENT_FAILED": "Quand le paiement d'un abonnement échoue.",
-      "SUBSCRIPTION_CHANGED": "Quand votre offre démarre, est renouvelée, résiliée, remboursée ou mise en pause."
+      "SUBSCRIPTION_CHANGED": "Quand votre forfait démarre, est renouvelé, résilié, remboursé ou mis en pause."
     },
     "roles": {
       "OWNER": "Propriétaire",
@@ -2451,16 +2459,17 @@
       },
       "SUBSCRIPTION_CHANGED": {
         "title": "Abonnement mis à jour",
-        "description": "Votre offre d'abonnement a été mise à jour.",
-        "activated": "Votre offre payante est active et ses crédits ont été ajoutés.",
-        "payment_received": "Paiement reçu. Les crédits de votre offre ont été renouvelés.",
-        "cancel_scheduled": "Votre abonnement est résilié. Vous gardez votre offre jusqu'à la fin de la période payée.",
-        "cancel_scheduledDate": "Votre abonnement est résilié. Vous gardez votre offre jusqu'au {date, date, medium}.",
-        "ended": "Votre offre payante a pris fin. Votre compte est sur l'offre Free.",
-        "paused": "Votre abonnement est en pause. En attendant, votre compte utilise l'offre Free.",
-        "refunded": "Votre paiement a été remboursé et votre offre payante a pris fin.",
-        "refunded_partial": "Une partie de votre paiement a été remboursée. Votre offre reste active.",
-        "disputed": "Un litige de paiement est ouvert. La génération par IA est en pause sur votre compte."
+        "description": "Votre forfait d'abonnement a été mis à jour.",
+        "activated": "Votre forfait payant est actif et ses crédits ont été ajoutés.",
+        "payment_received": "Paiement reçu. Les crédits de votre forfait ont été renouvelés.",
+        "cancel_scheduled": "Votre abonnement est résilié. Vous gardez votre forfait jusqu'à la fin de la période payée.",
+        "cancel_scheduledDate": "Votre abonnement est résilié. Vous gardez votre forfait jusqu'au {date, date, medium}.",
+        "ended": "Votre forfait payant a pris fin. Votre compte est sur le forfait Free.",
+        "paused": "Votre abonnement est en pause. En attendant, votre compte utilise le forfait Free.",
+        "refunded": "Votre paiement a été remboursé et votre forfait payant a pris fin.",
+        "refunded_partial": "Une partie de votre paiement a été remboursée. Votre forfait reste actif.",
+        "disputed": "Un litige de paiement est ouvert. La génération par IA est en pause sur votre compte.",
+        "plan_changed": "Votre forfait a été amélioré. Les crédits supplémentaires ont été ajoutés."
       },
       "NEW_SIGN_IN": {
         "title": "Nouvelle connexion détectée",
@@ -3193,5 +3202,104 @@
     "accept": "Accepter",
     "policy": "Politique de cookies",
     "close": "Fermer l'avis sur les cookies"
+  },
+  "Billing": {
+    "page": {
+      "metaTitle": "Facturation",
+      "back": "Paramètres",
+      "eyebrow": "Facturation",
+      "title": "Forfait et facturation",
+      "description": "Votre forfait, vos paiements et vos factures."
+    },
+    "loading": "Chargement de votre forfait…",
+    "loadFailed": "Votre forfait n'a pas pu être chargé. Actualisez la page pour réessayer.",
+    "activation": {
+      "waiting": "Activation de votre forfait… Cela prend généralement quelques secondes.",
+      "slow": "Cela prend plus de temps que d'habitude. Si vous avez vu la confirmation, votre paiement est passé ; votre forfait apparaîtra ici d'ici quelques minutes. Sinon, contactez l'assistance.",
+      "done": "Votre forfait est actif."
+    },
+    "pastDue": {
+      "body": "Votre dernier paiement pour {plan} a échoué. Mettez à jour votre moyen de paiement pour garder votre forfait.",
+      "action": "Mettre à jour le paiement"
+    },
+    "intent": {
+      "title": "Vous avez choisi {plan} ({interval}). Passez au paiement pour la démarrer.",
+      "action": "Passer au paiement"
+    },
+    "taxNote": "Prix en USD, taxes applicables en sus, calculées au paiement par notre partenaire de paiement.",
+    "interval": {
+      "month": "Mensuel",
+      "year": "Annuel"
+    },
+    "intervalLabel": "Période de facturation",
+    "currentPlan": "Forfait actuel",
+    "status": {
+      "active": "Actif",
+      "trial": "Essai",
+      "cancelScheduled": "Se termine le {date}",
+      "paused": "En pause",
+      "paymentIssue": "Problème de paiement",
+      "onHold": "Suspendu",
+      "ended": "Terminé",
+      "free": "Forfait Free"
+    },
+    "renewsOn": "Renouvellement le",
+    "endsOn": "Se termine le",
+    "creditsResetOn": "Crédits renouvelés le",
+    "launchingSoon": "Les forfaits payants arrivent bientôt.",
+    "upgrade": "Passer à un forfait supérieur",
+    "upgradeTitle": "Choisissez un forfait",
+    "upgradeDescription": "Vous paierez sur la page sécurisée de notre partenaire de paiement. Votre forfait démarre dès que le paiement est confirmé.",
+    "pricePerMonth": "{price} / mois",
+    "pricePerYear": "{price} / an",
+    "creditsPerMonth": "{count, plural, one {# crédit par mois} other {# crédits par mois}}",
+    "changePlan": {
+      "open": "Changer de forfait",
+      "title": "Améliorer votre forfait",
+      "description": "Le nouveau forfait démarre maintenant. Ses crédits supplémentaires pour cette période sont ajoutés à votre solde immédiatement.",
+      "pick": "Améliorer",
+      "done": "Vous êtes maintenant sur le forfait {plan}.",
+      "failed": "Votre forfait n'a pas pu être changé. Rien n'a été facturé.",
+      "prorationNote": "Notre partenaire de paiement facture maintenant la différence au prorata pour le reste de la période en cours.",
+      "downgradeNote": "Pour passer à un forfait inférieur ou à la facturation mensuelle, résiliez votre forfait et abonnez-vous au nouveau à la fin de la période en cours."
+    },
+    "checkout": {
+      "pick": "S'abonner",
+      "failed": "La page de paiement n'a pas pu s'ouvrir. Veuillez réessayer.",
+      "note": "Résiliable à tout moment. Votre forfait reste actif jusqu'à la fin de la période payée."
+    },
+    "resume": {
+      "action": "Garder mon forfait",
+      "done": "Votre forfait sera renouvelé normalement.",
+      "failed": "Votre forfait n'a pas pu être repris. Veuillez réessayer."
+    },
+    "portal": {
+      "action": "Moyens de paiement et factures",
+      "failed": "Le portail de facturation n'a pas pu s'ouvrir. Veuillez réessayer.",
+      "note": "Pour garder votre forfait jusqu'à la fin de la période payée, résiliez-le ici. Une résiliation dans le portail de paiement y met fin immédiatement."
+    },
+    "cancel": {
+      "action": "Résilier le forfait",
+      "title": "Résilier votre forfait ?",
+      "body": "Vous gardez {plan} et ses crédits jusqu'au {date}. Il ne sera pas renouvelé ensuite.",
+      "after": "Votre compte passe ensuite au forfait Free. Vos espaces et votre contenu sont conservés, et vous pouvez vous réabonner à tout moment.",
+      "confirm": "Résilier le forfait",
+      "keep": "Garder le forfait",
+      "done": "Votre forfait est résilié. Vous le gardez jusqu'au {date}.",
+      "failed": "Votre forfait n'a pas pu être résilié. Veuillez réessayer."
+    },
+    "refund": {
+      "title": "Besoin d'un remboursement ?",
+      "body": "Demandez-le et nous le vérifierons selon la politique de remboursement.",
+      "policyLink": "Lire la politique de remboursement",
+      "action": "Demander un remboursement"
+    }
+  },
+  "UpgradeDialog": {
+    "title": "Passer à {plan}",
+    "creditsLow": "{count, plural, one {Il vous reste # crédit pour cette période.} other {Il vous reste # crédits pour cette période.}} Un forfait supérieur vous en donne plus chaque mois.",
+    "seePlans": "Voir tous les forfaits",
+    "upgradeTo": "Passer à {plan}",
+    "manage": "Gérer le forfait"
   }
 }

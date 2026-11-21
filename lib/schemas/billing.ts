@@ -22,9 +22,16 @@ export const cancelSubscriptionSchema = z
   })
   .strict();
 
+/** Step 8.5: a plan upgrade names the target plan and billing period, like a checkout. */
+export const changePlanSchema = checkoutSchema;
+
 export type MySubscription = {
   /** The plan the person may use now (`resolveSubscriptionPlan`). */
   effectivePlan: "FREE" | "LITE" | "STANDARD" | "PRO";
+  /** When the next credit allowance starts (Step 8.4); null when it waits for a renewal. */
+  resetsAt: string | null;
+  /** The person's own credit balance (plan + top-up), for the upgrade dialog (Step 8.5). */
+  balance: number;
   subscription: {
     plan: "FREE" | "LITE" | "STANDARD" | "PRO";
     interval: "month" | "year";
@@ -33,5 +40,11 @@ export type MySubscription = {
     cancelAtPeriodEnd: boolean;
     /** Whether "Manage billing" (the provider's customer portal) can be opened. */
     canManage: boolean;
+    /** Step 8.5: which billing-page actions apply now. */
+    canCancel: boolean;
+    canResume: boolean;
+    canChangePlan: boolean;
+    /** A renewal payment failed (PAST_DUE): show the "update your payment method" banner. */
+    paymentIssue: boolean;
   } | null;
 };

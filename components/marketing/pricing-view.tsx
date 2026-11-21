@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
+import { MODEL_CATALOG } from "@/lib/ai/model-catalog";
 import {
   MarketingPricingTable,
   MarketingFAQ,
@@ -16,6 +17,7 @@ export function PricingView() {
   const t = useTranslations("Marketing.pricingPage");
   const tc = useTranslations("Marketing.pricing.comparison");
   const { billingEnabled } = useSiteConfig();
+  const format = useFormatter();
 
   return (
     <div className="flex flex-col w-full py-6">
@@ -57,10 +59,11 @@ export function PricingView() {
               <tbody className="divide-y divide-border/60 text-fg-muted">
                 <tr>
                   <td className="p-4 font-medium text-fg">{tc("monthlyCredits")}</td>
-                  <td className="p-4 font-mono">{100}</td>
-                  <td className="p-4 font-mono">{800}</td>
-                  <td className="p-4 font-mono text-fg font-semibold">{1800}</td>
-                  <td className="p-4 font-mono">{3500}</td>
+                  {PLAN_ORDER.map((plan) => (
+                    <td key={plan} className={plan === "STANDARD" ? "p-4 font-mono text-fg font-semibold" : "p-4 font-mono"}>
+                      {format.number(PLANS[plan].credits)}
+                    </td>
+                  ))}
                 </tr>
                 <tr>
                   <td className="p-4 font-medium text-fg">{tc("dailyCap")}</td>
@@ -71,10 +74,11 @@ export function PricingView() {
                 </tr>
                 <tr>
                   <td className="p-4 font-medium text-fg">{tc("concurrentTurns")}</td>
-                  <td className="p-4">{tc("turn1")}</td>
-                  <td className="p-4">{tc("turns2")}</td>
-                  <td className="p-4">{tc("turns3")}</td>
-                  <td className="p-4">{tc("turns5")}</td>
+                  {PLAN_ORDER.map((plan) => (
+                    <td key={plan} className="p-4">
+                      {tc("turnsCount", { count: PLANS[plan].maxConcurrent })}
+                    </td>
+                  ))}
                 </tr>
                 <tr>
                   <td className="p-4 font-medium text-fg">{tc("modelAccess")}</td>
@@ -87,24 +91,29 @@ export function PricingView() {
                 <tr>
                   <td className="p-4 font-medium text-fg">{tc("imageSynthesis")}</td>
                   <td className="p-4 text-fg-subtle">{tc("no")}</td>
-                  <td className="p-4 text-success font-medium">{tc("yesApprox")}</td>
-                  <td className="p-4 text-success font-medium">{tc("yesApprox")}</td>
-                  <td className="p-4 text-success font-medium">{tc("yesApprox")}</td>
+                  <td className="p-4 text-success font-medium">{tc("yesApprox", { credits: MODEL_CATALOG["image-standard"].typicalCredits })}</td>
+                  <td className="p-4 text-success font-medium">{tc("yesApprox", { credits: MODEL_CATALOG["image-standard"].typicalCredits })}</td>
+                  <td className="p-4 text-success font-medium">{tc("yesApprox", { credits: MODEL_CATALOG["image-standard"].typicalCredits })}</td>
                 </tr>
                 )}
                 <tr>
                   <td className="p-4 font-medium text-fg">{tc("attachments")}</td>
-                  <td className="p-4">{tc("files3")}</td>
-                  <td className="p-4">{tc("files10")}</td>
-                  <td className="p-4">{tc("files25")}</td>
-                  <td className="p-4">{tc("files50")}</td>
+                  {PLAN_ORDER.map((plan) => (
+                    <td key={plan} className="p-4">
+                      {tc("filesCount", {
+                        count: PLANS[plan].limits.attachmentsPerWorkspace,
+                        mb: PLANS[plan].limits.maxFileMB,
+                      })}
+                    </td>
+                  ))}
                 </tr>
                 <tr>
                   <td className="p-4 font-medium text-fg">{tc("documentExports")}</td>
-                  <td className="p-4">{tc("markdownOnly")}</td>
-                  <td className="p-4">{tc("allExportFormats")}</td>
-                  <td className="p-4">{tc("allExportFormats")}</td>
-                  <td className="p-4">{tc("allExportFormats")}</td>
+                  {PLAN_ORDER.map((plan) => (
+                    <td key={plan} className="p-4">
+                      {PLANS[plan].limits.exportFormats.length > 1 ? tc("allExportFormats") : tc("markdownOnly")}
+                    </td>
+                  ))}
                 </tr>
                 <tr>
                   <td className="p-4 font-medium text-fg">{tc("teamMembers")}</td>

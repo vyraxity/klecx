@@ -280,6 +280,8 @@ describe("Step 8.2 — billing endpoints", () => {
     planForProduct() {
       return null;
     },
+    async resumeSubscription() {},
+    async changeSubscriptionPlan() {},
   };
 
   const post = (url: string, body?: unknown) =>
@@ -341,7 +343,7 @@ describe("Step 8.2 — billing endpoints", () => {
       customerId: null,
       plan: "PRO",
       interval: "year",
-      successUrl: "http://localhost:3000/settings?checkout=success",
+      successUrl: "http://localhost:3000/settings/billing?checkout=success",
     });
   });
 
@@ -414,7 +416,7 @@ describe("Step 8.2 — billing endpoints", () => {
   it("GET /me/subscription answers for the caller only and hides provider ids", async () => {
     mockActor = actorFor(buyer);
     const none = await (await mySubscriptionRoute(new NextRequest("http://localhost:3000/api/v1/me/subscription"))).json();
-    expect(none.data).toEqual({ effectivePlan: "FREE", subscription: null });
+    expect(none.data).toEqual({ effectivePlan: "FREE", resetsAt: null, balance: 0, subscription: null });
 
     mockActor = actorFor(subscriber);
     const res = await mySubscriptionRoute(new NextRequest("http://localhost:3000/api/v1/me/subscription"));
@@ -422,7 +424,8 @@ describe("Step 8.2 — billing endpoints", () => {
     const { data } = await res.json();
     expect(data).toMatchObject({
       effectivePlan: "STANDARD",
-      subscription: { plan: "STANDARD", interval: "month", status: "ACTIVE", cancelAtPeriodEnd: false, canManage: true },
+      // The cancel test above scheduled a cancellation; Step 8.5 records it once the provider confirms.
+      subscription: { plan: "STANDARD", interval: "month", status: "ACTIVE", cancelAtPeriodEnd: true, canManage: true, canResume: true, canCancel: false },
     });
     expect(JSON.stringify(data)).not.toMatch(/cust_|sub_/);
   });

@@ -19,6 +19,9 @@ import {
  * - `POST /v1/checkouts` { product_id, request_id, success_url, customer: { id | email }, metadata } → { id, checkout_url }
  * - `POST /v1/customers/billing` { customer_id } → { customer_portal_link }
  * - `POST /v1/subscriptions/{id}/cancel` { mode: "scheduled" | "immediate", onExecute: "cancel" }
+ * - `POST /v1/subscriptions/{id}/resume` (no body; only `paused` / `scheduled_cancel` subscriptions) — 2026-11-21
+ * - `POST /v1/subscriptions/{id}/upgrade` { product_id, update_behavior } — 2026-11-21; takes effect now,
+ *   `proration-charge-immediately` charges the prorated difference at once
  * - webhooks: `creem-signature` = hex HMAC-SHA256 of the raw body with the webhook secret;
  *   payload { id: "evt_…", eventType, created_at (ms), object }.
  * Errors come back as { trace_id, status, error, message[] }.
@@ -143,17 +146,17 @@ export function readCreemEventData(type: string, object: unknown): BillingEventD
 export function createCreemProvider(config: CreemConfig, fetchImpl: FetchLike = fetch): BillingProvider {
   const base = config.apiBase.replace(/\/+$/, "");
 
-  async function call<T>(operation: string, path: string, body: unknown): Promise<T> {
+  async function call<T>(operation: string, path: string, body?: unknown): Promise<T> {
     let res: Response;
     try {
       res = await fetchImpl(`${base}${path}`, {
         method: "POST",
         headers: {
           "x-api-key": config.apiKey,
-          "content-type": "application/json",
+          ...(body === undefined ? {} : { "content-type": "application/json" }),
           accept: "application/json",
         },
-        body: JSON.stringify(body),
+        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
         signal: AbortSignal.timeout(CREEM_TIMEOUT_MS),
       });
     } catch (e) {
@@ -210,6 +213,17 @@ export function createCreemProvider(config: CreemConfig, fetchImpl: FetchLike = 
         `/v1/subscriptions/${encodeURIComponent(subscriptionId)}/cancel`,
         atPeriodEnd ? { mode: "scheduled", onExecute: "cancel" } : { mode: "immediate" }
       );
+    },
+
+    async resumeSubscription(subscriptionId) {
+      await call("resume", `/v1/subscriptions/${encodeURIComponent(subscriptionId)}/resume`);
+    },
+
+    async changeSubscriptionPlan(subscriptionId, target) {
+      await call("change_plan", `/v1/subscriptions/${encodeURIComponent(subscriptionId)}/upgrade`, {
+        product_id: creemProductId(config.products, target.plan, target.interval),
+        update_behavior: "proration-charge-immediately",
+      });
     },
 
     verifyWebhook(rawBody, signature) {

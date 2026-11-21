@@ -11,7 +11,14 @@ import { authClient } from "@/lib/auth-client";
 import { ScreenshotPicker, type PickedScreenshot } from "@/components/support/screenshot-picker";
 
 
-export function SupportForm() {
+export interface SupportFormProps {
+  /** Pre-selected topic (`/support?topic=billing`). */
+  initialTopic?: string;
+  /** Pre-filled message (Step 8.5: a refund request from Settings → Billing). */
+  initialMessage?: string;
+}
+
+export function SupportForm({ initialTopic, initialMessage }: SupportFormProps = {}) {
   const t = useTranslations("Support");
   const tRoot = useTranslations();
   const format = useFormatter();
@@ -19,8 +26,8 @@ export function SupportForm() {
 
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
-  const [topic, setTopic] = React.useState("general");
-  const [message, setMessage] = React.useState("");
+  const [topic, setTopic] = React.useState(initialTopic ?? "general");
+  const [message, setMessage] = React.useState(initialMessage ?? "");
   const [attachDiagnostics, setAttachDiagnostics] = React.useState(false);
   const [honeypot, setHoneypot] = React.useState(""); // invisible bot trap
   const [screenshots, setScreenshots] = React.useState<PickedScreenshot[]>([]);

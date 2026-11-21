@@ -255,7 +255,8 @@
       "SOCIAL_ACCOUNT_ALREADY_LINKED": "Esta cuenta de inicio de sesión ya está vinculada a otro usuario.",
       "CREDENTIAL_ACCOUNT_NOT_FOUND": "Esta cuenta no usa contraseña. Inicia sesión con tu proveedor.",
       "DISPOSABLE_EMAIL": "Este servicio de correo no se acepta. Regístrate con una dirección de correo permanente."
-    }
+    },
+    "planIntent": "Elegiste {plan} ({interval}). Después de confirmar tu correo, continuarás al pago."
   },
   "Chat": {
     "newChat": "Nuevo espacio de trabajo",
@@ -401,7 +402,8 @@
       "unknownOs": "Sistema desconocido",
       "deviceOn": "{browser} en {os}",
       "deviceInfo": "{browser} • {os}"
-    }
+    },
+    "billing": "Plan y facturación"
   },
   "Email": {
     "common": {
@@ -607,6 +609,11 @@
         "subject": "Tu cuenta está en pausa durante una disputa de pago",
         "heading": "Disputa de pago abierta",
         "body": "Se ha abierto una disputa sobre uno de tus pagos. Mientras siga abierta, la generación con IA de tu cuenta está en pausa. Si no querías abrirla, contacta con nuestro equipo de soporte."
+      },
+      "plan_changed": {
+        "subject": "Tu plan se ha mejorado",
+        "heading": "Plan mejorado",
+        "body": "Tu plan se ha mejorado y ya está activo. Los créditos adicionales del nuevo plan para este periodo se han añadido a tu saldo. Nuestro socio de pagos cobra la diferencia prorrateada."
       }
     },
     "billingAlert": {
@@ -1172,11 +1179,11 @@
       "subscribeTo": "Suscribirse a {name}",
       "footnoteTitle": "Cómo se traducen los créditos en turnos reales",
       "standardTurnTitle": "Turno estándar de texto",
-      "standardTurnDesc": "≈ 7 créditos por turno estándar de conversación",
+      "standardTurnDesc": "≈ {credits} créditos por turno estándar de conversación",
       "imageGenTitle": "Generación de imágenes con IA",
-      "imageGenDesc": "≈ 34 créditos por imagen de 1K generada",
+      "imageGenDesc": "≈ {credits} créditos por imagen de 1K generada",
       "groundingTitle": "Búsqueda web fundamentada",
-      "groundingDesc": "+3 créditos adicionales por consulta con búsqueda",
+      "groundingDesc": "+{credits} créditos adicionales por consulta con búsqueda",
       "footnoteDisclaimer": "* Los créditos del plan se renuevan en cada periodo de facturación; los no usados no se acumulan.",
       "comparison": {
         "title": "Comparativa detallada de planes",
@@ -1196,25 +1203,19 @@
         "teamMembers": "Colaboradores (en todos tus espacios)",
         "responseVersions": "Versiones de respuesta",
         "inAppCancel": "Cancelación en la app",
-        "turn1": "1 turno",
-        "turns2": "2 turnos",
-        "turns3": "3 turnos",
-        "turns5": "5 turnos",
         "economyOnly": "Rápido",
         "economyStandard": "Rápido + Estándar",
         "no": "No",
-        "yesApprox": "Sí (≈ 34 créditos)",
-        "files3": "3 archivos (5 MB)",
-        "files10": "10 archivos (15 MB)",
-        "files25": "25 archivos (25 MB)",
-        "files50": "50 archivos (50 MB)",
+        "yesApprox": "Sí (≈ {credits} créditos)",
         "markdownOnly": "Markdown",
         "allExportFormats": "MD, PDF, DOCX",
         "collaborators": "{count, plural, =0 {Ninguno} one {# persona} other {# personas}}",
         "unlimited": "Ilimitadas",
         "capCredits": "{count, plural, one {# crédito} other {# créditos}}",
         "notApplicable": "—",
-        "anytime": "Cuando quieras, desde Ajustes"
+        "anytime": "Cuando quieras, desde Ajustes",
+        "filesCount": "{count, plural, one {# archivo} other {# archivos}} ({mb} MB)",
+        "turnsCount": "{count, plural, one {# turno} other {# turnos}}"
       },
       "priceFormat": "${price}",
       "creditsCount": "{count, plural, one {# crédito} other {# créditos}}",
@@ -1322,7 +1323,7 @@
     }
   },
   "Legal": {
-    "updatedAt": "2026-11-18",
+    "updatedAt": "2026-11-21",
     "lastUpdated": "Última actualización: {date}",
     "contents": "Contenido",
     "languageClause": "Este documento está disponible en varios idiomas por comodidad. Si hay alguna contradicción entre las versiones, prevalece la versión en inglés.",
@@ -1383,8 +1384,10 @@
           "heading": "6. Suscripciones, cancelación y reembolsos",
           "paragraphs": [
             "Los planes de pago los vende nuestro socio de pagos, Creem, que actúa como comerciante registrado: Creem es el vendedor de la suscripción, procesa tu pago y gestiona las facturas y los impuestos sobre las ventas. Sus condiciones también se aplican a tu compra.",
-            "Las suscripciones se renuevan automáticamente al final de cada periodo hasta que las canceles. Puedes cancelar en cualquier momento desde la Configuración; tu plan sigue activo hasta el final del periodo que hayas pagado.",
-            "Reembolsos: los nuevos suscriptores reciben un reembolso completo en los 14 días siguientes a su primer pago si han usado menos del 20 % de los créditos de ese periodo. Una renovación se reembolsa en un plazo de 7 días si no has usado ningún crédito desde que se renovó. Los cargos duplicados y los errores de facturación siempre se reembolsan. Para pedir un reembolso, escribe a {billingEmail}.",
+            "Los precios se muestran en USD sin impuestos. Los impuestos sobre las ventas aplicables (como el IVA) los calcula y añade nuestro socio de pagos en el pago.",
+            "Las suscripciones se renuevan automáticamente al final de cada periodo hasta que las canceles. Puedes cancelar en cualquier momento en Configuración → Plan y facturación; tu plan sigue activo hasta el final del periodo que hayas pagado. Si cancelas en el portal de clientes de nuestro socio de pagos, el plan termina de inmediato.",
+            "Puedes mejorar tu plan en cualquier momento en Configuración → Plan y facturación: el nuevo plan empieza de inmediato, se cobra al momento la diferencia prorrateada del resto del periodo y se añaden los créditos adicionales del nuevo plan. Para pasar a un plan más pequeño o a la facturación mensual, cancela y suscríbete al nuevo plan cuando termine el periodo actual.",
+            "Reembolsos: los nuevos suscriptores reciben un reembolso completo en los 14 días siguientes a su primer pago si han usado menos del 20 % de los créditos de ese periodo (una vez por cliente). Una renovación se reembolsa en un plazo de 7 días si no has usado ningún crédito desde que se renovó. Los cargos duplicados y los errores de facturación siempre se reembolsan. Un reembolso completo termina el plan de pago de inmediato y retira los créditos no usados de ese pago. Para pedir un reembolso, usa Solicitar un reembolso en Configuración → Plan y facturación, o escribe a {billingEmail}.",
             "Podemos cambiar los precios. Te avisaremos al menos 30 días antes de que un nuevo precio se aplique a tu suscripción, y podrás cancelarla antes."
           ]
         },
@@ -1881,7 +1884,8 @@
         "tooMany": "Puedes adjuntar como máximo {max} capturas.",
         "totalTooLarge": "Estas capturas pesan demasiado en conjunto. Quita una o usa imágenes más pequeñas."
       }
-    }
+    },
+    "refundRequestMessage": "Quiero solicitar el reembolso de mi último pago. Motivo: "
   },
   "Status": {
     "title": "Estado del Sistema",
@@ -2056,7 +2060,11 @@
       "screenshots_too_large": "Las capturas de pantalla pesan demasiado en conjunto. Quita una o usa imágenes más pequeñas.",
       "screenshot_type_unsupported": "Las capturas de pantalla deben ser imágenes PNG, JPEG o WebP.",
       "screenshot_unreadable": "No se pudo leer una captura de pantalla. Vuelve a guardarla como PNG.",
-      "screenshot_dimensions_too_large": "Una captura de pantalla es demasiado grande: como máximo 4096 × 4096 píxeles."
+      "screenshot_dimensions_too_large": "Una captura de pantalla es demasiado grande: como máximo 4096 × 4096 píxeles.",
+      "plan_change_not_supported": "Aquí solo se puede mejorar el plan. Para pasar a uno más pequeño, cancela y suscríbete de nuevo cuando termine el periodo.",
+      "same_plan": "Este ya es tu plan.",
+      "cancel_scheduled": "Tu plan va a terminar. Mantenlo primero y luego cámbialo.",
+      "nothing_to_resume": "No hay ninguna cancelación que deshacer."
     }
   },
   "Gates": {
@@ -2460,7 +2468,8 @@
         "paused": "Tu suscripción está en pausa. Mientras tanto, tu cuenta usa el plan Free.",
         "refunded": "Tu pago se ha reembolsado y tu plan de pago ha terminado.",
         "refunded_partial": "Se ha reembolsado parte de tu pago. Tu plan sigue activo.",
-        "disputed": "Hay una disputa de pago abierta. La generación con IA está en pausa en tu cuenta."
+        "disputed": "Hay una disputa de pago abierta. La generación con IA está en pausa en tu cuenta.",
+        "plan_changed": "Tu plan se ha mejorado. Se han añadido los créditos adicionales."
       },
       "NEW_SIGN_IN": {
         "title": "Nuevo inicio de sesión detectado",
@@ -3193,5 +3202,104 @@
     "accept": "Aceptar",
     "policy": "Política de cookies",
     "close": "Cerrar el aviso de cookies"
+  },
+  "Billing": {
+    "page": {
+      "metaTitle": "Facturación",
+      "back": "Ajustes",
+      "eyebrow": "Facturación",
+      "title": "Plan y facturación",
+      "description": "Tu plan, tus pagos y tus facturas."
+    },
+    "loading": "Cargando tu plan…",
+    "loadFailed": "No se pudo cargar tu plan. Actualiza la página para volver a intentarlo.",
+    "activation": {
+      "waiting": "Activando tu plan… Suele tardar unos segundos.",
+      "slow": "Está tardando más de lo habitual. Si viste la confirmación, tu pago se ha realizado; tu plan aparecerá aquí en unos minutos. Si no aparece, contacta con soporte.",
+      "done": "Tu plan está activo."
+    },
+    "pastDue": {
+      "body": "Tu último pago de {plan} ha fallado. Actualiza tu método de pago para mantener tu plan.",
+      "action": "Actualizar método de pago"
+    },
+    "intent": {
+      "title": "Elegiste {plan} ({interval}). Continúa al pago para empezarlo.",
+      "action": "Continuar al pago"
+    },
+    "taxNote": "Precios en USD, más los impuestos aplicables, calculados en el pago por nuestro socio de pagos.",
+    "interval": {
+      "month": "Mensual",
+      "year": "Anual"
+    },
+    "intervalLabel": "Periodo de facturación",
+    "currentPlan": "Plan actual",
+    "status": {
+      "active": "Activo",
+      "trial": "Prueba",
+      "cancelScheduled": "Termina el {date}",
+      "paused": "En pausa",
+      "paymentIssue": "Problema de pago",
+      "onHold": "Retenido",
+      "ended": "Terminado",
+      "free": "Plan Free"
+    },
+    "renewsOn": "Se renueva el",
+    "endsOn": "Termina el",
+    "creditsResetOn": "Los créditos se renuevan el",
+    "launchingSoon": "Los planes de pago llegarán pronto.",
+    "upgrade": "Mejorar plan",
+    "upgradeTitle": "Elige un plan",
+    "upgradeDescription": "Pagarás en la página segura de nuestro socio de pagos. Tu plan empieza en cuanto se confirma el pago.",
+    "pricePerMonth": "{price} / mes",
+    "pricePerYear": "{price} / año",
+    "creditsPerMonth": "{count, plural, one {# crédito al mes} other {# créditos al mes}}",
+    "changePlan": {
+      "open": "Cambiar de plan",
+      "title": "Mejora tu plan",
+      "description": "El nuevo plan empieza ahora. Sus créditos adicionales de este periodo se añaden a tu saldo de inmediato.",
+      "pick": "Mejorar",
+      "done": "Ahora tienes el plan {plan}.",
+      "failed": "No se pudo cambiar tu plan. No se ha cobrado nada.",
+      "prorationNote": "Nuestro socio de pagos cobra ahora la diferencia prorrateada del resto del periodo actual.",
+      "downgradeNote": "Para pasar a un plan más pequeño o a facturación mensual, cancela tu plan y suscríbete al nuevo cuando termine el periodo actual."
+    },
+    "checkout": {
+      "pick": "Suscribirse",
+      "failed": "No se pudo abrir la página de pago. Inténtalo de nuevo.",
+      "note": "Cancela cuando quieras. Tu plan sigue activo hasta el final del periodo pagado."
+    },
+    "resume": {
+      "action": "Mantener mi plan",
+      "done": "Tu plan se renovará como siempre.",
+      "failed": "No se pudo reanudar tu plan. Inténtalo de nuevo."
+    },
+    "portal": {
+      "action": "Métodos de pago y facturas",
+      "failed": "No se pudo abrir el portal de facturación. Inténtalo de nuevo.",
+      "note": "Para mantener tu plan hasta el final del periodo pagado, cancélalo aquí. Si lo cancelas en el portal de pago, termina de inmediato."
+    },
+    "cancel": {
+      "action": "Cancelar plan",
+      "title": "¿Cancelar tu plan?",
+      "body": "Mantienes {plan} y sus créditos hasta el {date}. Después no se renovará.",
+      "after": "Luego tu cuenta pasa al plan Free. Tus espacios y tu contenido se conservan, y puedes suscribirte de nuevo cuando quieras.",
+      "confirm": "Cancelar plan",
+      "keep": "Mantener plan",
+      "done": "Tu plan está cancelado. Lo mantienes hasta el {date}.",
+      "failed": "No se pudo cancelar tu plan. Inténtalo de nuevo."
+    },
+    "refund": {
+      "title": "¿Necesitas un reembolso?",
+      "body": "Pídelo y lo revisaremos según la política de reembolsos.",
+      "policyLink": "Leer la política de reembolsos",
+      "action": "Solicitar un reembolso"
+    }
+  },
+  "UpgradeDialog": {
+    "title": "Mejora a {plan}",
+    "creditsLow": "{count, plural, one {Te queda # crédito en este periodo.} other {Te quedan # créditos en este periodo.}} Un plan mayor te da más cada mes.",
+    "seePlans": "Ver todos los planes",
+    "upgradeTo": "Mejorar a {plan}",
+    "manage": "Gestionar plan"
   }
 }

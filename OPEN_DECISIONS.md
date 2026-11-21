@@ -191,3 +191,24 @@ Known gap: the credit hold before an answer covers the base cost only (decided 2
 **To build it:** a Creem one-time product per pack (and its `CREEM_PRODUCT_*` id), `checkout.completed` for that product → `grantTopup()`, a buy button where credits run low, the refund rule for packs, how long unused packs stay valid (ask a lawyer), and the copy in `en`, `es`, `fr`.
 
 **If nothing is decided:** stays unbuilt and unmentioned.
+
+---
+
+## 9. Self-service downgrades and yearly → monthly
+
+- **Found:** 2026-11-21, Step 8.5.
+- **Where:** `lib/billing/plan-changes.ts` (`planChangeKind`), `server/services/billing.ts` (`changePlan`), the billing page.
+
+**The situation.** Creem's plan change (`POST /v1/subscriptions/{id}/upgrade`) always takes effect **at once** (docs.creem.io, read 2026-11-21). With `proration-charge-immediately` a downgrade **refunds the unused time** to the card, although the credits of the bigger plan may already be spent; with `proration-none` the person loses the rest of the bigger plan's period without any refund. Creem has no "change at the next renewal" option.
+
+**Today.** Only upgrades (a higher plan, or monthly → yearly) can be made in Klecx. For a smaller plan or monthly billing, the billing page says: cancel, then subscribe to the new plan when the period ends. Support can change a plan by hand in Creem's dashboard (`ADMIN_CONSOLE.md` §12).
+
+**Options.**
+
+| | Option | Effect |
+|---|---|---|
+| A | Upgrades only (today) | Simple and safe; a downgrade takes two steps for the person. |
+| B | Scheduled downgrade | Klecx stores the wanted plan and, right after the renewal's `subscription.paid`, calls the change with `proration-none`. The first renewal is still charged at the old price unless the change happens before it, so the timing needs care (a job shortly before `currentPeriodEnd`). |
+| C | Immediate downgrade with `proration-none` | One click, no refund, the bigger plan's remaining time is lost; the balance is capped at the smaller allowance. Needs clear copy before confirming. |
+
+**If nothing is decided:** stays at A.
