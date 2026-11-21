@@ -9,6 +9,7 @@ import { env } from "@/server/env";
 import { sendEmail } from "@/server/email/send";
 import { authSecondaryStorage } from "@/server/http/rate-limit";
 import { createAccountWithFreeGrant } from "@/server/services/credits";
+import { isDisposableEmail } from "@/server/auth/disposable-email";
 import { generateUniqueDefaultUsername } from "@/server/services/username";
 import { parseDeviceMetadata, checkAndAlertNewSignIn } from "@/server/services/device";
 import { welcomeOnUserCreated, welcomeOnUserUpdated } from "@/server/services/welcome";
@@ -21,6 +22,13 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
+          // Step 8.4: Free credits renew monthly, so throwaway inboxes can't sign up.
+          if (isDisposableEmail(user.email)) {
+            throw new APIError("BAD_REQUEST", {
+              message: "Disposable email addresses can't be used",
+              code: "DISPOSABLE_EMAIL",
+            });
+          }
           let u = (user as { username?: string }).username;
           if (!u) {
             u = await generateUniqueDefaultUsername();

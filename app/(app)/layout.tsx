@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { requireActor } from "@/server/auth/session";
+import { ensureCurrentGrantForUser } from "@/server/billing/grants";
 import { getAccountByUserId } from "@/server/services/credits";
 import { listProjects } from "@/server/services/project";
 import { listWorkspaces } from "@/server/services/workspace";
@@ -37,7 +38,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   );
 
   const [creditAccount, projectsPage, workspacesPage, avatarData, identity] = await Promise.all([
-    getAccountByUserId(actor.userId).catch(() => null),
+    // Step 8.4: the current period's allowance first, so the sidebar shows what can be spent.
+    ensureCurrentGrantForUser(actor.userId)
+      .catch(() => null)
+      .then(() => getAccountByUserId(actor.userId))
+      .catch(() => null),
     listProjects(actor, { limit: 50 }).catch(() => ({
       items: [],
       nextCursor: null,

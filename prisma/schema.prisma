@@ -243,6 +243,11 @@ model CreditAccount {
   userId       String         @unique @map("user_id")
   planBalance  Int            @default(0) @map("plan_balance")
   topupBalance Int            @default(0) @map("topup_balance")
+  /// Plan whose allowance `planBalance` holds (Step 8.4). FREE after a paid plan ends.
+  allowancePlan PlanKey       @default(FREE) @map("allowance_plan")
+  /// Ledger key of the current allowance, e.g. `free:<userId>:2026-11`,
+  /// `creem:paid:<transaction>` or `yearly:<subscription>:<start>:<n>`. Null = not stamped yet.
+  allowanceKey String?        @map("allowance_key")
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
   user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -929,6 +934,8 @@ model MemberLimitGrace {
   ownerId     String   @unique @map("owner_id")
   limit       Int
   graceEndsAt DateTime @map("grace_ends_at")
+  /// When `enforceMemberLimit` ran after the grace ended (Step 8.4); null while pending.
+  enforcedAt  DateTime? @map("enforced_at")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 

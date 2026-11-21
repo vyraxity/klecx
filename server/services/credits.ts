@@ -63,6 +63,16 @@ export async function reserve(
     };
   }
 
+  // Step 8.4: the allowance of the current period (monthly Free, yearly months,
+  // expiry of an ended plan) before anything is spent. Loaded lazily: grants.ts
+  // imports this module. A failure here never blocks the reservation.
+  try {
+    const { ensureCurrentGrant } = await import("@/server/billing/grants");
+    await ensureCurrentGrant(accountId);
+  } catch (e) {
+    console.error({ credits: "ensure_current_grant", accountId, err: e instanceof Error ? e.message : "unknown" });
+  }
+
   // Step 8.1: a disputed subscription (chargeback) freezes the account's credits.
   await assertAccountNotFrozen(accountId);
 
@@ -451,7 +461,8 @@ export async function grantPlanInTx(
   accountId: string,
   amount: number,
   reason: string,
-  key: string
+  key: string,
+  options: { expireReason?: string } = {}
 ): Promise<BalanceResult & { granted: boolean }> {
   if (amount < 0) {
     throw Errors.badRequest("Grant amount cannot be negative");
@@ -485,7 +496,7 @@ export async function grantPlanInTx(
         topupDelta: 0,
         planAfter: 0,
         topupAfter: current.topup_balance,
-        reason: "monthly_reset",
+        reason: options.expireReason ?? "monthly_reset",
         idempotencyKey: `${key}:expire`,
       },
     });
@@ -909,6 +920,9 @@ export async function createAccountWithFreeGrant(userId: string) {
           userId,
           planBalance: 100,
           topupBalance: 0,
+          // The signup grant is this month's Free allowance (Step 8.4).
+          allowancePlan: "FREE",
+          allowanceKey: `free:${userId}:${new Date().toISOString().slice(0, 7)}`,
         },
       });
 

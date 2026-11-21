@@ -80,6 +80,15 @@ export interface SupportNotificationData {
   userId?: string;
   /** Signed links to the request's screenshots, valid for 7 days (F5.8). */
   screenshotLinks?: string[];
+  /** Billing requests from a subscriber: the refund policy check (Step 8.4). */
+  refundEligibility?: {
+    eligible: boolean;
+    rule: string | null;
+    creditsUsedPct: number | null;
+    daysSincePayment: number | null;
+    paymentNumber: number;
+    previousRefunds: number;
+  };
 }
 
 export interface OwnershipTransferRequestedData {

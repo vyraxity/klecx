@@ -118,6 +118,9 @@ const planState = (row: SubRow | null): SubscriptionPlanState | null =>
       }
     : null;
 
+/** Ledger reason prefix of a refund recorded before its payment was granted. */
+export const REFUND_BEFORE_PAID = "refund_before_paid";
+
 /** Ledger idempotency key of the credit grant for one payment. */
 export function paidGrantKey(provider: string, transactionId: string): string {
   return `${provider}:paid:${transactionId}`;
@@ -343,13 +346,50 @@ export async function applyBillingEvent(
         event.data.transaction?.id ??
         `${eventSub?.id ?? "sub"}:${(eventSub?.currentPeriodStart ?? event.createdAt).toISOString()}`;
       const account = await ensureCreditAccountInTx(tx, userId);
+      const grantKey = paidGrantKey(event.provider, transactionId);
+
+      // A refund of this payment that arrived before it (Step 8.4) reduces the grant,
+      // or cancels it and ends the plan when the whole payment was refunded.
+      const earlyRefunds = await tx.creditLedger.findMany({
+        where: { accountId: account.id, type: "REFUND", reason: { startsWith: `${REFUND_BEFORE_PAID}:${transactionId}:` } },
+        select: { reason: true },
+      });
+      const fullAllowance = PLANS[plan.plan].credits;
+      let amount = fullAllowance;
+      let fullyRefunded = false;
+      for (const r of earlyRefunds) {
+        const share = r.reason?.split(":").pop() ?? "";
+        if (share === "full") fullyRefunded = true;
+        else amount -= Math.floor((fullAllowance * Math.min(1000, Number(share) || 0)) / 1000);
+      }
+      if (fullyRefunded) {
+        if (after && !stale && !otherSubscription && after.status !== "DISPUTED") {
+          after = (await tx.subscription.update({
+            where: { userId },
+            data: { status: "CANCELED", cancelAtPeriodEnd: false },
+          })) as SubRow;
+          if (after.providerSubscriptionId) {
+            effects.push({ kind: "cancelNow", userId, subscriptionId: after.providerSubscriptionId });
+          }
+        }
+        note = "refunded_before_paid";
+        break;
+      }
+
       const grant = await grantPlanInTx(
         tx,
         account.id,
-        PLANS[plan.plan].credits,
+        Math.max(0, amount),
         "subscription.paid",
-        paidGrantKey(event.provider, transactionId)
+        grantKey
       );
+      if (grant.granted) {
+        // The plan whose allowance the account now holds (Step 8.4: expired when the plan ends).
+        await tx.creditAccount.update({
+          where: { id: account.id },
+          data: { allowancePlan: plan.plan, allowanceKey: grantKey },
+        });
+      }
       if (grant.granted) {
         const periodStart = eventSub?.currentPeriodStart ?? event.createdAt;
         if (!stale) {
@@ -472,13 +512,15 @@ export async function applyBillingEvent(
           }
         }
       }
-      await refundPlanCreditsInTx(
-        tx,
-        account.id,
-        toRemove,
-        `refund.created:${refund.reason ?? "unspecified"}`,
-        `${event.provider}:refund:${refund.id}`
-      );
+      // A refund before its payment's grant (Step 8.4) is recorded with the
+      // refunded share, so the late `subscription.paid` grants only the rest.
+      const refundReason =
+        transaction && !grantFound
+          ? `${REFUND_BEFORE_PAID}:${transaction.id}:${
+              full ? "full" : Math.floor((1000 * Math.min(refund.amount ?? 0, paid ?? 0)) / (paid ?? 1))
+            }`
+          : `refund.created:${refund.reason ?? "unspecified"}`;
+      await refundPlanCreditsInTx(tx, account.id, toRemove, refundReason, `${event.provider}:refund:${refund.id}`);
 
       // A full refund of the current subscription ends the paid plan now (refund policy).
       const ofCurrent = !!row && (!eventSub || eventSub.id === row.providerSubscriptionId);
