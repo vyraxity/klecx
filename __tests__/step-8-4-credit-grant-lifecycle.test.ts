@@ -14,6 +14,7 @@ import {
   decideGrant,
   ensureCurrentGrant,
   freeGrantKey,
+  freePeriod,
   yearlyMonthIndex,
   type GrantState,
 } from "@/server/billing/grants";
@@ -61,10 +62,11 @@ afterAll(async () => {
 
 const baseState = (over: Partial<GrantState> = {}): GrantState => ({
   userId: "u1",
+  signedUpAt: d("2026-03-10T15:00:00Z"),
   emailVerified: true,
   deleted: false,
   allowancePlan: "FREE",
-  allowanceKey: "free:u1:2026-10",
+  allowanceKey: "free:u1:2026-10-10",
   subscription: null,
   ...over,
 });
@@ -83,20 +85,25 @@ const sub = (over: Partial<NonNullable<GrantState["subscription"]>> = {}): NonNu
 });
 
 describe("Step 8.4 — grant rules (fake clock)", () => {
-  it("Free: a new UTC month grants the allowance; the same month doesn't", () => {
-    const nov = d("2026-11-01T00:00:00Z");
-    expect(decideGrant(baseState(), nov).decision).toEqual({ kind: "free_monthly", key: "free:u1:2026-11", amount: PLANS.FREE.credits });
-    expect(decideGrant(baseState({ allowanceKey: "free:u1:2026-11" }), d("2026-11-30T23:59:59Z")).decision.kind).toBe("none");
-    expect(decideGrant(baseState(), nov).resetsAt).toEqual(d("2026-12-01T00:00:00Z"));
+  it("Free: renews monthly on the sign-up date; not before", () => {
+    const renewal = d("2026-11-10T15:00:00Z");
+    expect(decideGrant(baseState(), renewal).decision).toEqual({ kind: "free_monthly", key: "free:u1:2026-11-10", amount: PLANS.FREE.credits });
+    expect(decideGrant(baseState(), d("2026-11-10T14:59:59Z")).decision.kind).toBe("none");
+    expect(decideGrant(baseState(), renewal).resetsAt).toEqual(d("2026-12-10T15:00:00Z"));
+    expect(decideGrant(baseState({ allowanceKey: "free:u1:2026-11-10" }), d("2026-12-10T14:00:00Z")).decision.kind).toBe("none");
     // Year rollover.
-    expect(decideGrant(baseState({ allowanceKey: "free:u1:2026-12" }), d("2027-01-01T00:00:00Z")).decision).toMatchObject({ key: "free:u1:2027-01" });
+    expect(decideGrant(baseState({ allowanceKey: "free:u1:2026-12-10" }), d("2027-01-10T16:00:00Z")).decision).toMatchObject({ key: "free:u1:2027-01-10" });
+    // Signed up on the 31st: renews on the month's last day.
+    const late = baseState({ signedUpAt: d("2026-01-31T00:00:00Z"), allowanceKey: "free:u1:2026-01-31" });
+    expect(decideGrant(late, d("2026-02-28T00:00:00Z")).decision).toMatchObject({ key: "free:u1:2026-02-28" });
+    expect(decideGrant(late, d("2026-02-28T00:00:00Z")).resetsAt).toEqual(d("2026-03-31T00:00:00Z"));
   });
 
   it("Free: unverified or deleted accounts get no monthly grant; unstamped accounts are stamped", () => {
-    const now = d("2026-11-10T00:00:00Z");
+    const now = d("2026-11-12T00:00:00Z");
     expect(decideGrant(baseState({ emailVerified: false }), now).decision.kind).toBe("none");
     expect(decideGrant(baseState({ deleted: true }), now).decision.kind).toBe("none");
-    expect(decideGrant(baseState({ allowanceKey: null }), now).decision).toEqual({ kind: "stamp", key: "free:u1:2026-11" });
+    expect(decideGrant(baseState({ allowanceKey: null }), now).decision).toEqual({ kind: "stamp", key: "free:u1:2026-11-10" });
   });
 
   it("paid monthly: nothing lazily (the webhook grants); resets at the period end", () => {
@@ -131,7 +138,7 @@ describe("Step 8.4 — grant rules (fake clock)", () => {
     const canceled = sub({ status: "CANCELED", cancelAtPeriodEnd: true });
     const state = baseState({ allowancePlan: "STANDARD", allowanceKey: "creem:paid:t1", subscription: canceled });
     expect(decideGrant(state, d("2026-12-05T09:59:59Z")).decision.kind).toBe("none");
-    expect(decideGrant(state, d("2026-12-05T10:00:00Z")).decision).toEqual({ kind: "plan_ended", freeKey: "free:u1:2026-12", previousPlan: "STANDARD" });
+    expect(decideGrant(state, d("2026-12-05T10:00:00Z")).decision).toMatchObject({ kind: "plan_ended", freeKey: "free:u1:2026-11-10", previousPlan: "STANDARD" });
     // A past-due plan ends 3 days after the period end, without any webhook.
     const pastDue = baseState({ allowancePlan: "PRO", subscription: sub({ plan: "PRO", status: "PAST_DUE" }) });
     expect(decideGrant(pastDue, d("2026-12-07T00:00:00Z")).decision.kind).toBe("none");
@@ -141,11 +148,19 @@ describe("Step 8.4 — grant rules (fake clock)", () => {
 
 // ---------------------------------------------------------------- database
 
-async function makeUser(label: string, opts: { verified?: boolean } = {}) {
+async function makeUser(label: string, opts: { verified?: boolean; createdAt?: Date } = {}) {
   const id = `s84_${label}_${sfx}`;
   ids.push(id);
-  await db.user.create({ data: { id, email: `${id}@example.com`, name: id, emailVerified: opts.verified ?? true } });
+  await db.user.create({
+    data: { id, email: `${id}@example.com`, name: id, emailVerified: opts.verified ?? true, ...(opts.createdAt ? { createdAt: opts.createdAt } : {}) },
+  });
   return id;
+}
+
+/** Key of the Free period the user is in now. */
+async function currentFreeKey(userId: string) {
+  const { createdAt } = await db.user.findUniqueOrThrow({ where: { id: userId }, select: { createdAt: true } });
+  return freeGrantKey(userId, freePeriod(createdAt, new Date()).start);
 }
 
 async function makeAccount(userId: string, data: { planBalance: number; allowancePlan?: "FREE" | "LITE" | "STANDARD" | "PRO"; allowanceKey?: string | null; topupBalance?: number }) {
@@ -164,24 +179,25 @@ const balanceOf = async (accountId: string) =>
   db.creditAccount.findUniqueOrThrow({ where: { id: accountId }, select: { planBalance: true, topupBalance: true, allowancePlan: true, allowanceKey: true } });
 
 describe("Step 8.4 — ensureCurrentGrant", () => {
-  it("Free month rollover: expires leftovers, grants once, even with concurrent calls; top-ups untouched", async () => {
-    const userId = await makeUser("free");
-    const acc = await makeAccount(userId, { planBalance: 37, topupBalance: 5, allowanceKey: `free:${userId}:2026-10` });
-    const now = d("2026-11-03T00:00:00Z");
+  it("Free renewal on the sign-up date: expires leftovers, grants once, even with concurrent calls; top-ups untouched", async () => {
+    const userId = await makeUser("free", { createdAt: d("2026-09-15T12:00:00Z") });
+    const acc = await makeAccount(userId, { planBalance: 37, topupBalance: 5, allowanceKey: `free:${userId}:2026-10-15` });
+    const now = d("2026-11-16T00:00:00Z");
 
     const results = await Promise.all([ensureCurrentGrant(acc.id, now), ensureCurrentGrant(acc.id, now), ensureCurrentGrant(acc.id, now)]);
     expect(results.filter((r) => r.action === "free_monthly")).toHaveLength(1);
-    await ensureCurrentGrant(acc.id, d("2026-11-29T00:00:00Z"));
+    expect(results[0]?.resetsAt).toEqual(d("2026-12-15T12:00:00Z"));
+    await ensureCurrentGrant(acc.id, d("2026-12-15T11:59:59Z"));
 
-    expect(await balanceOf(acc.id)).toMatchObject({ planBalance: PLANS.FREE.credits, topupBalance: 5, allowanceKey: freeGrantKey(userId, now) });
+    expect(await balanceOf(acc.id)).toMatchObject({ planBalance: PLANS.FREE.credits, topupBalance: 5, allowanceKey: `free:${userId}:2026-11-15` });
     const ledger = await db.creditLedger.findMany({ where: { accountId: acc.id }, orderBy: { createdAt: "asc" } });
     expect(ledger.map((l) => [l.type, l.planDelta])).toEqual([["EXPIRE", -37], ["GRANT", PLANS.FREE.credits]]);
   });
 
   it("an unverified account gets no monthly grant", async () => {
     const userId = await makeUser("unverified", { verified: false });
-    const acc = await makeAccount(userId, { planBalance: 3, allowanceKey: `free:${userId}:2026-10` });
-    await ensureCurrentGrant(acc.id, d("2026-11-03T00:00:00Z"));
+    const acc = await makeAccount(userId, { planBalance: 3, allowanceKey: `free:${userId}:2000-01-01` });
+    await ensureCurrentGrant(acc.id);
     expect((await balanceOf(acc.id)).planBalance).toBe(3);
   });
 
@@ -200,7 +216,7 @@ describe("Step 8.4 — ensureCurrentGrant", () => {
     expect(await db.creditLedger.count({ where: { accountId: acc.id, type: "GRANT" } })).toBe(1);
   });
 
-  it("plan ended at the period end: paid credits expire, Free starts (0 if this month's Free credits were already given), and the collaborator grace starts", async () => {
+  it("plan ended at the period end: paid credits expire, Free starts (0 if this Free period's credits were already given), and the collaborator grace starts", async () => {
     const owner = await makeUser("ended");
     const member = await makeUser("ended_member");
     const ws = await db.workspace.create({ data: { ownerId: owner, title: "Team" } });
@@ -211,11 +227,11 @@ describe("Step 8.4 — ensureCurrentGrant", () => {
     const acc = await makeAccount(owner, { planBalance: 900, allowancePlan: "STANDARD", allowanceKey: `creem:paid:t84_${sfx}` });
 
     expect((await ensureCurrentGrant(acc.id)).action).toBe("plan_ended");
-    expect(await balanceOf(acc.id)).toMatchObject({ planBalance: PLANS.FREE.credits, allowancePlan: "FREE", allowanceKey: freeGrantKey(owner, new Date()) });
+    expect(await balanceOf(acc.id)).toMatchObject({ planBalance: PLANS.FREE.credits, allowancePlan: "FREE", allowanceKey: await currentFreeKey(owner) });
     expect(await db.memberLimitGrace.findUnique({ where: { ownerId: owner } })).toMatchObject({ limit: 0 });
     expect((await ensureCurrentGrant(acc.id)).action).toBe("none");
 
-    // Someone who already had this month's Free credits before subscribing restarts at 0.
+    // Someone who already had this Free period's credits before subscribing restarts at 0.
     const again = await makeUser("ended_again");
     await db.subscription.create({ data: { userId: again, plan: "LITE", interval: "month", status: "EXPIRED" } });
     const acc2 = await makeAccount(again, { planBalance: 500, allowancePlan: "LITE", allowanceKey: `creem:paid:t84b_${sfx}` });
@@ -228,7 +244,7 @@ describe("Step 8.4 — ensureCurrentGrant", () => {
 
   it("reserve() grants the current allowance before spending", async () => {
     const userId = await makeUser("reserve");
-    const acc = await makeAccount(userId, { planBalance: 1, allowanceKey: `free:${userId}:2000-01` });
+    const acc = await makeAccount(userId, { planBalance: 1, allowanceKey: `free:${userId}:2000-01-01` });
     const result = await reserve(acc.id, 10, `s84_res_${sfx}`, { generationId: `gen84_${sfx}` });
     expect(result.planBalance).toBe(PLANS.FREE.credits - 10);
   });
@@ -239,7 +255,7 @@ describe("Step 8.4 — ensureCurrentGrant", () => {
     const ws = await db.workspace.create({ data: { ownerId: owner, title: "Grace" } });
     await db.workspaceMember.create({ data: { workspaceId: ws.id, userId: member, role: "EDITOR", invitedById: owner } });
     await db.memberLimitGrace.create({ data: { ownerId: owner, limit: 0, graceEndsAt: new Date(Date.now() - DAY) } });
-    const acc = await makeAccount(owner, { planBalance: 50, allowanceKey: freeGrantKey(owner, new Date()) });
+    const acc = await makeAccount(owner, { planBalance: 50, allowanceKey: await currentFreeKey(owner) });
 
     await Promise.all([ensureCurrentGrant(acc.id), ensureCurrentGrant(acc.id)]);
     await ensureCurrentGrant(acc.id);
@@ -359,7 +375,7 @@ describe("Step 8.4 — a refund that arrives before its payment", () => {
 
   it("partial refund first: the late payment grants only the unrefunded share", async () => {
     const userId = await makeUser("early_partial");
-    await makeAccount(userId, { planBalance: 0, allowanceKey: freeGrantKey(userId, new Date()) });
+    await makeAccount(userId, { planBalance: 0, allowanceKey: await currentFreeKey(userId) });
     await db.subscription.create({ data: { userId, plan: "STANDARD", interval: "month", status: "ACTIVE", providerSubscriptionId: `sub84_p_${sfx}` } });
     const t0 = Date.now();
     await deliver("refund.created", { id: `ref84_p_${sfx}`, refund_amount: 500, transaction: { id: `tx84_p_${sfx}`, amount_paid: 2000, refunded_amount: 500 }, subscription: `sub84_p_${sfx}` }, t0);
@@ -372,7 +388,7 @@ describe("Step 8.4 — a refund that arrives before its payment", () => {
 
   it("full refund first: the late payment grants nothing and ends the plan", async () => {
     const userId = await makeUser("early_full");
-    await makeAccount(userId, { planBalance: 0, allowanceKey: freeGrantKey(userId, new Date()) });
+    await makeAccount(userId, { planBalance: 0, allowanceKey: await currentFreeKey(userId) });
     await db.subscription.create({ data: { userId, plan: "STANDARD", interval: "month", status: "ACTIVE", providerSubscriptionId: `sub84_f_${sfx}` } });
     const t0 = Date.now();
     await deliver("refund.created", { id: `ref84_f_${sfx}`, refund_amount: 2000, transaction: { id: `tx84_f_${sfx}`, amount_paid: 2000, refunded_amount: 2000 }, subscription: `sub84_f_${sfx}` }, t0);

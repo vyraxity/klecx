@@ -920,9 +920,9 @@ export async function createAccountWithFreeGrant(userId: string) {
           userId,
           planBalance: 100,
           topupBalance: 0,
-          // The signup grant is this month's Free allowance (Step 8.4).
+          // The signup grant is the first Free period's allowance: the first
+          // ensureCurrentGrant() stamps that period's key (Step 8.4).
           allowancePlan: "FREE",
-          allowanceKey: `free:${userId}:${new Date().toISOString().slice(0, 7)}`,
         },
       });
 

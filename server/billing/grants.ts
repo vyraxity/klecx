@@ -10,8 +10,10 @@ import { applyMemberLimitForPlanChange, enforceEndedGrace } from "@/server/servi
  * the start of `reserve()` and wherever a balance is shown, so every account
  * holds the right allowance for the current period without a cron:
  *
- * - **Free:** one allowance per UTC month (`free:<userId>:<yyyy-mm>`), only for
- *   verified emails. The signup grant counts as the first month.
+ * - **Free:** one allowance per month, renewed on the person's sign-up date
+ *   (the day of the month they signed up, UTC; the 31st becomes the month's
+ *   last day). Key `free:<userId>:<period start yyyy-mm-dd>`; verified emails
+ *   only. The signup grant counts as the first period.
  * - **Paid monthly:** granted by the `subscription.paid` webhook (Step 8.3).
  *   No lazy grant: the period dates only arrive with webhooks, so a lazy grant
  *   couldn't see a renewal the webhook missed, and would double-grant when the
@@ -21,7 +23,7 @@ import { applyMemberLimitForPlanChange, enforceEndedGrace } from "@/server/servi
  *   (`yearly:<subscription>:<start>:<n>`).
  * - **Plan ended** (cancel, expiry, refund, dispute, past-due grace over): the
  *   leftover paid credits expire and the Free allowance starts (100 credits,
- *   or 0 when this month's Free credits were already given).
+ *   or 0 when this Free period's credits were already given).
  * - Every grant replaces the plan balance: no rollover. Top-up credits are
  *   never touched. Idempotency keys make repeated calls harmless.
  *
@@ -50,6 +52,8 @@ type SubState = SubscriptionPlanState & {
 
 export type GrantState = {
   userId: string;
+  /** Sign-up time: Free periods start on its day of the month. */
+  signedUpAt: Date;
   emailVerified: boolean;
   deleted: boolean;
   allowancePlan: PlanKey;
@@ -62,27 +66,13 @@ export type GrantDecision =
   | { kind: "stamp"; key: string }
   | { kind: "free_monthly"; key: string; amount: number }
   | { kind: "yearly_monthly"; key: string; amount: number; plan: PlanKey }
-  | { kind: "plan_ended"; freeKey: string; previousPlan: PlanKey };
+  | { kind: "plan_ended"; freeKey: string; freePeriodStart: Date; previousPlan: PlanKey };
 
 export type GrantResult = {
   action: GrantDecision["kind"];
   /** When the next allowance starts (UI: "Credits reset on …"); null when it depends on a renewal we can't date. */
   resetsAt: Date | null;
 };
-
-/** "2026-11" in UTC. */
-export function monthKey(d: Date): string {
-  return d.toISOString().slice(0, 7);
-}
-
-/** First instant of the next UTC month. */
-export function nextMonthStart(d: Date): Date {
-  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1));
-}
-
-function monthStart(d: Date): Date {
-  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1));
-}
 
 /** `d` plus `n` calendar months (UTC), the day clamped to the month's end (Jan 31 + 1 → Feb 28/29). */
 export function addMonthsUTC(d: Date, n: number): Date {
@@ -94,15 +84,27 @@ export function addMonthsUTC(d: Date, n: number): Date {
   );
 }
 
-/** Month of a yearly period that `now` falls in: 0 for the first month … 11. */
-export function yearlyMonthIndex(start: Date, now: Date): number {
-  let n = 0;
-  while (n < 11 && addMonthsUTC(start, n + 1) <= now) n++;
+/** Whole months from `anchor` to `now` (0 before the first month boundary). */
+export function monthsSince(anchor: Date, now: Date): number {
+  if (now <= anchor) return 0;
+  let n = (now.getUTCFullYear() - anchor.getUTCFullYear()) * 12 + (now.getUTCMonth() - anchor.getUTCMonth());
+  while (n > 0 && addMonthsUTC(anchor, n) > now) n--;
   return n;
 }
 
-export function freeGrantKey(userId: string, now: Date): string {
-  return `free:${userId}:${monthKey(now)}`;
+/** Month of a yearly period that `now` falls in: 0 for the first month … 11. */
+export function yearlyMonthIndex(start: Date, now: Date): number {
+  return Math.min(11, monthsSince(start, now));
+}
+
+/** The Free period `now` falls in: it starts on the sign-up date's day of the month. */
+export function freePeriod(signedUpAt: Date, now: Date): { start: Date; next: Date } {
+  const n = monthsSince(signedUpAt, now);
+  return { start: addMonthsUTC(signedUpAt, n), next: addMonthsUTC(signedUpAt, n + 1) };
+}
+
+export function freeGrantKey(userId: string, periodStart: Date): string {
+  return `free:${userId}:${periodStart.toISOString().slice(0, 10)}`;
 }
 
 export function yearlyGrantKey(sub: Pick<SubState, "id" | "providerSubscriptionId">, start: Date, n: number): string {
@@ -115,10 +117,14 @@ export function decideGrant(state: GrantState, now: Date): { decision: GrantDeci
   const effective = resolveSubscriptionPlan(sub, now).plan;
 
   if (effective === "FREE") {
-    const freeKey = freeGrantKey(state.userId, now);
-    const resetsAt = nextMonthStart(now);
+    const period = freePeriod(state.signedUpAt, now);
+    const freeKey = freeGrantKey(state.userId, period.start);
+    const resetsAt = period.next;
     if (state.allowancePlan !== "FREE") {
-      return { decision: { kind: "plan_ended", freeKey, previousPlan: state.allowancePlan }, resetsAt };
+      return {
+        decision: { kind: "plan_ended", freeKey, freePeriodStart: period.start, previousPlan: state.allowancePlan },
+        resetsAt,
+      };
     }
     // Accounts from before Step 8.4 (or created directly): their current balance counts as this month's.
     if (state.allowanceKey === null) return { decision: { kind: "stamp", key: freeKey }, resetsAt };
@@ -160,6 +166,7 @@ async function loadState(accountId: string) {
         select: {
           emailVerified: true,
           deletedAt: true,
+          createdAt: true,
           subscription: { select: SUB_FIELDS },
           memberLimitGrace: { select: { graceEndsAt: true, enforcedAt: true } },
         },
@@ -169,6 +176,7 @@ async function loadState(accountId: string) {
   if (!acc) return null;
   const state: GrantState = {
     userId: acc.userId,
+    signedUpAt: acc.user.createdAt,
     emailVerified: Boolean(acc.user.emailVerified),
     deleted: acc.user.deletedAt !== null,
     allowancePlan: acc.allowancePlan,
@@ -220,15 +228,15 @@ export async function ensureCurrentGrant(accountId: string, now: Date = new Date
           });
           return fresh;
         case "plan_ended": {
-          // Free credits once per month: someone who already had this month's
-          // Free allowance before subscribing starts the month at 0.
+          // Free credits once per Free period: someone who already had this
+          // period's Free allowance before subscribing starts it at 0.
           const freeThisMonth = await tx.creditLedger.findFirst({
             where: {
               accountId,
               type: "GRANT",
               planDelta: { gt: 0 },
               reason: { in: ["monthly_free", "free_monthly"] },
-              createdAt: { gte: monthStart(now) },
+              createdAt: { gte: fresh.freePeriodStart },
             },
             select: { id: true },
           });

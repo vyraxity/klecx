@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import { requireActor } from "@/server/auth/session";
 import { ensureCurrentGrantForUser } from "@/server/billing/grants";
 import { getAccountByUserId } from "@/server/services/credits";
+import { getEntitlements } from "@/server/billing/entitlements";
+import { PLANS } from "@/server/billing/plans";
 import { listProjects } from "@/server/services/project";
 import { listWorkspaces } from "@/server/services/workspace";
 import { getUserAvatar } from "@/server/services/avatar";
@@ -37,7 +39,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     cookieStore.get(SIDEBAR_COOKIE_NAME)?.value,
   );
 
-  const [creditAccount, projectsPage, workspacesPage, avatarData, identity] = await Promise.all([
+  const [creditAccount, projectsPage, workspacesPage, avatarData, identity, entitlements, tRoot] = await Promise.all([
     // Step 8.4: the current period's allowance first, so the sidebar shows what can be spent.
     ensureCurrentGrantForUser(actor.userId)
       .catch(() => null)
@@ -55,6 +57,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     // The session's copy of the user can be stale: read what people change
     // (name, username) from the database.
     getShellIdentity(actor.userId).catch(() => null),
+    // The effective plan (subscription, grace periods), for the sidebar's plan label.
+    getEntitlements(actor.userId).catch(() => null),
+    getTranslations(),
   ]);
 
   const usernameClaimedAt =
@@ -65,7 +70,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     name: identity?.name ?? actor.name ?? "",
     email: actor.email,
     image: avatarData?.avatarUrl ?? actor.image ?? null,
-    planName: "Free",
+    planName: tRoot(PLANS[entitlements?.plan ?? "FREE"].name),
     creditBalance:
       (creditAccount?.planBalance ?? 0) + (creditAccount?.topupBalance ?? 0),
     username: identity ? identity.username : actor.username ?? null,
