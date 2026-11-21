@@ -96,6 +96,7 @@ afterAll(async () => {
   setBillingProviderForTests(undefined);
   await db.billingEvent.deleteMany({ where: { OR: [{ userId: { in: ids } }, { providerEventId: { startsWith: `evt85_${sfx}` } }] } });
   await db.notification.deleteMany({ where: { userId: { in: ids } } });
+  await db.billingConsent.deleteMany({ where: { userId: { in: ids } } });
   await db.subscription.deleteMany({ where: { userId: { in: ids } } });
   await db.creditAccount.deleteMany({ where: { userId: { in: ids } } });
   await db.user.deleteMany({ where: { id: { in: ids } } });
@@ -104,7 +105,7 @@ afterAll(async () => {
 describe("Step 8.5 — billing actions", () => {
   it("every new endpoint needs a session", async () => {
     expect((await resumeRoute(post("/api/v1/billing/resume"))).status).toBe(401);
-    expect((await changePlanRoute(post("/api/v1/billing/change-plan", { plan: "PRO", interval: "month" }))).status).toBe(401);
+    expect((await changePlanRoute(post("/api/v1/billing/change-plan", { plan: "PRO", interval: "month", consentImmediateStart: true }))).status).toBe(401);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -115,8 +116,13 @@ describe("Step 8.5 — billing actions", () => {
     // The client can't send a product id or a price.
     expect((await changePlanRoute(post("/api/v1/billing/change-plan", { plan: "PRO", interval: "month", productId: "prod_cheap" }))).status).toBe(422);
 
-    const res = await changePlanRoute(post("/api/v1/billing/change-plan", { plan: "STANDARD", interval: "month" }));
+    // Without the consent to immediate start: refused before anything happens.
+    expect((await changePlanRoute(post("/api/v1/billing/change-plan", { plan: "STANDARD", interval: "month" }))).status).toBe(422);
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    const res = await changePlanRoute(post("/api/v1/billing/change-plan", { plan: "STANDARD", interval: "month", consentImmediateStart: true }));
     expect(res.status).toBe(200);
+    expect(await db.billingConsent.findFirst({ where: { userId, kind: "plan_change" } })).toMatchObject({ plan: "STANDARD", interval: "month" });
     const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe(`https://test-api.creem.io/v1/subscriptions/${subId}/upgrade`);
     expect(JSON.parse(String(init.body))).toEqual({ product_id: "prod_std_m", update_behavior: "proration-charge-immediately" });
@@ -153,9 +159,9 @@ describe("Step 8.5 — billing actions", () => {
     const { userId } = await subscriber("down", "STANDARD", "year");
     mockActor = actorFor(userId);
     for (const [body, status, code] of [
-      [{ plan: "LITE", interval: "year" }, 422, "plan_change_not_supported"],
-      [{ plan: "PRO", interval: "month" }, 422, "plan_change_not_supported"],
-      [{ plan: "STANDARD", interval: "year" }, 409, "same_plan"],
+      [{ plan: "LITE", interval: "year", consentImmediateStart: true }, 422, "plan_change_not_supported"],
+      [{ plan: "PRO", interval: "month", consentImmediateStart: true }, 422, "plan_change_not_supported"],
+      [{ plan: "STANDARD", interval: "year", consentImmediateStart: true }, 409, "same_plan"],
     ] as const) {
       const res = await changePlanRoute(post("/api/v1/billing/change-plan", body));
       expect(res.status).toBe(status);
@@ -169,7 +175,7 @@ describe("Step 8.5 — billing actions", () => {
     ids.push(userId);
     await db.user.create({ data: { id: userId, email: `${userId}@example.com`, name: userId, emailVerified: true } });
     mockActor = actorFor(userId);
-    expect((await changePlanRoute(post("/api/v1/billing/change-plan", { plan: "PRO", interval: "month" }))).status).toBe(404);
+    expect((await changePlanRoute(post("/api/v1/billing/change-plan", { plan: "PRO", interval: "month", consentImmediateStart: true }))).status).toBe(404);
     expect((await resumeRoute(post("/api/v1/billing/resume"))).status).toBe(404);
     expect((await cancelRoute(post("/api/v1/billing/cancel", { atPeriodEnd: true }))).status).toBe(404);
     expect(fetchMock).not.toHaveBeenCalled();
@@ -190,7 +196,7 @@ describe("Step 8.5 — billing actions", () => {
     });
 
     // A plan change waits until the cancellation is undone.
-    expect((await changePlanRoute(post("/api/v1/billing/change-plan", { plan: "PRO", interval: "year" }))).status).toBe(409);
+    expect((await changePlanRoute(post("/api/v1/billing/change-plan", { plan: "PRO", interval: "year", consentImmediateStart: true }))).status).toBe(409);
 
     fetchMock.mockClear();
     expect((await resumeRoute(post("/api/v1/billing/resume"))).status).toBe(200);

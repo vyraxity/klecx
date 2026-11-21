@@ -74,6 +74,7 @@ model User {
   memberLimitGrace     MemberLimitGrace?
   subscription         Subscription?
   billingCheckouts     BillingCheckout[]
+  billingConsents      BillingConsent[]
   annotationMentions   AnnotationMention[]
   workspaceNotes       WorkspaceNote[]     @relation("WorkspaceNoteCreator")
   documentRevisionsEdited DocumentRevision[]
@@ -1003,6 +1004,29 @@ model BillingEvent {
   @@unique([provider, providerEventId])
   @@index([userId, receivedAt])
   @@map("billing_events")
+}
+
+/// Consent to immediate start of a paid plan (Step 8.5): the person asked for
+/// the service to start at once and acknowledged losing the statutory 14-day
+/// withdrawal right where it applies (EU/UK). One row per checkout or upgrade,
+/// kept as evidence for refund requests and disputes.
+model BillingConsent {
+  id         String   @id @default(uuid(7))
+  userId     String   @map("user_id")
+  /// "checkout" | "plan_change"
+  kind       String
+  plan       PlanKey
+  /// "month" | "year"
+  interval   String
+  /// Version of the consent wording shown (`CHECKOUT_CONSENT_VERSION`).
+  version    String
+  /// Our checkout id (`BillingCheckout.id`) for a checkout.
+  checkoutId String?  @map("checkout_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("billing_consents")
 }
 
 /// A hosted checkout we started (Step 8.3). Its id is the `request_id` sent to

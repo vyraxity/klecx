@@ -10,6 +10,7 @@ import { CHECKOUT_SUCCESS_PATH } from "@/lib/billing/links";
 import type { CheckoutInput, MySubscription } from "@/lib/schemas/billing";
 import { PLANS } from "@/server/billing/plans";
 import { planChangeKind } from "@/lib/billing/plan-changes";
+import { CHECKOUT_CONSENT_VERSION } from "@/lib/billing/consent";
 import { ensureCurrentGrantForUser } from "@/server/billing/grants";
 import { addPlanCreditsInTx, ensureCreditAccountInTx } from "@/server/services/credits";
 import { applyMemberLimitForPlanChange } from "@/server/services/member-limits";
@@ -107,9 +108,21 @@ export async function startCheckout(
   // Recorded before the provider call: its id comes back on the webhooks as
   // `request_id` and ties the payment to this person (Step 8.3).
   const checkoutRequestId = randomUUID();
-  await db.billingCheckout.create({
-    data: { id: checkoutRequestId, userId, plan: input.plan, interval: input.interval },
-  });
+  await db.$transaction([
+    db.billingCheckout.create({
+      data: { id: checkoutRequestId, userId, plan: input.plan, interval: input.interval },
+    }),
+    db.billingConsent.create({
+      data: {
+        userId,
+        kind: "checkout",
+        plan: input.plan,
+        interval: input.interval,
+        version: CHECKOUT_CONSENT_VERSION,
+        checkoutId: checkoutRequestId,
+      },
+    }),
+  ]);
   const { url, checkoutId } = await providerCall(requestId, "checkout", () =>
     provider.createCheckout({
       userId,
@@ -198,15 +211,19 @@ export async function changePlan(
     throw Errors.conflict("Resume the subscription before changing plan", "cancel_scheduled");
   }
   const current = { plan: sub.plan, interval: sub.interval === "year" ? ("year" as const) : ("month" as const) };
-  const kind = planChangeKind(current, input);
+  const target = { plan: input.plan, interval: input.interval };
+  const kind = planChangeKind(current, target);
   if (kind === "same") throw Errors.conflict("This is already your plan", "same_plan");
   if (kind !== "upgrade") {
     throw Errors.unprocessable("Only upgrades can be made here", "plan_change_not_supported");
   }
 
   const provider = requireProvider(requestId, "change_plan");
+  await db.billingConsent.create({
+    data: { userId, kind: "plan_change", plan: input.plan, interval: input.interval, version: CHECKOUT_CONSENT_VERSION },
+  });
   await providerCall(requestId, "change_plan", () =>
-    provider.changeSubscriptionPlan(sub.providerSubscriptionId!, input)
+    provider.changeSubscriptionPlan(sub.providerSubscriptionId!, target)
   );
 
   const extra = Math.max(0, PLANS[input.plan].credits - PLANS[current.plan].credits);

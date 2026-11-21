@@ -1385,6 +1385,7 @@
           "paragraphs": [
             "Paid plans are sold by our payment partner, Creem, which acts as the merchant of record: Creem is the seller of the subscription, processes your payment and handles invoices and sales taxes. Its terms also apply to your purchase.",
             "Prices are shown in USD without taxes. Applicable sales taxes (such as VAT or GST) are calculated and added at checkout by our payment partner.",
+            "Your plan starts as soon as the payment is confirmed. Before paying, you ask us to start the service immediately and acknowledge that, once it has started, you lose any statutory right to withdraw from the purchase within 14 days (for example as a consumer in the EU or UK). This doesn't affect the refunds described below.",
             "Subscriptions renew automatically at the end of each period until you cancel. You can cancel at any time in Settings → Plan & billing; your plan stays active until the end of the period you have paid for. Cancelling in our payment partner's customer portal ends the plan immediately.",
             "You can upgrade at any time in Settings → Plan & billing: the new plan starts immediately, the prorated difference for the rest of the period is charged at once, and the extra credits of the new plan are added. To move to a smaller plan or to monthly billing, cancel and subscribe to the new plan when the current period ends.",
             "Refunds: new subscribers get a full refund within 14 days of their first payment if they have used less than 20 % of the credits of that period (once per customer). A renewal is refunded within 7 days if you haven't used any credits since it renewed. Duplicate charges and billing errors are always refunded. A full refund ends the paid plan immediately and removes the unused credits of that payment. To ask for a refund, use Request a refund in Settings → Plan & billing, or write to {billingEmail}.",
@@ -3293,6 +3294,11 @@
       "body": "Ask us and we'll check it against the refund policy.",
       "policyLink": "Read the refund policy",
       "action": "Request a refund"
+    },
+    "consent": {
+      "label": "I want my plan to start right away. I understand that once it has started I lose any legal right to cancel within 14 days and get my money back (for example in the EU or UK). The Klecx refund policy still applies.",
+      "policyLink": "Refund policy",
+      "required": "Tick the box above to continue."
     }
   },
   "UpgradeDialog": {

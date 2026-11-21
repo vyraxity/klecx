@@ -114,9 +114,17 @@ describe("Step 8.5 — Settings → Billing", () => {
     const dialog = await screen.findByRole("dialog");
     expect(within(dialog).queryByText("Lite")).not.toBeInTheDocument();
     expect(within(dialog).getByText("Pro")).toBeInTheDocument();
-    fireEvent.click(within(dialog).getAllByRole("button", { name: "Upgrade" })[0]!);
+    // Nothing can be picked before the consent to immediate start is ticked.
+    const upgrade = within(dialog).getAllByRole("button", { name: "Upgrade" })[0]!;
+    expect(upgrade).toBeDisabled();
+    fireEvent.click(within(dialog).getByRole("checkbox"));
+    fireEvent.click(upgrade);
     await waitFor(() =>
-      expect(calls.find((c) => c.url.includes("/api/v1/billing/change-plan"))?.body).toEqual({ plan: "PRO", interval: "month" })
+      expect(calls.find((c) => c.url.includes("/api/v1/billing/change-plan"))?.body).toEqual({
+        plan: "PRO",
+        interval: "month",
+        consentImmediateStart: true,
+      })
     );
   });
 
@@ -174,9 +182,17 @@ describe("Step 8.5 — Settings → Billing", () => {
     }) as unknown as typeof fetch;
     renderWithProviders(view({ intent: { plan: "LITE", interval: "year" } }));
     expect(await screen.findByText(/You chose Lite \(Yearly\)/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /Continue to payment/ }));
+    const go = screen.getByRole("button", { name: /Continue to payment/ });
+    expect(go).toBeDisabled();
+    expect(screen.getByText(/lose any legal right to cancel within 14 days/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(go);
     await waitFor(() => expect(assign).toHaveBeenCalledWith("https://checkout.example/x"));
-    expect(calls.find((c) => c.url.includes("/billing/checkout"))?.body).toEqual({ plan: "LITE", interval: "year" });
+    expect(calls.find((c) => c.url.includes("/billing/checkout"))?.body).toEqual({
+      plan: "LITE",
+      interval: "year",
+      consentImmediateStart: true,
+    });
   });
 });
 
@@ -198,6 +214,10 @@ describe("Step 8.5 — upgrade dialog", () => {
     });
     const dialog = await screen.findByRole("dialog");
     expect(dialog).toHaveTextContent("Upgrade to Lite");
+    const upgrade = within(dialog).getByRole("button", { name: "Upgrade to Lite" });
+    expect(upgrade).toBeDisabled();
+    fireEvent.click(within(dialog).getByRole("checkbox"));
+    expect(upgrade).toBeEnabled();
   });
 
   it("offers an upgrade once when ≥ 80 % of the credits are used", async () => {

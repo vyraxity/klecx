@@ -8,9 +8,13 @@ export const checkoutSchema = z
   .object({
     plan: z.enum(["LITE", "STANDARD", "PRO"]),
     interval: z.enum(["month", "year"]),
+    /** Step 8.5: the person asked for immediate start (`lib/billing/consent.ts`). Required. */
+    consentImmediateStart: z.literal(true),
   })
   .strict();
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
+/** A plan and billing period, without the consent flag (what the server maps to a product). */
+export type PlanTarget = Pick<CheckoutInput, "plan" | "interval">;
 
 /**
  * Cancelling from Klecx always takes effect at the end of the paid period.

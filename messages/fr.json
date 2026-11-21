@@ -1385,6 +1385,7 @@
           "paragraphs": [
             "Les forfaits payants sont vendus par notre partenaire de paiement, Creem, qui agit en tant que vendeur officiel (merchant of record) : Creem est le vendeur de l'abonnement, traite votre paiement et gère les factures et les taxes sur les ventes. Ses conditions s'appliquent aussi à votre achat.",
             "Les prix sont affichés en USD hors taxes. Les taxes sur les ventes applicables (comme la TVA) sont calculées et ajoutées au paiement par notre partenaire de paiement.",
+            "Votre forfait démarre dès que le paiement est confirmé. Avant de payer, vous nous demandez de démarrer le service immédiatement et reconnaissez qu'une fois démarré, vous perdez tout droit légal de rétractation de 14 jours (par exemple en tant que consommateur dans l'UE ou au Royaume-Uni). Cela n'affecte pas les remboursements décrits ci-dessous.",
             "Les abonnements se renouvellent automatiquement à la fin de chaque période jusqu'à leur résiliation. Vous pouvez résilier à tout moment dans Paramètres → Forfait et facturation ; votre forfait reste actif jusqu'à la fin de la période payée. Une résiliation dans le portail client de notre partenaire de paiement met fin au forfait immédiatement.",
             "Vous pouvez passer à un forfait supérieur à tout moment dans Paramètres → Forfait et facturation : le nouveau forfait démarre immédiatement, la différence au prorata pour le reste de la période est facturée aussitôt et les crédits supplémentaires du nouveau forfait sont ajoutés. Pour passer à un forfait inférieur ou à la facturation mensuelle, résiliez et abonnez-vous au nouveau forfait à la fin de la période en cours.",
             "Remboursements : les nouveaux abonnés sont intégralement remboursés dans les 14 jours suivant leur premier paiement s'ils ont utilisé moins de 20 % des crédits de cette période (une fois par client). Un renouvellement est remboursé dans les 7 jours si vous n'avez utilisé aucun crédit depuis. Les doubles prélèvements et les erreurs de facturation sont toujours remboursés. Un remboursement intégral met fin au forfait payant immédiatement et retire les crédits non utilisés de ce paiement. Pour demander un remboursement, utilisez Demander un remboursement dans Paramètres → Forfait et facturation, ou écrivez à {billingEmail}.",
@@ -3293,6 +3294,11 @@
       "body": "Demandez-le et nous le vérifierons selon la politique de remboursement.",
       "policyLink": "Lire la politique de remboursement",
       "action": "Demander un remboursement"
+    },
+    "consent": {
+      "label": "Je souhaite que mon forfait démarre immédiatement. Je comprends qu'une fois démarré, je perds tout droit légal de rétractation de 14 jours avec remboursement (par exemple dans l'UE ou au Royaume-Uni). La politique de remboursement de Klecx continue de s'appliquer.",
+      "policyLink": "Politique de remboursement",
+      "required": "Cochez la case ci-dessus pour continuer."
     }
   },
   "UpgradeDialog": {

@@ -25,6 +25,7 @@ import { REFUND_POLICY_HREF } from "@/lib/billing/links";
 import { upgradeOptions, type Interval, type PaidPlan } from "@/lib/billing/plan-changes";
 import { PLANS, type PlanKey } from "@/server/billing/plans";
 import { PlanPicker } from "./plan-picker";
+import { ConsentCheckbox } from "@/components/billing/consent-checkbox";
 
 /** How long the page waits for the webhook after a checkout before saying it takes longer than usual. */
 export const ACTIVATION_TIMEOUT_MS = 60_000;
@@ -82,6 +83,7 @@ export function BillingSettingsView({ userId, checkoutReturned, intent }: Billin
   const changePlan = useChangePlan(userId);
 
   const [cancelOpen, setCancelOpen] = React.useState(false);
+  const [intentConsent, setIntentConsent] = React.useState(false);
   const [pickerOpen, setPickerOpen] = React.useState(false);
 
   const showError = React.useCallback(
@@ -129,9 +131,11 @@ export function BillingSettingsView({ userId, checkoutReturned, intent }: Billin
   const current = sub && !isFree ? { plan: sub.plan, interval: sub.interval } : null;
   const options = current ? upgradeOptions(current) : upgradeOptions({ plan: "FREE", interval: "month" });
 
+  /** Called only once the consent to immediate start was ticked (plan picker, intent card). */
   const onPick = (target: { plan: PaidPlan; interval: Interval }) => {
+    const input = { ...target, consentImmediateStart: true as const };
     if (current) {
-      changePlan.mutate(target, {
+      changePlan.mutate(input, {
         onSuccess: () => {
           setPickerOpen(false);
           toast.success(t("changePlan.done", { plan: planName(target.plan) }));
@@ -139,7 +143,7 @@ export function BillingSettingsView({ userId, checkoutReturned, intent }: Billin
         onError: (err) => showError(err, "changePlan.failed"),
       });
     } else {
-      checkout.mutate(target, { onError: (err) => showError(err, "checkout.failed") });
+      checkout.mutate(input, { onError: (err) => showError(err, "checkout.failed") });
     }
   };
 
@@ -176,14 +180,15 @@ export function BillingSettingsView({ userId, checkoutReturned, intent }: Billin
 
       {/* Plan chosen before signing up */}
       {intent && isFree && billingEnabled && !waitingForActivation && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-accent/30 bg-surface p-4">
+        <div className="flex flex-col gap-3 rounded-xl border border-accent/30 bg-surface p-4">
           <div className="text-sm">
             <p className="font-semibold text-fg">
               {t("intent.title", { plan: planName(intent.plan), interval: t(`interval.${intent.interval}`) })}
             </p>
             <p className="text-xs text-muted mt-0.5">{t("taxNote")}</p>
           </div>
-          <Button size="sm" disabled={checkout.isPending} onClick={() => onPick(intent)}>
+          <ConsentCheckbox id="intent-consent" checked={intentConsent} onCheckedChange={setIntentConsent} />
+          <Button size="sm" className="self-start" disabled={checkout.isPending || !intentConsent} onClick={() => onPick(intent)}>
             {checkout.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
             {t("intent.action")}
           </Button>

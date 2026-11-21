@@ -20,7 +20,7 @@ How to use this file:
 ### 2. Dispute evidence
 - **Found:** Step 8.3.
 - **Why:** Creem asks the merchant for evidence (usage, dates). The admin needs the person's credit ledger, activity log and billing events for the disputed payment, exportable.
-- **Today:** `credit_ledger`, `activity_log`, `billing_events` tables only.
+- **Today:** `credit_ledger`, `activity_log`, `billing_events` and `billing_consents` (the consent to immediate start given before each checkout and upgrade, with the wording version; Step 8.5) tables only.
 
 ### 3. Add or remove credits by hand
 - **Found:** Steps 8.3 / 8.4.

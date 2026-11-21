@@ -1385,6 +1385,7 @@
           "paragraphs": [
             "Los planes de pago los vende nuestro socio de pagos, Creem, que actúa como comerciante registrado: Creem es el vendedor de la suscripción, procesa tu pago y gestiona las facturas y los impuestos sobre las ventas. Sus condiciones también se aplican a tu compra.",
             "Los precios se muestran en USD sin impuestos. Los impuestos sobre las ventas aplicables (como el IVA) los calcula y añade nuestro socio de pagos en el pago.",
+            "Tu plan empieza en cuanto se confirma el pago. Antes de pagar, nos pides que empecemos a prestar el servicio de inmediato y reconoces que, una vez empezado, pierdes cualquier derecho legal a desistir de la compra en 14 días (por ejemplo, como consumidor en la UE o el Reino Unido). Esto no afecta a los reembolsos que se describen a continuación.",
             "Las suscripciones se renuevan automáticamente al final de cada periodo hasta que las canceles. Puedes cancelar en cualquier momento en Configuración → Plan y facturación; tu plan sigue activo hasta el final del periodo que hayas pagado. Si cancelas en el portal de clientes de nuestro socio de pagos, el plan termina de inmediato.",
             "Puedes mejorar tu plan en cualquier momento en Configuración → Plan y facturación: el nuevo plan empieza de inmediato, se cobra al momento la diferencia prorrateada del resto del periodo y se añaden los créditos adicionales del nuevo plan. Para pasar a un plan más pequeño o a la facturación mensual, cancela y suscríbete al nuevo plan cuando termine el periodo actual.",
             "Reembolsos: los nuevos suscriptores reciben un reembolso completo en los 14 días siguientes a su primer pago si han usado menos del 20 % de los créditos de ese periodo (una vez por cliente). Una renovación se reembolsa en un plazo de 7 días si no has usado ningún crédito desde que se renovó. Los cargos duplicados y los errores de facturación siempre se reembolsan. Un reembolso completo termina el plan de pago de inmediato y retira los créditos no usados de ese pago. Para pedir un reembolso, usa Solicitar un reembolso en Configuración → Plan y facturación, o escribe a {billingEmail}.",
@@ -3293,6 +3294,11 @@
       "body": "Pídelo y lo revisaremos según la política de reembolsos.",
       "policyLink": "Leer la política de reembolsos",
       "action": "Solicitar un reembolso"
+    },
+    "consent": {
+      "label": "Quiero que mi plan empiece de inmediato. Entiendo que, una vez empezado, pierdo cualquier derecho legal a desistir en 14 días y recuperar mi dinero (por ejemplo, en la UE o el Reino Unido). La política de reembolsos de Klecx sigue aplicándose.",
+      "policyLink": "Política de reembolsos",
+      "required": "Marca la casilla de arriba para continuar."
     }
   },
   "UpgradeDialog": {

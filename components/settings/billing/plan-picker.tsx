@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { ConsentCheckbox } from "@/components/billing/consent-checkbox";
 import type { Interval, PaidPlan } from "@/lib/billing/plan-changes";
 import { PLANS, type PlanKey } from "@/server/billing/plans";
 
@@ -15,7 +16,7 @@ export interface PlanPickerProps {
   onOpenChange: (open: boolean) => void;
   /** The paid plan the person has now; null on Free (then every plan is offered and checkout starts). */
   current: { plan: PlanKey; interval: Interval } | null;
-  /** The plans that may be picked (`upgradeOptions`). */
+  /** The plans that may be picked (`upgradeOptions`). `onPick` is only called after the consent box is ticked. */
   options: Array<{ plan: PaidPlan; interval: Interval }>;
   pending: boolean;
   onPick: (target: { plan: PaidPlan; interval: Interval }) => void;
@@ -37,6 +38,7 @@ export function PlanPicker({ open, onOpenChange, current, options, pending, onPi
   );
   const shown = options.filter((o) => o.interval === interval);
   const [picked, setPicked] = React.useState<string | null>(null);
+  const [consent, setConsent] = React.useState(false);
 
   const price = (plan: PaidPlan, iv: Interval) =>
     format.number(iv === "year" ? PLANS[plan].priceYearly : PLANS[plan].priceMonthly, { style: "currency", currency: "USD" });
@@ -71,6 +73,8 @@ export function PlanPicker({ open, onOpenChange, current, options, pending, onPi
           </div>
         )}
 
+        <ConsentCheckbox id="plan-picker-consent" checked={consent} onCheckedChange={setConsent} />
+
         <ul className="flex flex-col gap-2">
           {shown.map((o) => {
             const id = `${o.plan}:${o.interval}`;
@@ -86,7 +90,8 @@ export function PlanPicker({ open, onOpenChange, current, options, pending, onPi
                 </div>
                 <Button
                   size="sm"
-                  disabled={pending}
+                  disabled={pending || !consent}
+                  title={consent ? undefined : t("consent.required")}
                   onClick={() => {
                     setPicked(id);
                     onPick(o);

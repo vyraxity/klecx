@@ -9,6 +9,7 @@ import { Check, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { gateMessage } from "@/components/ui/gated";
+import { ConsentCheckbox } from "@/components/billing/consent-checkbox";
 import { useSiteConfig } from "@/components/providers/site-config-provider";
 import { INSUFFICIENT_CREDITS_EVENT } from "@/lib/api/client";
 import { getApiErrorMessage } from "@/lib/api/error-message";
@@ -64,6 +65,7 @@ export function UpgradeDialogHost({ userId }: { userId: string }) {
   const checkout = useStartCheckout();
   const changePlan = useChangePlan(userId);
   const [reason, setReason] = React.useState<UpgradeReason | null>(null);
+  const [consent, setConsent] = React.useState(false);
 
   const currentPlan = data?.effectivePlan ?? "FREE";
   const currentInterval = data?.subscription?.interval ?? "month";
@@ -117,7 +119,7 @@ export function UpgradeDialogHost({ userId }: { userId: string }) {
   const pending = checkout.isPending || changePlan.isPending;
 
   const onUpgrade = () => {
-    const target = { plan: recommended, interval: currentInterval };
+    const target = { plan: recommended, interval: currentInterval, consentImmediateStart: true as const };
     if (currentPlan === "FREE") {
       checkout.mutate(target, {
         onError: (err) => toast.error(getApiErrorMessage(err, tRoot, tRoot("Billing.checkout.failed"))),
@@ -134,7 +136,15 @@ export function UpgradeDialogHost({ userId }: { userId: string }) {
   };
 
   return (
-    <Dialog open onOpenChange={(open) => !open && setReason(null)}>
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) {
+          setReason(null);
+          setConsent(false);
+        }
+      }}
+    >
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{t("title", { plan: tRoot(plan.name) })}</DialogTitle>
@@ -161,6 +171,10 @@ export function UpgradeDialogHost({ userId }: { userId: string }) {
           <p className="text-[11px] text-muted">{tRoot("Billing.taxNote")}</p>
         </div>
 
+        {(currentPlan === "FREE" || canChangeHere) && (
+          <ConsentCheckbox id="upgrade-dialog-consent" checked={consent} onCheckedChange={setConsent} />
+        )}
+
         <DialogFooter className="gap-2 sm:gap-2">
           <Button asChild variant="outline" size="sm">
             <Link href={PLAN_UPGRADE_HREF} onClick={() => setReason(null)}>
@@ -168,7 +182,7 @@ export function UpgradeDialogHost({ userId }: { userId: string }) {
             </Link>
           </Button>
           {currentPlan === "FREE" || canChangeHere ? (
-            <Button size="sm" disabled={pending} onClick={onUpgrade}>
+            <Button size="sm" disabled={pending || !consent} onClick={onUpgrade}>
               {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
               {t("upgradeTo", { plan: tRoot(plan.name) })}
             </Button>

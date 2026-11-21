@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import { Link, useRouter } from "@/i18n/navigation";
-import { toast } from "sonner";
-import { getApiErrorMessage, readApiError } from "@/lib/api/error-message";
+import { subscribeIntentPath } from "@/lib/billing/intent";
 import { PLAN_MANAGE_HREF } from "@/lib/billing/links";
 import { useTranslations } from "next-intl";
 import { Check, HelpCircle, Loader2 } from "lucide-react";
@@ -19,10 +18,10 @@ import { GROUNDING_SURCHARGE_CREDITS, MODEL_CATALOG } from "@/lib/ai/model-catal
 /**
  * A plan card's button (Step 8.5). A link to sign-up that carries the chosen
  * plan and period (`/auth/register?plan=lite&interval=year`), so it works
- * without JavaScript and for crawlers. For a paid plan, a click first tries
- * the checkout: signed in → the provider's checkout; already on a paid plan
- * (409 `subscription_exists`) → Settings → Billing; signed out (401) → the
- * sign-up link.
+ * without JavaScript and for crawlers. For a paid plan, a click first checks
+ * the session: signed in on Free → Settings → Billing with the plan chosen
+ * (where the consent to immediate start is asked before checkout); already on
+ * a paid plan → Settings → Billing; signed out (401) → the sign-up link.
  */
 function PlanCta({
   plan,
@@ -35,7 +34,6 @@ function PlanCta({
   popular: boolean;
   label: string;
 }) {
-  const tRoot = useTranslations();
   const router = useRouter();
   const [pending, setPending] = React.useState(false);
   const href = plan === "FREE" ? "/auth/register" : `/auth/register?plan=${plan.toLowerCase()}&interval=${interval}`;
@@ -45,28 +43,15 @@ function PlanCta({
     e.preventDefault();
     setPending(true);
     try {
-      const res = await fetch("/api/v1/billing/checkout", {
-        method: "POST",
-        headers: { "content-type": "application/json", accept: "application/json" },
-        body: JSON.stringify({ plan, interval }),
-      });
-      if (res.status === 401) {
+      const res = await fetch("/api/v1/me/subscription", { headers: { accept: "application/json" } });
+      if (!res.ok) {
         router.push(href);
         return;
       }
-      if (!res.ok) {
-        const error = await readApiError(res);
-        if (error.code === "subscription_exists") {
-          router.push(PLAN_MANAGE_HREF);
-          return;
-        }
-        toast.error(getApiErrorMessage(error, tRoot, tRoot("Billing.checkout.failed")));
-        return;
-      }
-      const { data } = (await res.json()) as { data: { url: string } };
-      window.location.assign(data.url);
+      const { data } = (await res.json()) as { data: { effectivePlan: PlanKey } };
+      router.push(data.effectivePlan === "FREE" ? subscribeIntentPath(plan, interval) : PLAN_MANAGE_HREF);
     } catch {
-      toast.error(tRoot("Billing.checkout.failed"));
+      router.push(href);
     } finally {
       setPending(false);
     }
