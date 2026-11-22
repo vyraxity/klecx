@@ -111,6 +111,7 @@ export default async function RootLayout({
       data-theme-pref={theme ?? undefined}
       data-theme={theme ? serverThemeAttribute(theme) : undefined}
       data-reduce-motion={display?.reduceMotion ? "true" : undefined}
+      data-density={display?.density === "compact" ? "compact" : undefined}
     >
       <head>
         {/* Resolves "system" (and an old next-themes choice) before paint. */}

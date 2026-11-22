@@ -30,3 +30,7 @@ export function serverThemeAttribute(theme: Theme): ResolvedTheme | undefined {
  * no cookie exists yet. Kept tiny and dependency-free.
  */
 export const THEME_INIT_SCRIPT = `(function(){try{var d=document.documentElement,p=d.getAttribute("data-theme-pref");if(!p){var l=localStorage.getItem("${LEGACY_THEME_STORAGE_KEY}");p=(l==="light"||l==="dark"||l==="system")?l:"system";d.setAttribute("data-theme-pref",p);}var t=p==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):p;d.setAttribute("data-theme",t);}catch(e){}})();`;
+
+/** Step 9.2: spacing density. "compact" tightens spacing from tablet width up (app/globals.css). */
+export const DENSITIES = ["comfortable", "compact"] as const;
+export type Density = (typeof DENSITIES)[number];

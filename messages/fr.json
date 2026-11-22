@@ -496,7 +496,15 @@
       "enterToSendOff": "Entrée ajoute une nouvelle ligne ; Ctrl + Entrée (⌘ + Entrée sur Mac) envoie.",
       "reduceMotion": "Réduire les animations",
       "reduceMotionHint": "Désactive les animations et les transitions. Désactivé, Klecx suit le réglage de votre appareil.",
-      "saveError": "Impossible d'enregistrer ce réglage. Réessayez."
+      "saveError": "Impossible d'enregistrer ce réglage. Réessayez.",
+      "densityTitle": "Densité",
+      "densityHint": "L'espace entre les éléments. Compacte s'applique sur tablettes et ordinateurs ; les téléphones gardent toujours l'espacement confortable.",
+      "density": {
+        "comfortable": "Confortable",
+        "comfortableHint": "Plus d'espace entre les éléments.",
+        "compact": "Compacte",
+        "compactHint": "Espacement réduit, plus de contenu à l'écran."
+      }
     },
     "support": {
       "title": "Assistance",

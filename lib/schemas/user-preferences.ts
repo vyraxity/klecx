@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { UI_LOCALES, AI_LANGUAGES } from "@/lib/locale";
-import { THEMES } from "@/lib/theme";
+import { DENSITIES, THEMES } from "@/lib/theme";
 
 /**
  * Step 9.2: what a person can change through `PATCH /api/v1/me/preferences`.
@@ -17,6 +17,7 @@ export const updatePreferencesSchema = z
     /** true = always reduce motion; null = follow the device. */
     reduceMotion: z.literal(true).nullable().optional(),
     onboardingDismissed: z.boolean().optional(),
+    density: z.enum(DENSITIES).optional(),
   })
   .strict();
 

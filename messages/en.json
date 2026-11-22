@@ -496,7 +496,15 @@
       "enterToSendOff": "Enter adds a new line; Ctrl + Enter (⌘ + Enter on Mac) sends.",
       "reduceMotion": "Reduce motion",
       "reduceMotionHint": "Turns off animations and transitions. When off, Klecx follows your device's setting.",
-      "saveError": "Couldn't save this setting. Try again."
+      "saveError": "Couldn't save this setting. Try again.",
+      "densityTitle": "Density",
+      "densityHint": "How much space there is between things. Compact applies on tablets and computers; phones always use the comfortable spacing.",
+      "density": {
+        "comfortable": "Comfortable",
+        "comfortableHint": "More room between items.",
+        "compact": "Compact",
+        "compactHint": "Tighter spacing, more on screen."
+      }
     },
     "support": {
       "title": "Support",

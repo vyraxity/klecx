@@ -62,9 +62,10 @@ describe("Step 9.2 — preferences model", () => {
       voiceId: null,
       voiceSpeed: 1,
       onboardingDismissed: false,
+      density: "comfortable",
     });
     expect(await db.userPreference.count({ where: { userId: B.id } })).toBe(0);
-    expect(await getDisplayPreferences(B.id)).toEqual({ theme: null, reduceMotion: false });
+    expect(await getDisplayPreferences(B.id)).toEqual({ theme: null, reduceMotion: false, density: "comfortable" });
   });
 
   it("saves theme, enter-to-send, reduced motion and the onboarding dismissal", async () => {
@@ -73,11 +74,12 @@ describe("Step 9.2 — preferences model", () => {
       enterToSend: false,
       reduceMotion: true,
       onboardingDismissed: true,
+      density: "compact",
     });
-    expect(out).toMatchObject({ theme: "dark", themeSaved: true, enterToSend: false, reduceMotion: true, onboardingDismissed: true });
+    expect(out).toMatchObject({ theme: "dark", themeSaved: true, enterToSend: false, reduceMotion: true, onboardingDismissed: true, density: "compact" });
     // Other fields keep their defaults.
     expect(out.webSearchEnabled).toBe(true);
-    expect(await getDisplayPreferences(A.id)).toEqual({ theme: "dark", reduceMotion: true });
+    expect(await getDisplayPreferences(A.id)).toEqual({ theme: "dark", reduceMotion: true, density: "compact" });
 
     const back = await updateUserPreferences(A.id, { reduceMotion: null, theme: "system" });
     expect(back).toMatchObject({ reduceMotion: null, theme: "system", themeSaved: true, enterToSend: false });
@@ -111,6 +113,7 @@ describe("Step 9.2 — /api/v1/me/preferences", () => {
     expect((await patchPrefs(req("PATCH", { theme: "sepia" }))).status).toBe(422);
     expect((await patchPrefs(req("PATCH", { voiceProvider: "x" }))).status).toBe(422);
     expect((await patchPrefs(req("PATCH", { reduceMotion: false }))).status).toBe(422);
+    expect((await patchPrefs(req("PATCH", { density: "tiny" }))).status).toBe(422);
   });
 
   it("GET returns the full object", async () => {
@@ -118,7 +121,7 @@ describe("Step 9.2 — /api/v1/me/preferences", () => {
     const { data } = await (await getPrefs(req("GET"))).json();
     expect(Object.keys(data).sort()).toEqual(
       [
-        "aiLanguage", "enterToSend", "onboardingDismissed", "reduceMotion", "theme", "themeSaved",
+        "aiLanguage", "density", "enterToSend", "onboardingDismissed", "reduceMotion", "theme", "themeSaved",
         "uiLocale", "updatedAt", "voiceId", "voiceProvider", "voiceSpeed", "webSearchEnabled",
       ].sort()
     );

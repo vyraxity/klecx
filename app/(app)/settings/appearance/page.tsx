@@ -4,6 +4,7 @@ import { requireActor } from "@/server/auth/session";
 import { getUserPreferences } from "@/server/services/user-preferences";
 import { ThemeCard } from "@/components/settings/appearance/theme-card";
 import { BehaviorCard } from "@/components/settings/appearance/behavior-card";
+import { DensityCard } from "@/components/settings/appearance/density-card";
 import { SettingsPageHeader } from "@/components/settings/settings-section";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -20,6 +21,7 @@ export default async function AppearanceSettingsPage() {
     <>
       <SettingsPageHeader title={t("title")} description={t("description")} />
       <ThemeCard />
+      <DensityCard userId={actor.userId} initialDensity={prefs.density} />
       <BehaviorCard
         userId={actor.userId}
         initialEnterToSend={prefs.enterToSend}

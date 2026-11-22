@@ -12,7 +12,7 @@ import {
 import { api } from "@/lib/api/client";
 import { queryKeys } from "./query-keys";
 import type { UpdatePreferencesInput } from "@/lib/schemas/user-preferences";
-import type { Theme } from "@/lib/theme";
+import type { Density, Theme } from "@/lib/theme";
 
 /** Step 9.2: the full object `GET /api/v1/me/preferences` returns (defaults applied). */
 export interface UserPreferencesDto {
@@ -27,6 +27,7 @@ export interface UserPreferencesDto {
   voiceId: string | null;
   voiceSpeed: number;
   onboardingDismissed: boolean;
+  density: Density;
 }
 
 export interface UserCreditsDto {

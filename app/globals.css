@@ -197,6 +197,15 @@
 /* The annotation highlight rules (CSS Custom Highlight API) are in
    lib/annotations/highlight-styles.ts, rendered by app/layout.tsx. */
 
+  /* Step 9.2: Settings → Appearance → Density. Every Tailwind spacing and size
+     utility is a multiple of --spacing, so this tightens the whole layout.
+     Only from tablet width up: phones keep full-size tap targets. */
+  @media (min-width: 768px) {
+    [data-density="compact"] {
+      --spacing: 0.21875rem;
+    }
+  }
+
   /* Step 9.2: Settings → Appearance → "Reduce motion" (always), on top of the device setting below. */
   [data-reduce-motion="true"] ::view-transition-group(*),
   [data-reduce-motion="true"] ::view-transition-old(*),

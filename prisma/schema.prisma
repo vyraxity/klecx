@@ -459,27 +459,34 @@ enum ThemePreference {
   DARK
 }
 
+/// Step 9.2: Settings → Appearance → Density (compact applies from tablet width up).
+enum DensityPreference {
+  COMFORTABLE
+  COMPACT
+}
+
 /// Step 9.2: a row is written only on the first change; reads apply the
 /// defaults (server/services/user-preferences.ts). Nullable fields mean
 /// "not chosen on the account".
 model UserPreference {
-  userId              String           @id @map("user_id")
-  uiLocale            String?          @map("ui_locale")
-  aiLanguage          String?          @map("ai_language")
-  webSearchEnabled    Boolean          @default(true) @map("web_search_enabled")
-  notificationPrefs   Json?            @map("notification_prefs")
+  userId              String            @id @map("user_id")
+  uiLocale            String?           @map("ui_locale")
+  aiLanguage          String?           @map("ai_language")
+  webSearchEnabled    Boolean           @default(true) @map("web_search_enabled")
+  notificationPrefs   Json?             @map("notification_prefs")
   /// null = never chosen on the account: the device's `theme` cookie decides.
   theme               ThemePreference?
-  enterToSend         Boolean          @default(true) @map("enter_to_send")
+  enterToSend         Boolean           @default(true) @map("enter_to_send")
   /// null = follow the device's setting; true = always reduce motion.
-  reduceMotion        Boolean?         @map("reduce_motion")
+  reduceMotion        Boolean?          @map("reduce_motion")
   /// Step 9.4 (read-aloud) uses these; not writable before then.
-  voiceProvider       String?          @map("voice_provider")
-  voiceId             String?          @map("voice_id")
-  voiceSpeed          Float            @default(1) @map("voice_speed")
-  onboardingDismissed Boolean          @default(false) @map("onboarding_dismissed")
-  updatedAt           DateTime         @updatedAt @map("updated_at")
-  user                User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  voiceProvider       String?           @map("voice_provider")
+  voiceId             String?           @map("voice_id")
+  voiceSpeed          Float             @default(1) @map("voice_speed")
+  onboardingDismissed Boolean           @default(false) @map("onboarding_dismissed")
+  density             DensityPreference @default(COMFORTABLE)
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_preferences")
 }
