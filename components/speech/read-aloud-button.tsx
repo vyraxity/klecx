@@ -45,6 +45,29 @@ export function ReadAloudButton({
   const error = useReadAloud((s) => s.error);
   const truncated = useReadAloud((s) => s.truncated);
   const { start, pause, resume, stop, skip, setSpeed } = useReadAloud.getState();
+  const showPlayer = active && status !== "idle";
+
+  // Focus follows the swap between the button and the player (keyboard users):
+  // pressing Read aloud moves focus to Pause; when reading stops or ends,
+  // focus comes back to Read aloud — but only if focus was ours to move.
+  const readButtonRef = React.useRef<HTMLButtonElement>(null);
+  const playPauseRef = React.useRef<HTMLButtonElement>(null);
+  const groupRef = React.useRef<HTMLDivElement>(null);
+  const moveFocusToPlayer = React.useRef(false);
+  const playerHadFocus = React.useRef(false);
+  const wasShown = React.useRef(showPlayer);
+  React.useLayoutEffect(() => {
+    if (showPlayer && !wasShown.current && moveFocusToPlayer.current) {
+      playPauseRef.current?.focus();
+      moveFocusToPlayer.current = false;
+    }
+    if (!showPlayer && wasShown.current && playerHadFocus.current) {
+      const focusLost = !document.activeElement || document.activeElement === document.body;
+      if (focusLost) readButtonRef.current?.focus();
+      playerHadFocus.current = false;
+    }
+    wasShown.current = showPlayer;
+  }, [showPlayer]);
 
   // Say once why the voice changed or why reading stopped.
   const lastNotice = React.useRef<string | null>(null);
@@ -60,13 +83,17 @@ export function ReadAloudButton({
     else if (truncated) toast.info(t("truncated"));
   }, [active, fallback, error, truncated, t]);
 
-  if (!active || status === "idle") {
+  if (!showPlayer) {
     return (
       <Button
+        ref={readButtonRef}
         type="button"
         variant="ghost"
         size="sm"
-        onClick={() => void start(target)}
+        onClick={() => {
+          moveFocusToPlayer.current = true;
+          void start(target);
+        }}
         aria-label={t("readAloud")}
         title={compact ? t("readAloud") : undefined}
         className={cn("text-muted hover:text-fg h-8 px-2 text-xs", className)}
@@ -81,7 +108,24 @@ export function ReadAloudButton({
   const playing = status === "playing";
   return (
     <div
+      ref={groupRef}
       role="group"
+      onFocus={() => {
+        playerHadFocus.current = true;
+      }}
+      onBlur={(e) => {
+        // Still ours while focus moves within the player or into its speed menu.
+        const next = e.relatedTarget as Node | null;
+        if (next && !groupRef.current?.contains(next) && !(next as HTMLElement).closest?.("[data-radix-popper-content-wrapper]")) {
+          playerHadFocus.current = false;
+        }
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          e.stopPropagation();
+          stop();
+        }
+      }}
       aria-label={t("player")}
       className={cn("inline-flex items-center gap-0.5 rounded-lg border border-border bg-surface-2 px-1", className)}
       data-testid="read-aloud-player"
@@ -91,6 +135,7 @@ export function ReadAloudButton({
         <SkipBack className="h-3.5 w-3.5" aria-hidden />
       </Button>
       <Button
+        ref={playPauseRef}
         type="button"
         variant="ghost"
         size="icon"
