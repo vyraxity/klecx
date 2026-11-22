@@ -7,3 +7,10 @@ f3810472137746689a4067d5bb3ad6ce94f83e61:.gitleaksignore:generic-api-key:2
 # Step 8.3: a made-up CREEM_WEBHOOK_SECRET in the Step 8.2 env-validation test matched the
 # generic-api-key rule; it is a test fixture, not a real secret.
 5c568fae8cb9d7763d0fe99da04ba6ec80c6cdd7:__tests__/step-8-2-billing-provider.test.ts:generic-api-key:103
+# Step 8.6 (2026-11-22): made-up keys in tests (RESEND_API_KEY "re_test_123456789" in the env
+# tests; a fake "AIzaSyD-secret-key-12345" checking that API keys never leak into error messages).
+5eda8d1ecf16cd0969043781924e1b682ce60556:__tests__/unit/env.test.ts:generic-api-key:15
+985191747e27e748ad9d80e0f7c4b1e33af57c34:__tests__/unit/env.test.ts:generic-api-key:15
+3eb90bc65ebad1d94a92b8618082082670ad1690:__tests__/unit/env.test.ts:generic-api-key:15
+09af68f9e8a5be1c4888ce7ad832fc6302c48fd8:__tests__/ai/errors.test.ts:generic-api-key:39
+f72ba7211a64e35a195ad5d0ba28108dacbba11c:__tests__/unit/env.test.ts:generic-api-key:15

@@ -125,10 +125,10 @@ export function PricingView() {
                 </tr>
                 <tr>
                   <td className="p-4 font-medium text-fg">{tc("responseVersions")}</td>
-                  <td className="p-4 text-success">{tc("unlimited")}</td>
-                  <td className="p-4 text-success">{tc("unlimited")}</td>
-                  <td className="p-4 text-success">{tc("unlimited")}</td>
-                  <td className="p-4 text-success">{tc("unlimited")}</td>
+                  <td className="p-4 text-success">{tc("included")}</td>
+                  <td className="p-4 text-success">{tc("included")}</td>
+                  <td className="p-4 text-success">{tc("included")}</td>
+                  <td className="p-4 text-success">{tc("included")}</td>
                 </tr>
                 {/* Cancellation exists only once billing is live (rule 9). */}
                 {billingEnabled && (

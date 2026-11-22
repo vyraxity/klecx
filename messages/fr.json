@@ -254,7 +254,8 @@
       "FAILED_TO_CREATE_SESSION": "La connexion a échoué. Veuillez réessayer.",
       "SOCIAL_ACCOUNT_ALREADY_LINKED": "Ce compte de connexion est déjà lié à un autre utilisateur.",
       "CREDENTIAL_ACCOUNT_NOT_FOUND": "Ce compte n'utilise pas de mot de passe. Connectez-vous avec votre fournisseur.",
-      "DISPOSABLE_EMAIL": "Ce service de messagerie n'est pas accepté. Inscrivez-vous avec une adresse e-mail permanente."
+      "DISPOSABLE_EMAIL": "Ce service de messagerie n'est pas accepté. Inscrivez-vous avec une adresse e-mail permanente.",
+      "ACCOUNT_SUSPENDED": "Ce compte est suspendu. Si vous pensez qu'il s'agit d'une erreur, contactez notre équipe d'assistance."
     },
     "planIntent": "Vous avez choisi {plan} ({interval}). Après avoir confirmé votre e-mail, vous passerez au paiement."
   },
@@ -1210,12 +1211,12 @@
         "markdownOnly": "Markdown",
         "allExportFormats": "MD, PDF, DOCX",
         "collaborators": "{count, plural, =0 {Aucun} one {# personne} other {# personnes}}",
-        "unlimited": "Illimitées",
         "capCredits": "{count, plural, one {# crédit} other {# crédits}}",
         "notApplicable": "—",
         "anytime": "À tout moment, depuis les Paramètres",
         "filesCount": "{count, plural, one {# fichier} other {# fichiers}} ({mb} Mo)",
-        "turnsCount": "{count, plural, one {# échange} other {# échanges}}"
+        "turnsCount": "{count, plural, one {# échange} other {# échanges}}",
+        "included": "Incluses"
       },
       "priceFormat": "${price}",
       "creditsCount": "{count, plural, one {# crédit} other {# crédits}}",
@@ -1239,12 +1240,12 @@
         },
         "cancel": {
           "q": "Puis-je annuler mon abonnement à tout moment ?",
-          "a": "Oui — Paramètres → Facturation → Annuler. Votre forfait reste actif jusqu'à la fin de la période payée.",
+          "a": "Oui — Paramètres → Forfait et facturation → Résilier le forfait. Votre forfait reste actif jusqu'à la fin de la période payée. (Une résiliation dans le portail de notre partenaire de paiement y met fin immédiatement.)",
           "aLaunchingSoon": "Les forfaits payants seront bientôt disponibles. Dès leur lancement, vous pourrez annuler à tout moment depuis les Paramètres, et votre forfait restera actif jusqu'à la fin de la période payée."
         },
         "refund": {
           "q": "Quelle est votre politique de remboursement ?",
-          "a": "Annulez à tout moment et conservez votre forfait jusqu'au terme de la période. Les nouveaux abonnés bénéficient d'un remboursement intégral sous 14 jours s'ils ont utilisé moins de 20 % des crédits du forfait. Oubli d'annuler ? Les renouvellements sont remboursés sous 7 jours si aucun crédit n'a été utilisé depuis. Les débits en double et erreurs de facturation sont toujours remboursés.",
+          "a": "Résiliez à tout moment et gardez votre forfait jusqu'à la fin de la période. Les nouveaux abonnés sont intégralement remboursés dans les 14 jours suivant leur premier paiement s'ils ont utilisé moins de 20 % de ses crédits (une fois par client). Oubli de résilier ? Les renouvellements sont remboursés sous 7 jours si aucun crédit n'a été utilisé depuis. Les doubles prélèvements et erreurs de facturation sont toujours remboursés. Un remboursement intégral met fin au forfait payant immédiatement. Pour le demander, utilisez Demander un remboursement dans Paramètres → Forfait et facturation.",
           "aLaunchingSoon": "Les forfaits payants seront lancés prochainement. Dès l'ouverture de la facturation, chaque forfait disposera de modalités claires d'annulation et de remboursement."
         },
         "models": {
@@ -1323,7 +1324,7 @@
     }
   },
   "Legal": {
-    "updatedAt": "2026-11-21",
+    "updatedAt": "2026-11-22",
     "lastUpdated": "Dernière mise à jour : {date}",
     "contents": "Sommaire",
     "languageClause": "Ce document est proposé en plusieurs langues par commodité. En cas de contradiction entre les versions, la version anglaise prévaut.",
@@ -1704,7 +1705,7 @@
           "id": "reporting",
           "heading": "5. Signaler un abus",
           "paragraphs": [
-            "Pour signaler un contenu ou un comportement contraire à cette politique, y compris un lien public, écrivez à {abuseEmail} avec un lien ou une description et la raison pour laquelle vous pensez qu'il l'enfreint. Pour les réclamations relatives au droit d'auteur, voir nos Conditions d'utilisation. Nous examinons les signalements rapidement."
+            "Pour signaler un contenu ou un comportement contraire à cette politique, y compris un lien public, écrivez à {abuseEmail} avec un lien ou une description et la raison pour laquelle vous pensez qu'il l'enfreint. Pour les réclamations relatives au droit d'auteur, voir nos Conditions d'utilisation. Nous examinons chaque signalement et répondons sous 3 jours ouvrés."
           ]
         }
       ]
@@ -2065,7 +2066,9 @@
       "plan_change_not_supported": "Seules les améliorations sont possibles ici. Pour passer à un forfait inférieur, résiliez puis réabonnez-vous à la fin de la période.",
       "same_plan": "C'est déjà votre forfait.",
       "cancel_scheduled": "Votre forfait va se terminer. Gardez-le d'abord, puis changez-le.",
-      "nothing_to_resume": "Il n'y a aucune résiliation à annuler."
+      "nothing_to_resume": "Il n'y a aucune résiliation à annuler.",
+      "credits_frozen": "La génération est suspendue pour ce compte. Veuillez contacter l'assistance.",
+      "admin_target": "Un administrateur ne peut pas être suspendu ni gelé."
     }
   },
   "Gates": {

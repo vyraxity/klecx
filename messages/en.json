@@ -254,7 +254,8 @@
       "FAILED_TO_CREATE_SESSION": "You couldn't be signed in. Please try again.",
       "SOCIAL_ACCOUNT_ALREADY_LINKED": "This sign-in account is already linked to another user.",
       "CREDENTIAL_ACCOUNT_NOT_FOUND": "This account doesn't use a password. Sign in with your provider instead.",
-      "DISPOSABLE_EMAIL": "This email service isn't accepted. Please sign up with a permanent email address."
+      "DISPOSABLE_EMAIL": "This email service isn't accepted. Please sign up with a permanent email address.",
+      "ACCOUNT_SUSPENDED": "This account is suspended. If you think this is a mistake, contact our support team."
     },
     "planIntent": "You chose {plan} ({interval}). After you confirm your email, you'll continue to payment."
   },
@@ -1210,12 +1211,12 @@
         "markdownOnly": "Markdown",
         "allExportFormats": "MD, PDF, DOCX",
         "collaborators": "{count, plural, =0 {None} one {# person} other {# people}}",
-        "unlimited": "Unlimited",
         "capCredits": "{count, plural, one {# credit} other {# credits}}",
         "notApplicable": "—",
         "anytime": "Anytime, from Settings",
         "filesCount": "{count, plural, one {# file} other {# files}} ({mb} MB)",
-        "turnsCount": "{count, plural, one {# turn} other {# turns}}"
+        "turnsCount": "{count, plural, one {# turn} other {# turns}}",
+        "included": "Included"
       },
       "priceFormat": "${price}",
       "creditsCount": "{count, plural, one {# Credit} other {# Credits}}",
@@ -1239,12 +1240,12 @@
         },
         "cancel": {
           "q": "Can I cancel my subscription anytime?",
-          "a": "Yes — Settings → Billing → Cancel. Your plan stays active until the end of the paid period.",
+          "a": "Yes — Settings → Plan & billing → Cancel plan. Your plan stays active until the end of the paid period. (Cancelling in our payment partner's portal ends it immediately.)",
           "aLaunchingSoon": "Paid plans are launching soon. When they do, you'll be able to cancel anytime from Settings, and your plan will stay active until the end of the period you paid for."
         },
         "refund": {
           "q": "What is your refund policy?",
-          "a": "Cancel anytime and keep your plan until the end of the period. New subscribers get a full refund within 14 days of their first payment if they've used less than 20% of its credits. Forgot to cancel? Renewals are refunded within 7 days if you haven't used any credits since. Duplicate charges and billing errors are always refunded.",
+          "a": "Cancel anytime and keep your plan until the end of the period. New subscribers get a full refund within 14 days of their first payment if they've used less than 20% of its credits (once per customer). Forgot to cancel? Renewals are refunded within 7 days if you haven't used any credits since. Duplicate charges and billing errors are always refunded. A full refund ends the paid plan immediately. To ask for one, use Request a refund in Settings → Plan & billing.",
           "aLaunchingSoon": "Paid plans and subscriptions are launching soon. When billing launches, all plans include clear cancellation and refund terms."
         },
         "models": {
@@ -1323,7 +1324,7 @@
     }
   },
   "Legal": {
-    "updatedAt": "2026-11-21",
+    "updatedAt": "2026-11-22",
     "lastUpdated": "Last updated {date}",
     "contents": "Contents",
     "languageClause": "This document is available in several languages for convenience. If there is any conflict between language versions, the English version prevails.",
@@ -1704,7 +1705,7 @@
           "id": "reporting",
           "heading": "5. Reporting abuse",
           "paragraphs": [
-            "To report content or behaviour that breaks this policy, including a public share link, write to {abuseEmail} with a link or description and why you think it breaks the policy. For copyright complaints, see our Terms of Service. We review reports promptly."
+            "To report content or behaviour that breaks this policy, including a public share link, write to {abuseEmail} with a link or description and why you think it breaks the policy. For copyright complaints, see our Terms of Service. We review every report and reply within 3 business days."
           ]
         }
       ]
@@ -2065,7 +2066,9 @@
       "plan_change_not_supported": "Only upgrades can be made here. To move to a smaller plan, cancel and subscribe again when the period ends.",
       "same_plan": "This is already your plan.",
       "cancel_scheduled": "Your plan is set to end. Keep it first, then change it.",
-      "nothing_to_resume": "There's no cancellation to undo."
+      "nothing_to_resume": "There's no cancellation to undo.",
+      "credits_frozen": "Generation is paused for this account. Please contact support.",
+      "admin_target": "Admins can't be suspended or frozen."
     }
   },
   "Gates": {
