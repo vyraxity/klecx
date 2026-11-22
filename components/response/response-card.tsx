@@ -12,7 +12,6 @@ import {
   Check,
   RotateCcw,
   Edit2,
-  Volume2,
   Share2,
   FileDown,
   MoreHorizontal,
@@ -49,6 +48,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ReadAloudButton } from "@/components/speech/read-aloud-button";
+import type { SpeechTarget } from "@/lib/schemas/speech";
 import { AnswerBody } from "./answer-body";
 import { PromptAttachmentPreview } from "./prompt-attachment-preview";
 import { EditResponse } from "./edit-response";
@@ -303,6 +304,7 @@ export function ResponseCard({
     reviewVersionId ? s.drafts[reviewVersionId] : undefined
   );
   const showsDraft = Boolean(draft) && viewMode === "edited";
+
   const baseRevision =
     (activeVer?.latestEdit as { revision?: number } | null | undefined)?.revision ?? null;
   const quickFix = React.useMemo(
@@ -348,6 +350,22 @@ export function ResponseCard({
     (displayedContent.startsWith("http") &&
       (displayedContent.includes("cloudinary") ||
         displayedContent.match(/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i) !== null));
+
+  // Step 9.4: read aloud exactly the text on screen (original or the saved edit).
+  const readAloudSource: "ORIGINAL" | "EDIT" = viewMode === "original" ? "ORIGINAL" : (hasEdits ? "EDIT" : "ORIGINAL");
+  const readAloudVersionId = activeVer?.id || response.activeVersionId || null;
+  const readAloudTarget: SpeechTarget | null =
+    readAloudVersionId && !isImageResponse
+      ? {
+          type: "RESPONSE_VERSION",
+          id: readAloudVersionId,
+          source: readAloudSource,
+          ...(readAloudSource === "EDIT" &&
+          (activeVer?.latestEdit as { revision?: number } | null)?.revision !== undefined
+            ? { editRevision: (activeVer?.latestEdit as { revision?: number } | null)!.revision }
+            : {}),
+        }
+      : null;
 
   // Resolve signed URL when displayedContent is an attachment ID (Step 5.4)
   const imageAttachmentId =
@@ -937,7 +955,7 @@ export function ResponseCard({
               responseId={response.id}
               quickFix={quickFix}
               unsaved={showsDraft}
-              contentSource={viewMode === "original" ? "ORIGINAL" : (hasEdits ? "EDIT" : "ORIGINAL")}
+              contentSource={readAloudSource}
               editRevision={
                 viewMode === "edited" && (activeVer?.latestEdit as { revision?: number } | null)?.revision !== undefined
                   ? (activeVer?.latestEdit as { revision?: number } | null)?.revision
@@ -1076,24 +1094,10 @@ export function ResponseCard({
                     </Button>
                   )}
 
-                  {/* Read Aloud (Step 9.4 placeholder with tooltip) */}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        disabled
-                        className="text-fg-muted/50 hidden h-8 cursor-not-allowed px-2 text-xs sm:inline-flex"
-                      >
-                        <Volume2 className="mr-1 h-3.5 w-3.5" />
-                        <span>{t("readAloud")}</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top">
-                      <p className="text-xs">{t("readAloudSoon")}</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  {/* Read aloud (Step 9.4): the text shown, original or saved edit. */}
+                  {readAloudTarget && !showsDraft && (
+                    <ReadAloudButton target={readAloudTarget} />
+                  )}
 
                   {/* Share (Step 7.6) */}
                   {canShare ? (

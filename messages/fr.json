@@ -386,7 +386,8 @@
       "notifications": "Notifications",
       "billing": "Forfait et facturation",
       "support": "Assistance",
-      "usage": "Utilisation"
+      "usage": "Utilisation",
+      "voice": "Voix"
     },
     "errors": {
       "pageTitle": "Impossible de charger cette page",
@@ -534,6 +535,59 @@
       "copyDiagnostics": "Copier le diagnostic",
       "diagnosticsCopied": "Diagnostic copié",
       "diagnosticsCopyError": "Impossible de copier. Votre navigateur ne le permet peut-être pas."
+    },
+    "voice": {
+      "title": "Voix",
+      "description": "La façon dont Klecx lit les réponses et les documents à voix haute.",
+      "loadError": "Impossible de charger vos réglages de voix.",
+      "retry": "Réessayer",
+      "saveError": "Impossible d'enregistrer ce réglage. Réessayez.",
+      "previewError": "Impossible de lire l'extrait. Réessayez.",
+      "providerTitle": "Type de voix",
+      "providerHint": "Les voix naturelles sonnent humaines et utilisent des crédits ; les voix de votre appareil sont gratuites.",
+      "providers": {
+        "natural": "Voix naturelles",
+        "naturalHint": "Des voix réalistes. Elles utilisent des crédits la première fois qu'un texte est lu ; la réécoute est gratuite.",
+        "browser": "Voix de l'appareil",
+        "browserHint": "Les voix intégrées à votre navigateur ou appareil. Gratuites, qualité variable."
+      },
+      "naturalPlan": "Les voix naturelles sont incluses dans les forfaits Lite, Standard et Pro.",
+      "seePlans": "Voir les forfaits",
+      "usedToday": "Voix naturelles aujourd'hui : {used} sur {limit} min.",
+      "voiceTitle": "Voix",
+      "voiceHint": "Chaque voix naturelle lit toutes les langues. Appuyez sur lecture pour écouter un extrait.",
+      "voiceName": "Voix {number}",
+      "styles": {
+        "bright": "Lumineuse",
+        "upbeat": "Enjouée",
+        "informative": "Informative",
+        "firm": "Ferme",
+        "excitable": "Énergique",
+        "youthful": "Jeune",
+        "breezy": "Légère",
+        "easyGoing": "Détendue",
+        "breathy": "Soufflée",
+        "clear": "Claire",
+        "smooth": "Douce",
+        "gravelly": "Rauque",
+        "soft": "Feutrée",
+        "even": "Posée",
+        "mature": "Mûre",
+        "forward": "Directe",
+        "friendly": "Amicale",
+        "casual": "Décontractée",
+        "gentle": "Tendre",
+        "lively": "Vive",
+        "knowledgeable": "Savante",
+        "warm": "Chaleureuse"
+      },
+      "preview": "Écouter un extrait de {name}",
+      "previewShort": "Écouter un extrait",
+      "noBrowserVoices": "Ce navigateur n'a pas de voix pour la lecture à voix haute.",
+      "browserDefault": "Automatique (voix de l'appareil)",
+      "browserVoiceOption": "{name} ({lang})",
+      "speedTitle": "Vitesse",
+      "speedHint": "Vous pouvez aussi la changer pendant l'écoute."
     }
   },
   "Email": {
@@ -956,7 +1010,6 @@
     "saveEdit": "Enregistrer la modification",
     "cancel": "Annuler",
     "editHelper": "Votre modification est enregistrée séparément ; l'original généré par l'IA est conservé.",
-    "readAloud": "Lire à voix haute",
     "share": "Partager",
     "export": "Exporter",
     "moreOptions": "Plus d'options",
@@ -988,7 +1041,6 @@
     "modelStandard": "Standard",
     "modelEconomy": "Rapide et efficace",
     "modelPro": "Raisonnement approfondi",
-    "readAloudSoon": "La lecture à voix haute sera bientôt disponible.",
     "shareNoPermission": "Seuls les propriétaires et administrateurs de l'espace de travail peuvent créer des liens publics",
     "exportSoon": "L'exportation sera bientôt disponible.",
     "sources": "Sources",
@@ -2209,7 +2261,11 @@
       "email_change_failed": "Impossible de lancer la modification de l'e-mail. Réessayez.",
       "DISPOSABLE_EMAIL": "Ce service d'e-mail n'est pas accepté. Utilisez une adresse e-mail permanente.",
       "invalid_range": "La date de fin ne peut pas précéder la date de début.",
-      "range_too_long": "Choisissez une plage de 366 jours au maximum."
+      "range_too_long": "Choisissez une plage de 366 jours au maximum.",
+      "daily_read_aloud_limit": "Vous avez utilisé le temps de voix naturelles du jour de votre forfait.",
+      "speech_unavailable": "Les voix naturelles ne sont pas disponibles pour le moment. Réessayez plus tard.",
+      "unknown_voice": "Cette voix n'est pas disponible.",
+      "aborted": "Annulé."
     }
   },
   "Gates": {
@@ -2246,7 +2302,11 @@
       "description": "Transcription rapide de voix et audio."
     },
     "creditHintMessage": "≈ {credits} crédits par message",
-    "creditHintImage": "≈ {credits} par image"
+    "creditHintImage": "≈ {credits} par image",
+    "speech-natural": {
+      "name": "Voix naturelle",
+      "description": "Lecture à voix haute avec des voix réalistes."
+    }
   },
   "Voice": {
     "start": "Enregistrer un message vocal",
@@ -3022,7 +3082,8 @@
         "documents": "Documents d'espace avec révision par IA et corrections rapides",
         "voice": "Saisie vocale (2 min d'enregistrement par jour)",
         "exports": "Export de document au format Markdown",
-        "sharing": "Partage d'espaces en lecture seule"
+        "sharing": "Partage d'espaces en lecture seule",
+        "readAloud": "Lecture à voix haute avec les voix de votre appareil"
       }
     },
     "LITE": {
@@ -3038,7 +3099,8 @@
         "attachments": "10 pièces jointes par espace (15 Mo max)",
         "documents": "Documents d'espace avec révision par IA et corrections rapides",
         "voice": "Saisie vocale (10 min d'enregistrement par jour)",
-        "exports": "Exports Markdown, PDF et Word"
+        "exports": "Exports Markdown, PDF et Word",
+        "readAloud": "Lecture à voix haute avec des voix naturelles (30 min par jour)"
       }
     },
     "STANDARD": {
@@ -3056,7 +3118,8 @@
         "documents": "Documents d'espace avec révision par IA et corrections rapides",
         "voice": "Saisie vocale (20 min d'enregistrement par jour)",
         "collaborators": "1 collaborateur sur l'ensemble de vos espaces",
-        "exports": "Suite complète d'export (MD, PDF, DOCX)"
+        "exports": "Suite complète d'export (MD, PDF, DOCX)",
+        "readAloud": "Lecture à voix haute avec des voix naturelles (60 min par jour)"
       }
     },
     "PRO": {
@@ -3073,7 +3136,8 @@
         "documents": "Documents d'espace avec révision par IA et corrections rapides",
         "voice": "Saisie vocale (40 min d'enregistrement par jour)",
         "collaborators": "Jusqu'à 3 collaborateurs sur l'ensemble de vos espaces",
-        "exports": "Suite complète d'export (MD, PDF, DOCX)"
+        "exports": "Suite complète d'export (MD, PDF, DOCX)",
+        "readAloud": "Lecture à voix haute avec des voix naturelles (120 min par jour)"
       }
     }
   },
@@ -3565,5 +3629,26 @@
         "adjustment": "Ajustement"
       }
     }
+  },
+  "Speech": {
+    "readAloud": "Lire à voix haute",
+    "player": "Lecteur à voix haute",
+    "previous": "Partie précédente",
+    "next": "Partie suivante",
+    "pause": "Pause",
+    "resume": "Reprendre",
+    "stop": "Arrêter la lecture",
+    "speed": "Vitesse",
+    "speedValue": "{speed}×",
+    "part": "{index}/{total}",
+    "voiceSettings": "Réglages de la voix",
+    "fallbackDailyLimit": "Vous avez utilisé le temps de voix naturelles du jour. La lecture continue avec la voix de votre appareil.",
+    "fallbackPlan": "Les voix naturelles ne sont pas incluses dans votre forfait. Lecture avec la voix de votre appareil.",
+    "fallbackUnavailable": "Les voix naturelles ne sont pas disponibles pour le moment. La lecture continue avec la voix de votre appareil.",
+    "error": "Impossible de lire ce texte à voix haute. Réessayez.",
+    "unsupported": "Ce navigateur ne peut pas lire de texte à voix haute.",
+    "truncated": "Ce texte est long : seule la première partie est lue.",
+    "codeOmitted": "Bloc de code omis",
+    "previewSample": "Bonjour ! Voici ma voix quand je lis vos réponses et vos documents à voix haute."
   }
 }

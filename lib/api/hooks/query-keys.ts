@@ -80,6 +80,7 @@ export const queryKeys = {
     linkedAccounts: (userId: string) => userQueryKey(userId, "me", "linked-accounts"),
     supportTickets: (userId: string) => userQueryKey(userId, "me", "support-tickets"),
     incomingTransfers: (userId: string) => userQueryKey(userId, "me", "ownership-transfers"),
+    voices: (userId: string) => userQueryKey(userId, "me", "voices"),
     usageSummary: (userId: string, period: "current" | "prev") =>
       userQueryKey(userId, "me", "usage", "summary", period),
     usageTimeseries: (userId: string, days: number) =>

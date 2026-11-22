@@ -14,6 +14,7 @@ import {
   Palette,
   Shield,
   User,
+  Volume2,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -31,6 +32,7 @@ const ICONS: Record<SettingsPage, LucideIcon> = {
   sessions: Laptop,
   language: Languages,
   appearance: Palette,
+  voice: Volume2,
   notifications: Bell,
   usage: BarChart3,
   billing: CreditCard,
