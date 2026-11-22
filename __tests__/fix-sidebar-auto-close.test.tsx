@@ -39,7 +39,7 @@ jest.mock("better-auth/client/plugins", () => ({
   inferAdditionalFields: () => ({}),
 }));
 
-jest.mock("next-themes", () => ({
+jest.mock("@/components/providers/theme-provider", () => ({
   useTheme: () => ({
     theme: "light",
     resolvedTheme: "light",

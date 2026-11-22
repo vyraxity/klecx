@@ -45,6 +45,8 @@ export interface HomeOnboarding {
   usernameChosen: boolean;
   hasWorkspace: boolean;
   hasProject: boolean;
+  /** Step 9.2: hidden by the person (saved on the account). */
+  dismissed: boolean;
 }
 
 export interface HomeData {
@@ -104,7 +106,12 @@ export async function getHomeData(actor: Actor): Promise<HomeData> {
     await Promise.all([
       db.user.findUnique({
         where: { id: actor.userId },
-        select: { name: true, email: true, emailVerified: true },
+        select: {
+          name: true,
+          email: true,
+          emailVerified: true,
+          preference: { select: { onboardingDismissed: true } },
+        },
       }),
       getAccountByUserId(actor.userId).catch(() => null),
       getEntitlements(actor.userId),
@@ -289,6 +296,7 @@ export async function getHomeData(actor: Actor): Promise<HomeData> {
       usernameChosen,
       hasWorkspace: workspaceCount > 0,
       hasProject: projectCount > 0,
+      dismissed: userRecord?.preference?.onboardingDismissed ?? false,
     },
   };
 }

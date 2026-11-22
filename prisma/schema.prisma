@@ -32,55 +32,55 @@ enum TitleSource {
 }
 
 model User {
-  id                   String            @id
-  name                 String
-  email                String            @unique
-  emailVerified        Boolean           @default(false)
-  image                String?
-  role                 UserRole          @default(USER)
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
+  id                      String              @id
+  name                    String
+  email                   String              @unique
+  emailVerified           Boolean             @default(false)
+  image                   String?
+  role                    UserRole            @default(USER)
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
   /// Soft delete: the account is marked, the row stays (see server/services/account-deletion.ts).
-  deletedAt            DateTime?         @map("deleted_at")
+  deletedAt               DateTime?           @map("deleted_at")
   /// Step 8.6: suspended by an admin (abuse, AUP violation). Can't sign in; sessions are revoked.
-  suspendedAt          DateTime?         @map("suspended_at")
+  suspendedAt             DateTime?           @map("suspended_at")
   /// Internal note on why (never shown to the person).
-  suspendedReason      String?           @map("suspended_reason")
-  sessions             Session[]
-  accounts             Account[]
-  projects             Project[]
-  workspaces           Workspace[]
-  projectMemberships   ProjectMember[]
-  workspaceMemberships WorkspaceMember[]
-  creditAccount        CreditAccount?
-  preference           UserPreference?
-  supportTickets       SupportTicket[]
-  attachments          Attachment[]        @relation("UserAttachments")
-  annotations          Annotation[]        @relation("AnnotationCreator")
-  annotationMessages   AnnotationMessage[] @relation("AnnotationMessageAuthor")
-  promotions           Promotion[]         @relation("PromotionCreator")
-  username             String?             @unique
-  displayUsername      String?             @map("display_username")
-  usernameChangeCount  Int                 @default(0) @map("username_change_count")
-  usernameChangedAt    DateTime?           @map("username_changed_at")
-  usernameClaimedAt    DateTime?           @map("username_claimed_at")
-  welcomeEmailSentAt   DateTime?           @map("welcome_email_sent_at")
-  auditLogs            AuditLog[]
-  avatarAttachmentId   String?             @unique @map("avatar_attachment_id")
-  avatarAttachment     Attachment?         @relation("UserAvatarAttachment", fields: [avatarAttachmentId], references: [id], onDelete: SetNull)
-  sentInvitations      Invitation[]        @relation("SentInvitations")
-  receivedInvitations  Invitation[]        @relation("ReceivedInvitations")
-  activityLogs         ActivityLog[]       @relation("ActorActivityLogs")
-  createdShareLinks    ShareLink[]         @relation("CreatedShareLinks")
-  notifications        Notification[]
-  sentTransfers        OwnershipTransfer[] @relation("TransfersSent")
-  receivedTransfers    OwnershipTransfer[] @relation("TransfersReceived")
-  memberLimitGrace     MemberLimitGrace?
-  subscription         Subscription?
-  billingCheckouts     BillingCheckout[]
-  billingConsents      BillingConsent[]
-  annotationMentions   AnnotationMention[]
-  workspaceNotes       WorkspaceNote[]     @relation("WorkspaceNoteCreator")
+  suspendedReason         String?             @map("suspended_reason")
+  sessions                Session[]
+  accounts                Account[]
+  projects                Project[]
+  workspaces              Workspace[]
+  projectMemberships      ProjectMember[]
+  workspaceMemberships    WorkspaceMember[]
+  creditAccount           CreditAccount?
+  preference              UserPreference?
+  supportTickets          SupportTicket[]
+  attachments             Attachment[]        @relation("UserAttachments")
+  annotations             Annotation[]        @relation("AnnotationCreator")
+  annotationMessages      AnnotationMessage[] @relation("AnnotationMessageAuthor")
+  promotions              Promotion[]         @relation("PromotionCreator")
+  username                String?             @unique
+  displayUsername         String?             @map("display_username")
+  usernameChangeCount     Int                 @default(0) @map("username_change_count")
+  usernameChangedAt       DateTime?           @map("username_changed_at")
+  usernameClaimedAt       DateTime?           @map("username_claimed_at")
+  welcomeEmailSentAt      DateTime?           @map("welcome_email_sent_at")
+  auditLogs               AuditLog[]
+  avatarAttachmentId      String?             @unique @map("avatar_attachment_id")
+  avatarAttachment        Attachment?         @relation("UserAvatarAttachment", fields: [avatarAttachmentId], references: [id], onDelete: SetNull)
+  sentInvitations         Invitation[]        @relation("SentInvitations")
+  receivedInvitations     Invitation[]        @relation("ReceivedInvitations")
+  activityLogs            ActivityLog[]       @relation("ActorActivityLogs")
+  createdShareLinks       ShareLink[]         @relation("CreatedShareLinks")
+  notifications           Notification[]
+  sentTransfers           OwnershipTransfer[] @relation("TransfersSent")
+  receivedTransfers       OwnershipTransfer[] @relation("TransfersReceived")
+  memberLimitGrace        MemberLimitGrace?
+  subscription            Subscription?
+  billingCheckouts        BillingCheckout[]
+  billingConsents         BillingConsent[]
+  annotationMentions      AnnotationMention[]
+  workspaceNotes          WorkspaceNote[]     @relation("WorkspaceNoteCreator")
   documentRevisionsEdited DocumentRevision[]
 
   @@map("users")
@@ -138,41 +138,41 @@ model Verification {
 }
 
 model Project {
-  id          String          @id @default(uuid(7))
-  ownerId     String
-  name        String
-  description String?
-  archivedAt  DateTime?
-  deletedAt   DateTime?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  owner       User            @relation(fields: [ownerId], references: [id], onDelete: Restrict)
-  workspaces  Workspace[]
-  members     ProjectMember[]
-  invitations Invitation[]
-  activityLogs ActivityLog[]
-  ownershipTransfers   OwnershipTransfer[]
+  id                 String              @id @default(uuid(7))
+  ownerId            String
+  name               String
+  description        String?
+  archivedAt         DateTime?
+  deletedAt          DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  owner              User                @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  workspaces         Workspace[]
+  members            ProjectMember[]
+  invitations        Invitation[]
+  activityLogs       ActivityLog[]
+  ownershipTransfers OwnershipTransfer[]
 
   @@index([ownerId, deletedAt, updatedAt(sort: Desc)])
   @@map("projects")
 }
 
 model Workspace {
-  id                 String            @id @default(uuid(7))
+  id                 String              @id @default(uuid(7))
   ownerId            String
   projectId          String?
-  sourceWorkspaceId  String?           @map("source_workspace_id")
-  sourceAnnotationId String?           @map("source_annotation_id")
-  sourceMessageId    String?           @map("source_message_id")
+  sourceWorkspaceId  String?             @map("source_workspace_id")
+  sourceAnnotationId String?             @map("source_annotation_id")
+  sourceMessageId    String?             @map("source_message_id")
   title              String
-  titleSource        TitleSource       @default(AUTO)
+  titleSource        TitleSource         @default(AUTO)
   archivedAt         DateTime?
   deletedAt          DateTime?
-  lastActivityAt     DateTime          @default(now())
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
-  owner              User              @relation(fields: [ownerId], references: [id], onDelete: Restrict)
-  project            Project?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  lastActivityAt     DateTime            @default(now())
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  owner              User                @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  project            Project?            @relation(fields: [projectId], references: [id], onDelete: SetNull)
   members            WorkspaceMember[]
   responses          Response[]
   generations        Generation[]
@@ -204,8 +204,8 @@ model ProjectMember {
   keepActive       Boolean     @default(false) @map("keep_active")
   invitedById      String
   createdAt        DateTime    @default(now())
-  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project          Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, userId])
   @@index([userId])
@@ -222,11 +222,11 @@ model WorkspaceMember {
   canAsk           Boolean?      @map("can_ask")
   suspendedAt      DateTime?     @map("suspended_at")
   suspendedReason  String?       @map("suspended_reason")
-  keepActive       Boolean     @default(false) @map("keep_active")
+  keepActive       Boolean       @default(false) @map("keep_active")
   invitedById      String
   createdAt        DateTime      @default(now())
-  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace        Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, userId])
   @@index([userId])
@@ -244,22 +244,22 @@ enum LedgerType {
 }
 
 model CreditAccount {
-  id           String         @id @default(uuid(7))
-  userId       String         @unique @map("user_id")
-  planBalance  Int            @default(0) @map("plan_balance")
-  topupBalance Int            @default(0) @map("topup_balance")
+  id            String         @id @default(uuid(7))
+  userId        String         @unique @map("user_id")
+  planBalance   Int            @default(0) @map("plan_balance")
+  topupBalance  Int            @default(0) @map("topup_balance")
   /// Plan whose allowance `planBalance` holds (Step 8.4). FREE after a paid plan ends.
-  allowancePlan PlanKey       @default(FREE) @map("allowance_plan")
+  allowancePlan PlanKey        @default(FREE) @map("allowance_plan")
   /// Step 8.6: frozen by an admin; nothing may spend these credits (`reserve()` → `credits_frozen`).
-  frozenAt     DateTime?      @map("frozen_at")
-  frozenReason String?        @map("frozen_reason")
+  frozenAt      DateTime?      @map("frozen_at")
+  frozenReason  String?        @map("frozen_reason")
   /// Ledger key of the current allowance, e.g. `free:<userId>:2026-11`,
   /// `creem:paid:<transaction>` or `yearly:<subscription>:<start>:<n>`. Null = not stamped yet.
-  allowanceKey String?        @map("allowance_key")
-  createdAt    DateTime       @default(now()) @map("created_at")
-  updatedAt    DateTime       @updatedAt @map("updated_at")
-  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ledger       CreditLedger[]
+  allowanceKey  String?        @map("allowance_key")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ledger        CreditLedger[]
 
   @@map("credit_accounts")
 }
@@ -284,7 +284,6 @@ model CreditLedger {
   @@index([generationId])
   @@map("credit_ledger")
 }
-
 
 enum ResponseKind {
   TEXT
@@ -369,20 +368,20 @@ model ResponseEdit {
 }
 
 model Document {
-  id               String            @id @default(uuid(7))
-  workspaceId      String            @map("workspace_id")
-  versionId        String            @map("version_id")             // the response version that created it
-  title            String
-  format           String                                           // "md" | "docx" | "pdf"
-  currentRevision  Int               @default(1) @map("current_revision")
-  createdById      String            @map("created_by_id")
-  createdAt        DateTime          @default(now()) @map("created_at")
-  deletedAt        DateTime?         @map("deleted_at")
+  id              String    @id @default(uuid(7))
+  workspaceId     String    @map("workspace_id")
+  versionId       String    @map("version_id") // the response version that created it
+  title           String
+  format          String // "md" | "docx" | "pdf"
+  currentRevision Int       @default(1) @map("current_revision")
+  createdById     String    @map("created_by_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  deletedAt       DateTime? @map("deleted_at")
 
-  workspace        Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  version          ResponseVersion   @relation(fields: [versionId], references: [id], onDelete: Cascade)
-  revisions        DocumentRevision[]
-  annotations      Annotation[]
+  workspace   Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  version     ResponseVersion    @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  revisions   DocumentRevision[]
+  annotations Annotation[]
 
   @@index([workspaceId, createdAt])
   @@index([versionId])
@@ -390,20 +389,19 @@ model Document {
 }
 
 model DocumentRevision {
-  id         String    @id @default(uuid(7))
-  documentId String    @map("document_id")
+  id         String   @id @default(uuid(7))
+  documentId String   @map("document_id")
   revision   Int
-  content    String    @db.Text                          // Markdown source of truth
-  editorId   String?   @map("editor_id")                 // null = generated by Klecx
-  createdAt  DateTime  @default(now()) @map("created_at")
+  content    String   @db.Text // Markdown source of truth
+  editorId   String?  @map("editor_id") // null = generated by Klecx
+  createdAt  DateTime @default(now()) @map("created_at")
 
-  document   Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  editor     User?     @relation(fields: [editorId], references: [id], onDelete: SetNull)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  editor   User?    @relation(fields: [editorId], references: [id], onDelete: SetNull)
 
   @@unique([documentId, revision])
   @@map("document_revisions")
 }
-
 
 enum GenStatus {
   QUEUED
@@ -425,27 +423,27 @@ enum GenKind {
 }
 
 model Generation {
-  id              String      @id @default(uuid(7))
-  workspaceId     String?     @map("workspace_id")
-  responseId      String?     @map("response_id")
-  versionId       String?     @map("version_id")
-  actorId         String      @map("actor_id")
-  billedAccountId String      @map("billed_account_id")
+  id              String    @id @default(uuid(7))
+  workspaceId     String?   @map("workspace_id")
+  responseId      String?   @map("response_id")
+  versionId       String?   @map("version_id")
+  actorId         String    @map("actor_id")
+  billedAccountId String    @map("billed_account_id")
   kind            GenKind
-  status          GenStatus   @default(QUEUED)
-  modelKey        String      @map("model_key")
-  providerModelId String      @map("provider_model_id")
-  promptVersion   String      @map("prompt_version")
-  idempotencyKey  String      @map("idempotency_key")
-  reservedCredits Int         @default(0) @map("reserved_credits")
-  chargedCredits  Int         @default(0) @map("charged_credits")
+  status          GenStatus @default(QUEUED)
+  modelKey        String    @map("model_key")
+  providerModelId String    @map("provider_model_id")
+  promptVersion   String    @map("prompt_version")
+  idempotencyKey  String    @map("idempotency_key")
+  reservedCredits Int       @default(0) @map("reserved_credits")
+  chargedCredits  Int       @default(0) @map("charged_credits")
   usage           Json?
-  errorCode       String?     @map("error_code")
-  startedAt       DateTime?   @map("started_at")
-  finishedAt      DateTime?   @map("finished_at")
-  createdAt       DateTime    @default(now()) @map("created_at")
+  errorCode       String?   @map("error_code")
+  startedAt       DateTime? @map("started_at")
+  finishedAt      DateTime? @map("finished_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
 
-  workspace       Workspace?  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@unique([actorId, idempotencyKey])
   @@index([workspaceId, createdAt])
@@ -455,14 +453,40 @@ model Generation {
   @@map("generations")
 }
 
+enum ThemePreference {
+  SYSTEM
+  LIGHT
+  DARK
+}
+
+/// Step 9.2: Settings → Appearance → Density (compact applies from tablet width up).
+enum DensityPreference {
+  COMFORTABLE
+  COMPACT
+}
+
+/// Step 9.2: a row is written only on the first change; reads apply the
+/// defaults (server/services/user-preferences.ts). Nullable fields mean
+/// "not chosen on the account".
 model UserPreference {
-  userId            String   @id @map("user_id")
-  uiLocale          String?  @map("ui_locale")
-  aiLanguage        String?  @map("ai_language")
-  webSearchEnabled  Boolean  @default(true) @map("web_search_enabled")
-  notificationPrefs Json?    @map("notification_prefs")
-  updatedAt         DateTime @updatedAt @map("updated_at")
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String            @id @map("user_id")
+  uiLocale            String?           @map("ui_locale")
+  aiLanguage          String?           @map("ai_language")
+  webSearchEnabled    Boolean           @default(true) @map("web_search_enabled")
+  notificationPrefs   Json?             @map("notification_prefs")
+  /// null = never chosen on the account: the device's `theme` cookie decides.
+  theme               ThemePreference?
+  enterToSend         Boolean           @default(true) @map("enter_to_send")
+  /// null = follow the device's setting; true = always reduce motion.
+  reduceMotion        Boolean?          @map("reduce_motion")
+  /// Step 9.4 (read-aloud) uses these; not writable before then.
+  voiceProvider       String?           @map("voice_provider")
+  voiceId             String?           @map("voice_id")
+  voiceSpeed          Float             @default(1) @map("voice_speed")
+  onboardingDismissed Boolean           @default(false) @map("onboarding_dismissed")
+  density             DensityPreference @default(COMFORTABLE)
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_preferences")
 }
@@ -484,7 +508,7 @@ model SupportTicket {
   status      TicketStatus @default(OPEN)
   createdAt   DateTime     @default(now()) @map("created_at")
 
-  user        User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user        User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
   attachments SupportAttachment[]
 
   @@index([email, createdAt])
@@ -496,16 +520,16 @@ model SupportTicket {
 /// without metadata, in a private folder `support/<ticketId>/`.
 /// Deleted after 90 days (job in main-guide Step 10.3).
 model SupportAttachment {
-  id         String        @id @default(uuid(7))
-  ticketId   String        @map("ticket_id")
-  providerId String        @map("provider_id")
+  id         String   @id @default(uuid(7))
+  ticketId   String   @map("ticket_id")
+  providerId String   @map("provider_id")
   mime       String
   bytes      Int
   width      Int?
   height     Int?
-  createdAt  DateTime      @default(now()) @map("created_at")
+  createdAt  DateTime @default(now()) @map("created_at")
 
-  ticket     SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
   @@index([ticketId])
   @@index([createdAt])
@@ -547,11 +571,11 @@ model Attachment {
   createdAt     DateTime         @default(now()) @map("created_at")
   deletedAt     DateTime?        @map("deleted_at")
 
-  user       User       @relation("UserAttachments", fields: [ownerId], references: [id], onDelete: Cascade)
-  avatarUser User?      @relation("UserAvatarAttachment")
-  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  response  Response?  @relation(fields: [responseId], references: [id], onDelete: SetNull)
-  uploadedDocumentResponse Response? @relation("UploadedDocumentResponse")
+  user                     User       @relation("UserAttachments", fields: [ownerId], references: [id], onDelete: Cascade)
+  avatarUser               User?      @relation("UserAvatarAttachment")
+  workspace                Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  response                 Response?  @relation(fields: [responseId], references: [id], onDelete: SetNull)
+  uploadedDocumentResponse Response?  @relation("UploadedDocumentResponse")
 
   @@index([workspaceId, createdAt])
   @@index([ownerId])
@@ -566,16 +590,16 @@ enum CitationSource {
 }
 
 model Citation {
-  id        String          @id @default(uuid(7))
-  versionId String          @map("version_id")
+  id        String         @id @default(uuid(7))
+  versionId String         @map("version_id")
   index     Int
   url       String
   title     String?
-  snippet   String?         @db.Text
-  source    CitationSource  @default(GROUNDING)
-  createdAt DateTime        @default(now()) @map("created_at")
+  snippet   String?        @db.Text
+  source    CitationSource @default(GROUNDING)
+  createdAt DateTime       @default(now()) @map("created_at")
 
-  version   ResponseVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  version ResponseVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
 
   @@unique([versionId, index])
   @@index([versionId])
@@ -630,49 +654,49 @@ enum MsgRole {
 }
 
 model Annotation {
-  id                 String              @id @default(uuid(7))
-  workspaceId        String              @map("workspace_id")
-  responseId         String?             @map("response_id")
-  versionId          String?             @map("version_id")
-  targetType         AnnotationTarget    @default(RESPONSE_VERSION) @map("target_type")
-  targetMessageId    String?             @map("target_message_id")
-  documentId         String?             @map("document_id")
-  documentRevision   Int?                @map("document_revision")
-  parentAnnotationId String?             @map("parent_annotation_id")
-  rootAnnotationId   String?             @map("root_annotation_id")
-  depth              Int                 @default(0)
-  authorType         AuthorType          @default(USER) @map("author_type")
+  id                 String           @id @default(uuid(7))
+  workspaceId        String           @map("workspace_id")
+  responseId         String?          @map("response_id")
+  versionId          String?          @map("version_id")
+  targetType         AnnotationTarget @default(RESPONSE_VERSION) @map("target_type")
+  targetMessageId    String?          @map("target_message_id")
+  documentId         String?          @map("document_id")
+  documentRevision   Int?             @map("document_revision")
+  parentAnnotationId String?          @map("parent_annotation_id")
+  rootAnnotationId   String?          @map("root_annotation_id")
+  depth              Int              @default(0)
+  authorType         AuthorType       @default(USER) @map("author_type")
   suggestion         Json?
-  suggestionState    SuggestionState?    @map("suggestion_state")
-  contentSource      ContentSource       @default(ORIGINAL) @map("content_source")
-  editRevision       Int?                @map("edit_revision")
-  createdById        String              @map("created_by_id")
+  suggestionState    SuggestionState? @map("suggestion_state")
+  contentSource      ContentSource    @default(ORIGINAL) @map("content_source")
+  editRevision       Int?             @map("edit_revision")
+  createdById        String           @map("created_by_id")
   kind               AnnotationKind
-  questionState      QuestionState       @default(NONE) @map("question_state")
-  visibility         Visibility          @default(PRIVATE)
-  resolvedAt         DateTime?           @map("resolved_at")
-  deletedAt          DateTime?           @map("deleted_at")
-  anchorExact        String              @map("anchor_exact") @db.Text
-  anchorPrefix       String              @map("anchor_prefix")
-  anchorSuffix       String              @map("anchor_suffix")
-  anchorStart        Int?                @map("anchor_start")
-  anchorEnd          Int?                @map("anchor_end")
-  createdAt          DateTime            @default(now()) @map("created_at")
-  updatedAt          DateTime            @updatedAt @map("updated_at")
+  questionState      QuestionState    @default(NONE) @map("question_state")
+  visibility         Visibility       @default(PRIVATE)
+  resolvedAt         DateTime?        @map("resolved_at")
+  deletedAt          DateTime?        @map("deleted_at")
+  anchorExact        String           @map("anchor_exact") @db.Text
+  anchorPrefix       String           @map("anchor_prefix")
+  anchorSuffix       String           @map("anchor_suffix")
+  anchorStart        Int?             @map("anchor_start")
+  anchorEnd          Int?             @map("anchor_end")
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @updatedAt @map("updated_at")
 
-  workspace          Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  response           Response?           @relation(fields: [responseId], references: [id], onDelete: Cascade)
-  version            ResponseVersion?    @relation(fields: [versionId], references: [id], onDelete: Cascade)
-  createdBy          User                @relation("AnnotationCreator", fields: [createdById], references: [id], onDelete: Cascade)
-  targetMessage      AnnotationMessage?  @relation("AnnotationsOnMessage", fields: [targetMessageId], references: [id], onDelete: Cascade)
-  parent             Annotation?         @relation("AnnotationChildren", fields: [parentAnnotationId], references: [id], onDelete: Cascade)
-  children           Annotation[]        @relation("AnnotationChildren")
-  root               Annotation?         @relation("AnnotationRoot", fields: [rootAnnotationId], references: [id], onDelete: Cascade)
-  descendants        Annotation[]        @relation("AnnotationRoot")
-  messages           AnnotationMessage[] @relation("AnnotationThreadMessages")
-  promotions         Promotion[]
-  notes              WorkspaceNote[]
-  document           Document?           @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  workspace     Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  response      Response?           @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  version       ResponseVersion?    @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  createdBy     User                @relation("AnnotationCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  targetMessage AnnotationMessage?  @relation("AnnotationsOnMessage", fields: [targetMessageId], references: [id], onDelete: Cascade)
+  parent        Annotation?         @relation("AnnotationChildren", fields: [parentAnnotationId], references: [id], onDelete: Cascade)
+  children      Annotation[]        @relation("AnnotationChildren")
+  root          Annotation?         @relation("AnnotationRoot", fields: [rootAnnotationId], references: [id], onDelete: Cascade)
+  descendants   Annotation[]        @relation("AnnotationRoot")
+  messages      AnnotationMessage[] @relation("AnnotationThreadMessages")
+  promotions    Promotion[]
+  notes         WorkspaceNote[]
+  document      Document?           @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@index([versionId, deletedAt])
   @@index([workspaceId, createdById, questionState])
@@ -684,24 +708,24 @@ model Annotation {
 }
 
 model AnnotationMessage {
-  id             String              @id @default(uuid(7))
-  annotationId   String              @map("annotation_id")
+  id             String   @id @default(uuid(7))
+  annotationId   String   @map("annotation_id")
   role           MsgRole
-  content        String              @db.Text
-  authorId       String?             @map("author_id")
-  generationId   String?             @unique @map("generation_id")
-  thoughtSummary String?             @map("thought_summary") @db.Text
+  content        String   @db.Text
+  authorId       String?  @map("author_id")
+  generationId   String?  @unique @map("generation_id")
+  thoughtSummary String?  @map("thought_summary") @db.Text
   citations      Json?
-  status         String              @default("COMPLETE")
-  modelKey       String?             @map("model_key")
-  createdAt      DateTime            @default(now()) @map("created_at")
+  status         String   @default("COMPLETE")
+  modelKey       String?  @map("model_key")
+  createdAt      DateTime @default(now()) @map("created_at")
 
-  annotation     Annotation          @relation("AnnotationThreadMessages", fields: [annotationId], references: [id], onDelete: Cascade)
-  author         User?               @relation("AnnotationMessageAuthor", fields: [authorId], references: [id], onDelete: SetNull)
-  promotions     Promotion[]
-  annotationsOn  Annotation[]        @relation("AnnotationsOnMessage")
-  mentions       AnnotationMention[]
-  note           WorkspaceNote?
+  annotation    Annotation          @relation("AnnotationThreadMessages", fields: [annotationId], references: [id], onDelete: Cascade)
+  author        User?               @relation("AnnotationMessageAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  promotions    Promotion[]
+  annotationsOn Annotation[]        @relation("AnnotationsOnMessage")
+  mentions      AnnotationMention[]
+  note          WorkspaceNote?
 
   @@index([annotationId, createdAt])
   @@map("annotation_messages")
@@ -727,25 +751,25 @@ enum NoteStatus {
 }
 
 model WorkspaceNote {
-  id           String     @id @default(uuid(7))
-  workspaceId  String     @map("workspace_id")
-  annotationId String     @map("annotation_id")
-  messageId    String     @unique @map("message_id")
-  createdById  String     @map("created_by_id")
-  quote        String     @db.Text
-  instruction  String     @db.Text
-  status       NoteStatus @default(ACTIVE)
-  createdAt    DateTime   @default(now()) @map("created_at")
-  archivedAt   DateTime?  @map("archived_at")
+  id           String            @id @default(uuid(7))
+  workspaceId  String            @map("workspace_id")
+  annotationId String            @map("annotation_id")
+  messageId    String            @unique @map("message_id")
+  createdById  String            @map("created_by_id")
+  quote        String            @db.Text
+  instruction  String            @db.Text
+  status       NoteStatus        @default(ACTIVE)
+  createdAt    DateTime          @default(now()) @map("created_at")
+  archivedAt   DateTime?         @map("archived_at")
   /// Set when the author's account is deleted (soft delete). A deleted note is hidden everywhere.
-  deletedAt    DateTime?  @map("deleted_at")
-  workspace    Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  annotation   Annotation @relation(fields: [annotationId], references: [id], onDelete: Cascade)
+  deletedAt    DateTime?         @map("deleted_at")
+  workspace    Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  annotation   Annotation        @relation(fields: [annotationId], references: [id], onDelete: Cascade)
   // The note goes with the message that recorded it. Accounts are soft-deleted
   // (User.deletedAt), which soft-deletes the author's notes; the cascade only
   // matters if a user row is ever removed for good.
   message      AnnotationMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  createdBy    User       @relation("WorkspaceNoteCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  createdBy    User              @relation("WorkspaceNoteCreator", fields: [createdById], references: [id], onDelete: Cascade)
 
   @@index([workspaceId, status, createdAt])
   @@index([annotationId])
@@ -758,18 +782,18 @@ enum PromotionTarget {
 }
 
 model Promotion {
-  id                     String            @id @default(uuid(7))
-  annotationId           String            @map("annotation_id")
-  messageId              String            @map("message_id")
+  id                     String          @id @default(uuid(7))
+  annotationId           String          @map("annotation_id")
+  messageId              String          @map("message_id")
   target                 PromotionTarget
-  destinationResponseId  String?           @map("destination_response_id")
-  destinationWorkspaceId String?           @map("destination_workspace_id")
-  createdById            String            @map("created_by_id")
-  createdAt              DateTime          @default(now()) @map("created_at")
+  destinationResponseId  String?         @map("destination_response_id")
+  destinationWorkspaceId String?         @map("destination_workspace_id")
+  createdById            String          @map("created_by_id")
+  createdAt              DateTime        @default(now()) @map("created_at")
 
-  annotation             Annotation        @relation(fields: [annotationId], references: [id], onDelete: Cascade)
-  message                AnnotationMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  createdBy              User              @relation("PromotionCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  annotation Annotation        @relation(fields: [annotationId], references: [id], onDelete: Cascade)
+  message    AnnotationMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  createdBy  User              @relation("PromotionCreator", fields: [createdById], references: [id], onDelete: Cascade)
 
   @@unique([messageId, target])
   @@index([annotationId])
@@ -786,7 +810,7 @@ model AuditLog {
   metadata  Json?
   createdAt DateTime @default(now()) @map("created_at")
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
   @@index([action, createdAt])
@@ -814,10 +838,10 @@ model Invitation {
   acceptedAt    DateTime?    @map("accepted_at")
   createdAt     DateTime     @default(now()) @map("created_at")
 
-  workspace     Workspace?   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  project       Project?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  invitedBy     User         @relation("SentInvitations", fields: [invitedById], references: [id], onDelete: Cascade)
-  invitedUser   User?        @relation("ReceivedInvitations", fields: [invitedUserId], references: [id], onDelete: SetNull)
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  invitedBy   User       @relation("SentInvitations", fields: [invitedById], references: [id], onDelete: Cascade)
+  invitedUser User?      @relation("ReceivedInvitations", fields: [invitedUserId], references: [id], onDelete: SetNull)
 
   @@index([email, status])
   @@index([workspaceId])
@@ -826,19 +850,19 @@ model Invitation {
 }
 
 model ActivityLog {
-  id          String     @id @default(uuid(7))
-  workspaceId String?    @map("workspace_id")
-  projectId   String?    @map("project_id")
-  actorId     String     @map("actor_id")
+  id          String   @id @default(uuid(7))
+  workspaceId String?  @map("workspace_id")
+  projectId   String?  @map("project_id")
+  actorId     String   @map("actor_id")
   action      String
-  targetType  String?    @map("target_type")
-  targetId    String?    @map("target_id")
+  targetType  String?  @map("target_type")
+  targetId    String?  @map("target_id")
   meta        Json?
-  createdAt   DateTime   @default(now()) @map("created_at")
+  createdAt   DateTime @default(now()) @map("created_at")
 
-  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  actor       User       @relation("ActorActivityLogs", fields: [actorId], references: [id], onDelete: Cascade)
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  project   Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  actor     User       @relation("ActorActivityLogs", fields: [actorId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId, createdAt(sort: Desc)])
   @@index([projectId, createdAt(sort: Desc)])
@@ -866,9 +890,9 @@ model ShareLink {
   viewCount    Int        @default(0) @map("view_count")
   lastViewedAt DateTime?  @map("last_viewed_at")
 
-  workspace    Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  response     Response?  @relation(fields: [responseId], references: [id], onDelete: Cascade)
-  createdBy    User       @relation("CreatedShareLinks", fields: [createdById], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  response  Response? @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  createdBy User      @relation("CreatedShareLinks", fields: [createdById], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
   @@map("share_links")
@@ -899,7 +923,7 @@ model Notification {
   readAt      DateTime?   @map("read_at")
   dismissedAt DateTime?   @map("dismissed_at")
 
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, dedupeKey])
   @@index([userId, status, createdAt(sort: Desc)])
@@ -926,10 +950,10 @@ model OwnershipTransfer {
   respondedAt         DateTime?      @map("responded_at")
   createdAt           DateTime       @default(now()) @map("created_at")
 
-  workspace           Workspace?     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  project             Project?       @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  fromUser            User           @relation("TransfersSent", fields: [fromUserId], references: [id], onDelete: Cascade)
-  toUser              User           @relation("TransfersReceived", fields: [toUserId], references: [id], onDelete: Cascade)
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  project   Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  fromUser  User       @relation("TransfersSent", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser    User       @relation("TransfersReceived", fields: [toUserId], references: [id], onDelete: Cascade)
 
   @@index([toUserId, status])
   @@index([workspaceId])
@@ -938,16 +962,16 @@ model OwnershipTransfer {
 }
 
 model MemberLimitGrace {
-  id          String   @id @default(uuid(7))
-  ownerId     String   @unique @map("owner_id")
+  id          String    @id @default(uuid(7))
+  ownerId     String    @unique @map("owner_id")
   limit       Int
-  graceEndsAt DateTime @map("grace_ends_at")
+  graceEndsAt DateTime  @map("grace_ends_at")
   /// When `enforceMemberLimit` ran after the grace ended (Step 8.4); null while pending.
   enforcedAt  DateTime? @map("enforced_at")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  owner       User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@map("member_limit_grace")
 }

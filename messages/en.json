@@ -481,13 +481,29 @@
     },
     "appearance": {
       "title": "Appearance",
-      "description": "How Klecx looks on this device.",
+      "description": "How Klecx looks and behaves. Saved to your account, so all your devices use it.",
       "themeTitle": "Theme",
       "themeHint": "System follows your device's light or dark setting.",
       "theme": {
         "system": "System",
         "light": "Light",
         "dark": "Dark"
+      },
+      "behaviorTitle": "Behavior",
+      "behaviorHint": "How the composer and animations work.",
+      "enterToSend": "Press Enter to send",
+      "enterToSendOn": "Enter sends your message; Shift + Enter adds a new line.",
+      "enterToSendOff": "Enter adds a new line; Ctrl + Enter (⌘ + Enter on Mac) sends.",
+      "reduceMotion": "Reduce motion",
+      "reduceMotionHint": "Turns off animations and transitions. When off, Klecx follows your device's setting.",
+      "saveError": "Couldn't save this setting. Try again.",
+      "densityTitle": "Density",
+      "densityHint": "How much space there is between things. Compact applies on tablets and computers; phones always use the comfortable spacing.",
+      "density": {
+        "comfortable": "Comfortable",
+        "comfortableHint": "More room between items.",
+        "compact": "Compact",
+        "compactHint": "Tighter spacing, more on screen."
       }
     },
     "support": {
@@ -1897,7 +1913,8 @@
         "projectView": "Remembers the list or grid view on project pages.",
         "documentDrafts": "Keeps unsaved document edits if you reload the page.",
         "usernamePrompt": "Avoids showing the username prompt twice in one visit.",
-        "cookieNotice": "Remembers that you have seen the cookie notice."
+        "cookieNotice": "Remembers that you have seen the cookie notice.",
+        "localeSuggestion": "Remembers your answer to the suggestion to switch to your country's language, so it isn't shown again."
       }
     }
   },
@@ -3431,5 +3448,11 @@
     "seePlans": "See all plans",
     "upgradeTo": "Upgrade to {plan}",
     "manage": "Manage plan"
+  },
+  "LocaleSuggestion": {
+    "label": "Language suggestion",
+    "message": "Klecx is also available in English.",
+    "switch": "Switch to English",
+    "dismiss": "No thanks"
   }
 }

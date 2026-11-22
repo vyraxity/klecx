@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Link, usePathname } from "@/i18n/navigation";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/providers/theme-provider";
 import { useTranslations } from "next-intl";
 import { Menu, Moon, Sun, X, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";

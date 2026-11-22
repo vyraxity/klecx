@@ -91,6 +91,8 @@ describe("Step 3.1 — Design tokens and dependency cleanup", () => {
       "@types/crypto-js",
       "@types/numeral",
       "@types/uuid",
+      // Step 9.2: replaced by components/providers/theme-provider.tsx.
+      "next-themes",
     ];
 
     for (const removed of removedPackages) {
@@ -98,7 +100,6 @@ describe("Step 3.1 — Design tokens and dependency cleanup", () => {
     }
 
     const addedPackages = [
-      "next-themes",
       "lucide-react",
       "clsx",
       "tailwind-merge",

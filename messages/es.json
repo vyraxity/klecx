@@ -481,13 +481,29 @@
     },
     "appearance": {
       "title": "Apariencia",
-      "description": "Cómo se ve Klecx en este dispositivo.",
+      "description": "Cómo se ve y funciona Klecx. Se guarda en tu cuenta, así que todos tus dispositivos lo usan.",
       "themeTitle": "Tema",
       "themeHint": "Sistema sigue el modo claro u oscuro de tu dispositivo.",
       "theme": {
         "system": "Sistema",
         "light": "Claro",
         "dark": "Oscuro"
+      },
+      "behaviorTitle": "Comportamiento",
+      "behaviorHint": "Cómo funcionan el compositor y las animaciones.",
+      "enterToSend": "Pulsar Intro para enviar",
+      "enterToSendOn": "Intro envía tu mensaje; Mayús + Intro añade una línea nueva.",
+      "enterToSendOff": "Intro añade una línea nueva; Ctrl + Intro (⌘ + Intro en Mac) envía.",
+      "reduceMotion": "Reducir el movimiento",
+      "reduceMotionHint": "Desactiva las animaciones y transiciones. Si está desactivado, Klecx sigue el ajuste de tu dispositivo.",
+      "saveError": "No se pudo guardar este ajuste. Inténtalo de nuevo.",
+      "densityTitle": "Densidad",
+      "densityHint": "Cuánto espacio hay entre los elementos. Compacta se aplica en tabletas y ordenadores; los teléfonos siempre usan el espaciado cómodo.",
+      "density": {
+        "comfortable": "Cómoda",
+        "comfortableHint": "Más espacio entre los elementos.",
+        "compact": "Compacta",
+        "compactHint": "Espaciado más ajustado, más contenido en pantalla."
       }
     },
     "support": {
@@ -1897,7 +1913,8 @@
         "projectView": "Recuerda la vista de lista o cuadrícula en las páginas de proyecto.",
         "documentDrafts": "Conserva las ediciones de documentos sin guardar si recargas la página.",
         "usernamePrompt": "Evita mostrar dos veces en una misma visita el aviso del nombre de usuario.",
-        "cookieNotice": "Recuerda que ya viste el aviso de cookies."
+        "cookieNotice": "Recuerda que ya viste el aviso de cookies.",
+        "localeSuggestion": "Recuerda tu respuesta a la sugerencia de cambiar al idioma de tu país, para no volver a mostrarla."
       }
     }
   },
@@ -3431,5 +3448,11 @@
     "seePlans": "Ver todos los planes",
     "upgradeTo": "Mejorar a {plan}",
     "manage": "Gestionar plan"
+  },
+  "LocaleSuggestion": {
+    "label": "Sugerencia de idioma",
+    "message": "Klecx también está disponible en español.",
+    "switch": "Cambiar a español",
+    "dismiss": "No, gracias"
   }
 }

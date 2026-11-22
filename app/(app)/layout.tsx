@@ -10,6 +10,7 @@ import { listProjects } from "@/server/services/project";
 import { listWorkspaces } from "@/server/services/workspace";
 import { getUserAvatar } from "@/server/services/avatar";
 import { getShellIdentity } from "@/server/services/user-profile";
+import { getUserPreferences } from "@/server/services/user-preferences";
 import { parseSidebarCookie, SIDEBAR_COOKIE_NAME } from "@/lib/stores/ui";
 import { AppShell } from "@/components/layout/app-shell";
 import type {
@@ -39,7 +40,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     cookieStore.get(SIDEBAR_COOKIE_NAME)?.value,
   );
 
-  const [creditAccount, projectsPage, workspacesPage, avatarData, identity, entitlements, tRoot] = await Promise.all([
+  const [creditAccount, projectsPage, workspacesPage, avatarData, identity, entitlements, tRoot, prefs] = await Promise.all([
     // Step 8.4: the current period's allowance first, so the sidebar shows what can be spent.
     ensureCurrentGrantForUser(actor.userId)
       .catch(() => null)
@@ -60,6 +61,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     // The effective plan (subscription, grace periods), for the sidebar's plan label.
     getEntitlements(actor.userId).catch(() => null),
     getTranslations(),
+    getUserPreferences(actor.userId).catch(() => null),
   ]);
 
   const usernameClaimedAt =
@@ -75,6 +77,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       (creditAccount?.planBalance ?? 0) + (creditAccount?.topupBalance ?? 0),
     username: identity ? identity.username : actor.username ?? null,
     usernameClaimedAt: usernameClaimedAt ? usernameClaimedAt.toISOString() : null,
+    preferences: prefs
+      ? { enterToSend: prefs.enterToSend, onboardingDismissed: prefs.onboardingDismissed }
+      : undefined,
   };
 
   const initialProjects: SidebarProjectItem[] = projectsPage.items.map((p) => ({

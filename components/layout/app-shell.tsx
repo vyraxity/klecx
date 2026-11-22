@@ -99,6 +99,17 @@ export function AppShell({
 
   const userCollapsed = hydrated ? storeCollapsed : initialSidebarCollapsed;
 
+  // Step 9.2: the account's preferences win over this device's stored copy.
+  const accountEnterToSend = user.preferences?.enterToSend;
+  const accountOnboardingDismissed = user.preferences?.onboardingDismissed;
+  React.useEffect(() => {
+    if (accountEnterToSend === undefined || accountOnboardingDismissed === undefined) return;
+    useUiStore.setState({
+      composerEnterToSend: accountEnterToSend,
+      onboardingDismissed: accountOnboardingDismissed,
+    });
+  }, [accountEnterToSend, accountOnboardingDismissed]);
+
   // Auto-closing sidebar: open columns may collapse it to the rail. Whenever
   // it's a rail, hovering it opens the full sidebar as an overlay; the toggle
   // keeps it open. See lib/layout/sidebar-auto.ts.
@@ -452,7 +463,9 @@ export function AppShell({
     }
   };
 
-  const sidebarWidthVar = collapsed ? "64px" : "280px";
+  // Same unit as the sidebar's own w-16 / w-70, so the column always matches
+  // it, including in the compact density (Step 9.2), which scales --spacing.
+  const sidebarWidthVar = collapsed ? "calc(var(--spacing) * 16)" : "calc(var(--spacing) * 70)";
 
   const desktopSidebarProps = {
     user,
