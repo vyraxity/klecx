@@ -12,6 +12,12 @@ export interface PlanLimits {
   images: boolean;
   searchesPerDay: number;
   voiceSecondsPerDay: number;
+  /**
+   * Step 9.4: seconds of natural-voice read-aloud generated per day (owner
+   * decided 2026-11-22: Free 0 = browser voices only, Lite 30 min, Standard
+   * 60 min, Pro 120 min). Cached replays don't count.
+   */
+  readAloudSecondsPerDay: number;
 }
 
 export interface PlanDefinition {
@@ -51,6 +57,7 @@ export const PLANS: Record<"FREE" | "LITE" | "STANDARD" | "PRO", PlanDefinition>
       images: false,
       searchesPerDay: 10,
       voiceSecondsPerDay: 120,
+      readAloudSecondsPerDay: 0,
     },
     features: [
       "Plans.FREE.features.credits",
@@ -84,6 +91,7 @@ export const PLANS: Record<"FREE" | "LITE" | "STANDARD" | "PRO", PlanDefinition>
       images: true,
       searchesPerDay: 50,
       voiceSecondsPerDay: 600,
+      readAloudSecondsPerDay: 1800,
     },
     features: [
       "Plans.LITE.features.credits",
@@ -119,6 +127,7 @@ export const PLANS: Record<"FREE" | "LITE" | "STANDARD" | "PRO", PlanDefinition>
       images: true,
       searchesPerDay: 100,
       voiceSecondsPerDay: 1200,
+      readAloudSecondsPerDay: 3600,
     },
     features: [
       "Plans.STANDARD.features.credits",
@@ -153,6 +162,7 @@ export const PLANS: Record<"FREE" | "LITE" | "STANDARD" | "PRO", PlanDefinition>
       images: true,
       searchesPerDay: 200,
       voiceSecondsPerDay: 2400,
+      readAloudSecondsPerDay: 7200,
     },
     features: [
       "Plans.PRO.features.credits",

@@ -26,6 +26,8 @@ export type EntitlementFeatures = {
   webSearch: boolean;
   documentReview: boolean;
   voiceInput: boolean;
+  /** Step 9.4: natural (AI) voices for read-aloud; browser voices are always allowed. */
+  naturalVoices: boolean;
   collaboration: boolean;
 };
 
@@ -111,6 +113,7 @@ export function entitlementsForPlan(plan: PlanKey): Entitlements {
       webSearch: Boolean(def.limits.grounding),
       documentReview: true,
       voiceInput: def.limits.voiceSecondsPerDay > 0,
+      naturalVoices: def.limits.readAloudSecondsPerDay > 0,
       collaboration: def.limits.members > 0,
     },
   };
