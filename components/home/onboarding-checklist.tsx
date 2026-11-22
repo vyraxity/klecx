@@ -47,7 +47,7 @@ export function OnboardingChecklist({
       completed: onboarding.usernameChosen,
       action: !onboarding.usernameChosen ? (
         <Link
-          href="/settings"
+          href="/settings/profile"
           className="text-xs font-semibold text-accent hover:underline flex items-center gap-0.5"
         >
           <span>{tHome("onboarding.settings")}</span>

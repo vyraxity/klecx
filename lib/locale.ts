@@ -27,6 +27,34 @@ export const AI_LANGUAGES = [
 ] as const;
 export type AiLanguage = (typeof AI_LANGUAGES)[number];
 
+/**
+ * Each AI language in its own language (endonyms, the same in every UI
+ * locale). Fixed here rather than computed with Intl.DisplayNames, whose
+ * results differ between the server and browsers (a hydration mismatch).
+ */
+export const AI_LANGUAGE_NATIVE_NAMES: Record<AiLanguage, string> = {
+  en: "English",
+  es: "Español",
+  fr: "Français",
+  pt: "Português",
+  de: "Deutsch",
+  it: "Italiano",
+  nl: "Nederlands",
+  ar: "العربية",
+  hi: "हिन्दी",
+  bn: "বাংলা",
+  sw: "Kiswahili",
+  yo: "Èdè Yorùbá",
+  ig: "Asụsụ Igbo",
+  ha: "Harshen Hausa",
+  zh: "中文",
+  ja: "日本語",
+  ko: "한국어",
+  ru: "Русский",
+  tr: "Türkçe",
+  id: "Bahasa Indonesia",
+};
+
 export const DEFAULT_UI_LOCALE: UiLocale = "en";
 export const DEFAULT_AI_LANGUAGE: AiLanguage = "en";
 export const LOCALE_COOKIE = "NEXT_LOCALE";

@@ -144,14 +144,14 @@ export function formatNotificationPresentation(
           typeof p.remainingCredits === "number"
             ? desc(item.type, "descriptionCount", { count: p.remainingCredits })
             : desc(item.type),
-        href: href || "/settings",
+        href: href || "/settings/billing",
         icon: <AlertTriangle className="h-4 w-4 text-warning" />,
       };
     case "CREDITS_EXHAUSTED":
       return {
         title: title(item.type),
         description: desc(item.type),
-        href: href || "/settings",
+        href: href || "/settings/billing",
         icon: <AlertTriangle className="h-4 w-4 text-danger" />,
       };
     case "PAYMENT_FAILED":

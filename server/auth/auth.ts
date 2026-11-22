@@ -15,6 +15,20 @@ import { generateUniqueDefaultUsername } from "@/server/services/username";
 import { parseDeviceMetadata, checkAndAlertNewSignIn } from "@/server/services/device";
 import { welcomeOnUserCreated, welcomeOnUserUpdated } from "@/server/services/welcome";
 
+/**
+ * Whether a verification token belongs to an email change (Better Auth puts
+ * `requestType` in the token's payload). Only read to pick the email wording;
+ * Better Auth verifies the token itself.
+ */
+export function isEmailChangeToken(token: string): boolean {
+  try {
+    const payload = JSON.parse(Buffer.from(token.split(".")[1] ?? "", "base64url").toString("utf8"));
+    return payload?.requestType === "change-email-verification" || Boolean(payload?.updateTo);
+  } catch {
+    return false;
+  }
+}
+
 export const auth = betterAuth({
   baseURL: env.APP_URL,
   secret: env.BETTER_AUTH_SECRET,
@@ -163,6 +177,15 @@ export const auth = betterAuth({
   },
   trustedOrigins: [env.APP_URL],
   user: {
+    // Step 9.1: email change from Settings → Profile. The current (verified)
+    // address approves it first, then the new address is verified; the email
+    // changes only after both (Better Auth's two-step flow).
+    changeEmail: {
+      enabled: true,
+      sendChangeEmailConfirmation: async ({ user, newEmail, url }) => {
+        await sendEmail("change-email-confirm", user.email, { url, newEmail });
+      },
+    },
     additionalFields: {
       role: {
         type: "string",
@@ -202,7 +225,12 @@ export const auth = betterAuth({
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
-    sendVerificationEmail: async ({ user, url }) => {
+    sendVerificationEmail: async ({ user, url, token }) => {
+      // Step 9.1: the second step of an email change verifies the new address.
+      if (isEmailChangeToken(token)) {
+        await sendEmail("change-email-verify", user.email, { url });
+        return;
+      }
       await sendEmail("verify-email", user.email, { url });
     },
   },

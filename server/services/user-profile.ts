@@ -42,3 +42,19 @@ export async function getShellIdentity(userId: string) {
     select: { name: true, username: true, usernameClaimedAt: true },
   });
 }
+
+/** Step 9.1: what Settings → Profile shows, read from the database (never the session copy). */
+export async function getAccountIdentity(userId: string) {
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: {
+      name: true,
+      email: true,
+      emailVerified: true,
+      username: true,
+      usernameClaimedAt: true,
+    },
+  });
+  if (!user) throw Errors.notFound("User");
+  return user;
+}

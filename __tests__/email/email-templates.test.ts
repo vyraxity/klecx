@@ -43,6 +43,13 @@ describe("Step 1.7 & F0.2 — Transactional Email Module", () => {
     "password-changed": {
       time: "2026-10-28 09:45 UTC",
     },
+    "change-email-confirm": {
+      url: "https://klecx.vyraxity.com/api/auth/verify-email?token=change-1",
+      newEmail: "new@example.com",
+    },
+    "change-email-verify": {
+      url: "https://klecx.vyraxity.com/api/auth/verify-email?token=change-2",
+    },
     "share-created": {
       title: "Quarterly AI Strategy Analysis",
       shareUrl: "https://klecx.vyraxity.com/workspaces/share/wksp-999",
@@ -120,6 +127,8 @@ describe("Step 1.7 & F0.2 — Transactional Email Module", () => {
     "invitation",
     "new-sign-in",
     "password-changed",
+    "change-email-confirm",
+    "change-email-verify",
     "share-created",
     "credits-low",
     "payment-failed",

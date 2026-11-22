@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { collectClientDiagnostics } from "@/lib/support/diagnostics";
 import { useFormatter, useTranslations } from "next-intl";
 import { getApiErrorMessage } from "@/lib/api/error-message";
 import { Mail, Clock, ShieldCheck, CheckCircle2, AlertCircle, Send, Info } from "lucide-react";
@@ -75,17 +76,7 @@ export function SupportForm({ initialTopic, initialMessage }: SupportFormProps =
 
     try {
       const diagnosticsData = attachDiagnostics
-        ? {
-            appVersion: "0.1.0",
-            clientTimestamp: new Date().toISOString(),
-            userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "unknown",
-            language: typeof navigator !== "undefined" ? navigator.language : "unknown",
-            screen:
-              typeof window !== "undefined"
-                ? `${window.innerWidth}x${window.innerHeight}`
-                : "unknown",
-            hasActiveSession: Boolean(session?.user),
-          }
+        ? collectClientDiagnostics(Boolean(session?.user))
         : undefined;
 
       const fields = {

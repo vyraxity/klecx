@@ -19,7 +19,7 @@ jest.mock("next-intl/server", () =>
 import sitemap from "@/app/sitemap";
 import robots from "@/app/robots";
 import { generateMetadata as appLayoutMetadata } from "@/app/(app)/layout";
-import { generateMetadata as settingsMetadata } from "@/app/settings/page";
+import { generateMetadata as settingsMetadata } from "@/app/(app)/settings/layout";
 import { PLANS } from "@/server/billing/plans";
 import enMessages from "@/messages/en.json";
 

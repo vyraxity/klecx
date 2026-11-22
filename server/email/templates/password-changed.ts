@@ -23,7 +23,7 @@ export function renderPasswordChanged(
     greeting,
     bodyHtml: `<p style="margin: 0;">${escapeHtml(bodyText)}</p>`,
     bodyText,
-    actionUrl: `${site.appUrl}/settings`,
+    actionUrl: `${site.appUrl}/settings/security`,
     actionLabel,
     disclaimerHtml: escapeHtml(disclaimerText),
     disclaimerText,

@@ -363,7 +363,7 @@ export async function checkAndNotifyOwnerAllowanceThresholds(opts: {
         spentThisPeriod,
         monthlyAllowance,
         upgradeUrl: `${env.APP_URL}/pricing`,
-        href: "/settings",
+        href: "/settings/billing",
       },
       {
         dedupeKey: `${threshold === 100 ? "credits_exhausted" : "credits_low"}:${periodKey}`,

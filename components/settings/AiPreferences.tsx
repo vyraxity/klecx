@@ -9,7 +9,7 @@ import {
   useUpdateUserPreferences,
   useUserPreferences,
 } from "@/lib/api/hooks/me";
-import { AI_LANGUAGES, type AiLanguage } from "@/lib/locale";
+import { AI_LANGUAGES, AI_LANGUAGE_NATIVE_NAMES, type AiLanguage } from "@/lib/locale";
 
 export interface AiPreferencesProps {
   userId: string;
@@ -35,21 +35,10 @@ export default function AiPreferences({
 
   const isUpdating = update.isPending;
 
-  const languageOptions = React.useMemo(() => {
-    return AI_LANGUAGES.map((code) => {
-      let nativeName = code.toUpperCase();
-      try {
-        const dn = new Intl.DisplayNames([code, "en"], { type: "language" });
-        const n = dn.of(code);
-        if (n) {
-          nativeName = n.charAt(0).toUpperCase() + n.slice(1);
-        }
-      } catch {
-        // Fallback to code
-      }
-      return { code, label: `${nativeName} (${code.toUpperCase()})` };
-    });
-  }, []);
+  const languageOptions = AI_LANGUAGES.map((code) => ({
+    code,
+    label: `${AI_LANGUAGE_NATIVE_NAMES[code]} (${code.toUpperCase()})`,
+  }));
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const val = e.target.value.trim();

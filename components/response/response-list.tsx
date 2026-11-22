@@ -376,7 +376,7 @@ export function ResponseList({
                       asChild
                       className="bg-accent text-accent-fg hover:bg-accent/90 text-xs"
                     >
-                      <Link href="/settings">{t("upgradePlan")}</Link>
+                      <Link href="/settings/billing">{t("upgradePlan")}</Link>
                     </Button>
                   </div>
                 </div>
