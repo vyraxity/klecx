@@ -90,3 +90,8 @@ How to use this file:
 - **Found:** Step 9.1.
 - **Why:** someone who lost access to their email inbox can't change their email address (Settings → Profile sends the approval link to the **current** address first), and someone whose only sign-in method is a social account they lost can't get back in. Support has to verify the person, then change the email or the sign-in methods for them.
 - **Today:** the person's own actions only: `POST /api/v1/me/email` (Better Auth's two-step change), `GET /api/v1/me/linked-accounts`, `DELETE /api/v1/me/linked-accounts/:provider` (`server/services/account-security.ts`; never the last method; `ACCOUNT_UNLINKED` and `PASSWORD_CHANGED` in `audit_logs`). Needed: admin actions to see a person's sign-in methods (the `accounts` table, provider ids only), change the email directly (then revoke sessions and email both addresses), remove a sign-in method or send a set-password link, each with an audit entry.
+
+### 16. A person's usage and credit history
+- **Found:** Step 9.3.
+- **Why:** "where did my credits go?", disputes and refund checks (the refund policy depends on how much of a payment was used) need the same view the person has, from the admin side.
+- **Today:** `getUsageSummary()`, `getUsageTimeseries()`, `getUsageByMember()` and `listCreditHistory()` in `server/services/usage.ts` take a user id; the `/api/v1/me/*` routes only serve the signed-in person. Needed: admin routes (or console reads) that call these for a looked-up user, read-only.

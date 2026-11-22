@@ -101,13 +101,18 @@ export function UsageAreaChart({ points }: { points: UsageTimeseriesPoint[] }) {
                 </text>
               </g>
             ))}
-            {points.map((p, i) =>
-              i % labelEvery === 0 || i === points.length - 1 ? (
-                <text key={p.day} x={x(i)} y={HEIGHT - 6} textAnchor="middle" className="fill-muted text-[10px]">
+            {points.map((p, i) => {
+              const last = points.length - 1;
+              // Regular ticks, plus the last day; a tick too close to the last is dropped.
+              const show = i === last || (i % labelEvery === 0 && last - i >= labelEvery * 0.75);
+              if (!show) return null;
+              const anchor = points.length > 1 && i === 0 ? "start" : i === last && points.length > 1 ? "end" : "middle";
+              return (
+                <text key={p.day} x={x(i)} y={HEIGHT - 6} textAnchor={anchor} className="fill-muted text-[10px]">
                   {dayLabel(p.day)}
                 </text>
-              ) : null
-            )}
+              );
+            })}
             <g className="text-accent">
               <path d={area} fill="currentColor" fillOpacity={0.1} />
               <path d={line} fill="none" stroke="currentColor" strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />

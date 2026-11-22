@@ -119,8 +119,7 @@ export function CreditHistory({ userId }: { userId: string }) {
                       e.amount > 0 ? "text-success" : "text-fg"
                     )}
                   >
-                    {e.amount > 0 ? "+" : ""}
-                    {format.number(e.amount)}
+                    {format.number(e.amount, { signDisplay: "exceptZero" })}
                   </td>
                   <td className="whitespace-nowrap py-2 text-right text-muted tabular-nums">
                     {format.number(e.balanceAfter)}
