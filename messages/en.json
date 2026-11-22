@@ -1553,8 +1553,7 @@
           "id": "ai",
           "heading": "5. How AI processing works",
           "paragraphs": [
-            "To produce an answer, Klecx sends your prompt and the context it needs (earlier messages, the passage you asked about, your workspace documents and Klecx notes, and attached files) to our AI model provider. The provider uses this data only to produce the answer, and its terms don't allow it to use data sent by apps like Klecx to train its models.",
-            "Image prompts are checked by automated rules before an image is created. If a prompt is blocked, we keep only a fingerprint of it and the reason, not its text."
+            "To produce an answer, Klecx sends your prompt and the context it needs (earlier messages, the passage you asked about, your workspace documents and Klecx notes, and attached files) to our AI model provider. The provider uses this data only to produce the answer, and its terms don't allow it to use data sent by apps like Klecx to train its models."
           ]
         },
         {
@@ -1681,29 +1680,16 @@
           ]
         },
         {
-          "id": "images",
-          "heading": "3. Images",
-          "paragraphs": [
-            "When you create images, never request or create:"
-          ],
-          "bullets": [
-            "Any sexual or sexualised content involving minors.",
-            "Intimate or sexual images of real people without their consent.",
-            "Face swaps, deepfakes or other manipulation of the face or likeness of real people.",
-            "Extreme violence, or content that encourages self-harm."
-          ]
-        },
-        {
           "id": "enforcement",
-          "heading": "4. How we enforce this policy",
+          "heading": "3. How we enforce this policy",
           "paragraphs": [
-            "Image prompts are checked by automated rules before an image is created, and blocked prompts are refused. After three blocked image prompts in one day, image creation is turned off for that account until the next day. For blocked prompts we keep only a fingerprint and the reason, not the text. Our AI model provider also applies its own safety filters to all requests, and rate limits protect the Service from abuse.",
+            "Our AI model provider also applies its own safety filters to all requests, and rate limits protect the Service from abuse.",
             "Depending on how serious a violation is, we may block the content, remove a public link, limit features, or suspend or close the account. Where reasonable, we will tell you and give you a chance to respond."
           ]
         },
         {
           "id": "reporting",
-          "heading": "5. Reporting abuse",
+          "heading": "4. Reporting abuse",
           "paragraphs": [
             "To report content or behaviour that breaks this policy, including a public share link, write to {abuseEmail} with a link or description and why you think it breaks the policy. For copyright complaints, see our Terms of Service. We review every report and reply within 3 business days."
           ]

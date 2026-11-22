@@ -6,7 +6,8 @@ Status legend: ✅ done · 🟡 owner to do / check · ⏳ later step
 
 ## Before applying
 
-- 🟡 **Payouts to Nigeria**: Creem's docs don't list payout countries. Ask Creem support (bank account vs. USDC, individual vs. CAC-registered business, documents, fees). If unsupported: USDC payouts or a fallback provider (guide §4.2; `BillingProvider` makes it one new adapter).
+- ✅ **Payouts to Nigeria**: supported, to a bank account or in USDC (Creem support, answer reported by the owner on 2026-11-22).
+- 🟡 **Who applies (individual or company)**: Creem asks an individual for a proof of identification and a company for its business registration certificate. Vyraxity's CAC registration is still pending; the only certificate today is a SMEDAN certificate (an MSME registration, not a company registration). Ask Creem support whether (a) the owner can apply as an individual now, using "Vyraxity" as the trading/brand name, (b) the SMEDAN certificate helps, and (c) the payout account / legal entity can be switched to Vyraxity once the CAC certificate arrives, without a new review or a new store. Whatever is chosen, describe it honestly in the application and check that the legal pages' "Klecx is a product of Vyraxity" and the Terms' "we" match it (`COMPANY_LEGAL_NAME`; a lawyer should confirm, Step 10.6).
 - 🟡 **Secrets in the public repository's history** rotated (RapidAPI key, old `AUTH_SECRET`, old `NEXT_PUBLIC_ENC_SECRET`): see `CLAUDE.md` open items.
 - ⏳ Phases 9 and 10 done; `dev` merged into `main`; Vercel deployment protection **off** for `klecx.com`.
 
@@ -20,13 +21,13 @@ Status legend: ✅ done · 🟡 owner to do / check · ⏳ later step
 - ✅ One refund policy, identical in the Terms (section 6), the FAQ and the help article `billing-and-cancellation`.
 - ✅ Cancellation inside the app (**Settings → Plan & billing → Cancel plan**, at period end) and the customer portal link (payment methods & invoices).
 - ✅ Consent to immediate start before every checkout and upgrade, recorded (`billing_consents`).
-- ✅ Privacy policy per the NDPA 2023 (plus GDPR rights for EU/UK), international transfers listed (F5.5); provider data-use evidence in `docs/compliance/ai-provider-data-use.md` (🟡 owner: add the terms URL and screenshot marked TODO there).
+- ✅ Privacy policy per the NDPA 2023 (plus GDPR rights for EU/UK), international transfers listed (F5.5); provider data-use evidence in `docs/compliance/ai-provider-data-use.md` (terms URL and API tier recorded 2026-11-22).
 - ✅ Cookie notice (F5.6), truthful features / FAQ / status page (F5.4), complete es/fr legal text (F5.5).
 - ✅ Web search on for all plans, run only when the model needs it, with a per-day cap (in the abuse document).
 
 ## Support and abuse
 
-- 🟡 **Support email**: the same address in Creem's **Business Details**, on `/support` (`SUPPORT_EMAIL`) and on receipts; a mismatch is a common reason for "changes requested". Send a test message and check the inbox receives it.
+- ✅ **Support email** set in Creem's **Business Details** (owner, 2026-11-22). 🟡 Before applying, check it is exactly the address shown on `/support` (`SUPPORT_EMAIL`) in **production**, and send a test message to it.
 - 🟡 **Abuse email** (`ABUSE_EMAIL`, shown on `/acceptable-use`): a monitored inbox; reply within 3 business days (stated in the AUP).
 - ✅ Admin can suspend an account and freeze its credits (`/api/v1/admin/users/:id/suspend|unsuspend|freeze-credits|unfreeze-credits`, admins only, audited). Until the admin console exists, call them with an admin session (`ADMIN_CONSOLE.md` §14).
 - ✅ "How we prevent abuse" document: `docs/compliance/abuse-prevention.md`.
@@ -35,13 +36,13 @@ Status legend: ✅ done · 🟡 owner to do / check · ⏳ later step
 
 - ✅ Checkout, webhooks (signed, recorded once), credits, cancel / resume, upgrade, refunds and disputes built and tested (Steps 8.2–8.5).
 - 🟡 **Evidence**: one full test-mode purchase on the deployed preview (`dev.klecx.com`, `BILLING_ENABLED=true` on Preview only), with screenshots or a screen recording of: pricing → consent → Creem checkout → "Activating your plan…" → plan active → cancel → keep my plan; and the matching rows in `billing_events` (status PROCESSED).
-- ✅ Image generation off (text-only launch): no Moderation API or Customer Credits needed yet (deferred, see `CLAUDE.md` "Text-only launch").
+- ✅ Image generation off (text-only launch): no Moderation API or Customer Credits needed yet (deferred, see `CLAUDE.md` "Text-only launch"). The image parts of the Acceptable Use Policy and the Privacy Policy are removed until images come back (`docs/compliance/legal-text-for-images.md`).
 
 ## The application form (what Creem asks)
 
 Prepare these answers in advance:
 
-1. **Name**: your full name and/or business name (Vyraxity; state honestly whether the CAC registration is done or planned).
+1. **Name**: your full name and/or business name (Vyraxity; state honestly whether the CAC registration is done or still pending, and whether you apply as an individual — see "Who applies" above).
 2. **Store / product name**: Klecx.
 3. **Website**: https://klecx.com
 4. **Business description and how you operate**: who you are, Lagos-based, new product, no prior payment processing history; text-first AI workspace built on third-party models; low-risk launch plan (Free plan first, paid plans after approval, refund policy, abuse controls). Paste or summarise `docs/compliance/abuse-prevention.md`.

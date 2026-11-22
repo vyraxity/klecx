@@ -1553,8 +1553,7 @@
           "id": "ai",
           "heading": "5. Fonctionnement du traitement par l'IA",
           "paragraphs": [
-            "Pour produire une réponse, Klecx envoie votre message et le contexte nécessaire (messages précédents, passage sur lequel vous avez posé une question, documents de votre espace de travail et notes Klecx, fichiers joints) à notre fournisseur de modèles d'IA. Le fournisseur utilise ces données uniquement pour produire la réponse, et ses conditions ne l'autorisent pas à utiliser les données envoyées par des applications comme Klecx pour entraîner ses modèles.",
-            "Les demandes d'images sont vérifiées par des règles automatiques avant la création de l'image. Si une demande est bloquée, nous ne gardons qu'une empreinte de celle-ci et le motif, pas son texte."
+            "Pour produire une réponse, Klecx envoie votre message et le contexte nécessaire (messages précédents, passage sur lequel vous avez posé une question, documents de votre espace de travail et notes Klecx, fichiers joints) à notre fournisseur de modèles d'IA. Le fournisseur utilise ces données uniquement pour produire la réponse, et ses conditions ne l'autorisent pas à utiliser les données envoyées par des applications comme Klecx pour entraîner ses modèles."
           ]
         },
         {
@@ -1681,29 +1680,16 @@
           ]
         },
         {
-          "id": "images",
-          "heading": "3. Images",
-          "paragraphs": [
-            "Lorsque vous créez des images, ne demandez ni ne créez jamais :"
-          ],
-          "bullets": [
-            "Aucun contenu sexuel ou sexualisé impliquant des mineurs.",
-            "Des images intimes ou sexuelles de personnes réelles sans leur consentement.",
-            "Des échanges de visages, deepfakes ou autres manipulations du visage ou de l'image de personnes réelles.",
-            "De la violence extrême, ou un contenu qui encourage l'automutilation."
-          ]
-        },
-        {
           "id": "enforcement",
-          "heading": "4. Comment nous appliquons cette politique",
+          "heading": "3. Comment nous appliquons cette politique",
           "paragraphs": [
-            "Les demandes d'images sont vérifiées par des règles automatiques avant la création de l'image, et les demandes bloquées sont refusées. Après trois demandes d'images bloquées dans la même journée, la création d'images est désactivée pour ce compte jusqu'au lendemain. Pour les demandes bloquées, nous ne gardons qu'une empreinte et le motif, pas le texte. Notre fournisseur de modèles d'IA applique aussi ses propres filtres de sécurité à toutes les demandes, et des limites d'utilisation protègent le Service contre les abus.",
+            "Notre fournisseur de modèles d'IA applique aussi ses propres filtres de sécurité à toutes les demandes, et des limites d'utilisation protègent le Service contre les abus.",
             "Selon la gravité de l'infraction, nous pouvons bloquer le contenu, retirer un lien public, limiter des fonctions, ou suspendre ou fermer le compte. Lorsque c'est raisonnable, nous vous en informerons et vous donnerons la possibilité de répondre."
           ]
         },
         {
           "id": "reporting",
-          "heading": "5. Signaler un abus",
+          "heading": "4. Signaler un abus",
           "paragraphs": [
             "Pour signaler un contenu ou un comportement contraire à cette politique, y compris un lien public, écrivez à {abuseEmail} avec un lien ou une description et la raison pour laquelle vous pensez qu'il l'enfreint. Pour les réclamations relatives au droit d'auteur, voir nos Conditions d'utilisation. Nous examinons chaque signalement et répondons sous 3 jours ouvrés."
           ]

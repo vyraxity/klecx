@@ -15,8 +15,8 @@ Record only what has been checked. Don't add claims here (encryption, certificat
 | Confirmed by | Owner (Vyraxity) |
 | Date confirmed | 2026-11-08 |
 | What was confirmed | The AI provider does not use data sent by third-party apps through its API to train its models. |
-| Source (provider terms page) | _TODO (owner): add the URL of the terms section, and a screenshot or PDF saved in this folder._ |
-| Account / tier those terms cover | _TODO (owner): name the paid API account/tier that production uses._ |
+| Source (provider terms page) | https://aistudio.google.com/docs/terms (given by the owner on 2026-11-22). _Optional: save a dated PDF or screenshot of the data-use section in this folder, in case the page changes._ |
+| Account / tier those terms cover | Vyraxity's Google AI (Gemini API) account, **Tier 1** (a paid, billing-enabled tier), the one production uses (owner, 2026-11-22). |
 
 ## Conditions
 
