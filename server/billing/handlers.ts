@@ -126,9 +126,9 @@ export function paidGrantKey(provider: string, transactionId: string): string {
   return `${provider}:paid:${transactionId}`;
 }
 
-/** "2026-11" — the month a grant's period starts in (UTC). */
+/** "2026-11-05" — the day a granted period starts (UTC). Step 8.5: a second payment for the same period start is a mid-period charge. */
 function periodKey(d: Date): string {
-  return d.toISOString().slice(0, 7);
+  return d.toISOString().slice(0, 10);
 }
 
 async function resolveUserId(tx: Tx, event: NormalizedEvent): Promise<string | null> {
@@ -345,6 +345,19 @@ export async function applyBillingEvent(
       const transactionId =
         event.data.transaction?.id ??
         `${eventSub?.id ?? "sub"}:${(eventSub?.currentPeriodStart ?? event.createdAt).toISOString()}`;
+      // Step 8.5: a payment inside a period that was already granted (the prorated
+      // charge of an upgrade) grants nothing: changePlan() added the extra credits.
+      if (
+        row &&
+        !replacing &&
+        eventSub?.currentPeriodStart &&
+        row.providerSubscriptionId === eventSub.id &&
+        row.lastGrantPeriod === periodKey(eventSub.currentPeriodStart)
+      ) {
+        note = "mid_period_payment";
+        break;
+      }
+
       const account = await ensureCreditAccountInTx(tx, userId);
       const grantKey = paidGrantKey(event.provider, transactionId);
 

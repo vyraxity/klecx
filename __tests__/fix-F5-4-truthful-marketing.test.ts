@@ -94,9 +94,10 @@ describe("F5.4 — FAQ claims", () => {
     expect(a).toContain(`≈ ${MODEL_CATALOG["image-standard"].typicalCredits} per image`);
     expect(a).toContain(`adds ${GROUNDING_SURCHARGE_CREDITS} credits`);
     expect(a).not.toMatch(/markup/i);
-    expect(en.Marketing.pricing.imageGenDesc).toContain(
-      `≈ ${MODEL_CATALOG["image-standard"].typicalCredits} credits`
-    );
+    // Step 8.5: the pricing page fills the number in from the catalog (no hand-typed copy).
+    expect(en.Marketing.pricing.imageGenDesc).toContain("≈ {credits} credits");
+    expect(en.Marketing.pricing.standardTurnDesc).toContain("≈ {credits} credits");
+    expect(en.Marketing.pricing.groundingDesc).toContain("+{credits} credits");
   });
 
   it.each(Object.entries(LOCALES))("%s: no top-up packs, no encryption-at-rest claim", (_locale, m) => {

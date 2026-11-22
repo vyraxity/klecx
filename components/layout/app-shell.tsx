@@ -47,6 +47,7 @@ import { CommandPalette } from "./command-palette";
 import { AllAnnotationsDrawer } from "@/components/annotations";
 import { ClaimUsernameDialog } from "@/components/user/claim-username-dialog";
 import { ClaimUsernameBanner } from "@/components/user/claim-username-banner";
+import { UpgradeDialogHost } from "@/components/billing/upgrade-dialog";
 import type {
   AppShellUser,
   SidebarProjectItem,
@@ -605,6 +606,7 @@ export function AppShell({
       />
 
       {/* Command Palette (Ctrl/⌘ + K) */}
+      <UpgradeDialogHost userId={user.id} />
       <CommandPalette
         open={commandPaletteOpen}
         onOpenChange={setCommandPaletteOpen}

@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
+import { subscribeIntentPath } from "@/lib/billing/intent";
+import { PLAN_MANAGE_HREF } from "@/lib/billing/links";
 import { useTranslations } from "next-intl";
-import { Check, HelpCircle } from "lucide-react";
+import { Check, HelpCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +13,68 @@ import { PLANS, PlanKey } from "@/server/billing/plans";
 import { useSiteConfig } from "@/components/providers/site-config-provider";
 import { isImageGenerationEnabled, visiblePlanFeatures } from "@/lib/features/image-generation";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { GROUNDING_SURCHARGE_CREDITS, MODEL_CATALOG } from "@/lib/ai/model-catalog";
+
+/**
+ * A plan card's button (Step 8.5). A link to sign-up that carries the chosen
+ * plan and period (`/auth/register?plan=lite&interval=year`), so it works
+ * without JavaScript and for crawlers. For a paid plan, a click first checks
+ * the session: signed in on Free → Settings → Billing with the plan chosen
+ * (where the consent to immediate start is asked before checkout); already on
+ * a paid plan → Settings → Billing; signed out (401) → the sign-up link.
+ */
+function PlanCta({
+  plan,
+  interval,
+  popular,
+  label,
+}: {
+  plan: PlanKey;
+  interval: "month" | "year";
+  popular: boolean;
+  label: string;
+}) {
+  const router = useRouter();
+  const [pending, setPending] = React.useState(false);
+  const href = plan === "FREE" ? "/auth/register" : `/auth/register?plan=${plan.toLowerCase()}&interval=${interval}`;
+
+  const onClick = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (plan === "FREE" || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    setPending(true);
+    try {
+      const res = await fetch("/api/v1/me/subscription", { headers: { accept: "application/json" } });
+      if (!res.ok) {
+        router.push(href);
+        return;
+      }
+      const { data } = (await res.json()) as { data: { effectivePlan: PlanKey } };
+      router.push(data.effectivePlan === "FREE" ? subscribeIntentPath(plan, interval) : PLAN_MANAGE_HREF);
+    } catch {
+      router.push(href);
+    } finally {
+      setPending(false);
+    }
+  };
+
+  return (
+    <Button
+      asChild
+      variant={popular ? "default" : "outline"}
+      className={cn(
+        "w-full text-xs font-semibold h-9",
+        popular
+          ? "bg-accent text-accent-fg hover:bg-accent-hover shadow-2xs"
+          : "border-border text-fg hover:bg-surface-2"
+      )}
+    >
+      <Link href={href} onClick={onClick} aria-busy={pending || undefined}>
+        {pending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+        {label}
+      </Link>
+    </Button>
+  );
+}
 
 export function MarketingPricingTable({
   isTeaser: _isTeaser = false,
@@ -175,28 +239,23 @@ export function MarketingPricingTable({
                       <TooltipContent>{t("paidPlansTooltip")}</TooltipContent>
                     </Tooltip>
                   ) : (
-                    <Button
-                      asChild
-                      variant={isPopular ? "default" : "outline"}
-                      className={cn(
-                        "w-full text-xs font-semibold h-9",
-                        isPopular
-                          ? "bg-accent text-accent-fg hover:bg-accent-hover shadow-2xs"
-                          : "border-border text-fg hover:bg-surface-2"
-                      )}
-                    >
-                      <Link href={plan.id === "FREE" ? "/auth/register" : `/auth/register?plan=${plan.id.toLowerCase()}`}>
-                        {plan.id === "FREE"
-                          ? t("startFree")
-                          : t("subscribeTo", { name: tPlans(plan.name) })}
-                      </Link>
-                    </Button>
+                    <PlanCta
+                      plan={plan.id}
+                      interval={billingCycle}
+                      popular={Boolean(isPopular)}
+                      label={plan.id === "FREE" ? t("startFree") : t("subscribeTo", { name: tPlans(plan.name) })}
+                    />
                   )}
                 </div>
               </div>
             );
           })}
         </div>
+
+        {/* Step 8.5: prices are shown before tax (owner decided 2026-11-20). */}
+        {billingEnabled && (
+          <p className="mt-6 text-center text-xs text-fg-muted">{tPlans("Billing.taxNote")}</p>
+        )}
 
         {/* Transparent Credit Breakdown Footnote */}
         <div className="mt-12 p-6 rounded-2xl border border-border bg-surface-2/60 text-xs text-fg-muted space-y-3">
@@ -212,17 +271,17 @@ export function MarketingPricingTable({
           >
             <div className="p-3 rounded-xl bg-surface border border-border/60 space-y-1">
               <span className="font-semibold text-fg">{t("standardTurnTitle")}</span>
-              <p className="text-[11px] text-fg-subtle">{t("standardTurnDesc")}</p>
+              <p className="text-[11px] text-fg-subtle">{t("standardTurnDesc", { credits: MODEL_CATALOG["text-standard"].typicalCredits })}</p>
             </div>
             {imagesOn && (
               <div className="p-3 rounded-xl bg-surface border border-border/60 space-y-1">
                 <span className="font-semibold text-fg">{t("imageGenTitle")}</span>
-                <p className="text-[11px] text-fg-subtle">{t("imageGenDesc")}</p>
+                <p className="text-[11px] text-fg-subtle">{t("imageGenDesc", { credits: MODEL_CATALOG["image-standard"].typicalCredits })}</p>
               </div>
             )}
             <div className="p-3 rounded-xl bg-surface border border-border/60 space-y-1">
               <span className="font-semibold text-fg">{t("groundingTitle")}</span>
-              <p className="text-[11px] text-fg-subtle">{t("groundingDesc")}</p>
+              <p className="text-[11px] text-fg-subtle">{t("groundingDesc", { credits: GROUNDING_SURCHARGE_CREDITS })}</p>
             </div>
           </div>
           <p className="text-[11px] text-fg-subtle pt-1">

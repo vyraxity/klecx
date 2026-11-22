@@ -25,13 +25,13 @@ const GithubIcon = () => (
   </svg>
 );
 
-const OAuthCard = (): React.JSX.Element => {
+const OAuthCard = ({ callbackURL = DEFAULT_LOGIN_REDIRECT }: { callbackURL?: string } = {}): React.JSX.Element => {
   const t = useTranslations("Auth");
 
   const handleClick = async (provider: "google" | "github") => {
     await authClient.signIn.social({
       provider,
-      callbackURL: DEFAULT_LOGIN_REDIRECT,
+      callbackURL,
     });
   };
 

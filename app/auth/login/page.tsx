@@ -4,7 +4,8 @@ import { getTranslations } from "next-intl/server";
 import AuthCard from "@/components/auth/AuthCard";
 import AuthWrapper from "@/components/auth/AuthWrapper";
 import LoginForm from "@/components/auth/LoginForm";
-import { useTranslations } from "next-intl";
+import { parseSubscribeIntent } from "@/lib/billing/intent";
+import { getSiteConfig } from "@/server/config/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata.auth");
@@ -18,8 +19,16 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const LoginPage = () => {
-  const t = useTranslations("Auth");
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+
+const LoginPage = async ({ searchParams }: { searchParams: SearchParams }) => {
+  const t = await getTranslations("Auth");
+  const params = await searchParams;
+  // Step 8.5: keep a plan chosen on the pricing page for the register link and OAuth.
+  const intent = getSiteConfig().billingEnabled
+    ? parseSubscribeIntent(one(params.plan), one(params.interval))
+    : null;
 
   return (
     <AuthWrapper>
@@ -28,6 +37,7 @@ const LoginPage = () => {
         headerText={t("loginSubtitle")}
         backText={t("noAccount")}
         backLink="register"
+        intent={intent}
       >
         <Suspense fallback={<div className="h-40" />}>
           <LoginForm />

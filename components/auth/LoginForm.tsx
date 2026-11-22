@@ -7,6 +7,7 @@ import { AlertTriangle, CheckCircle2, Lock, Mail } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { parseSubscribeIntent, subscribeIntentPath } from "@/lib/billing/intent";
 import { getAuthErrorMessage } from "@/lib/api/error-message";
 import { authClient } from "@/lib/auth-client";
 import {
@@ -32,6 +33,9 @@ const LoginForm = (): React.JSX.Element => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const reason = searchParams?.get("reason");
+  // Step 8.5: a plan chosen on the pricing page continues to Settings → Billing after sign-in.
+  const intent = parseSubscribeIntent(searchParams?.get("plan"), searchParams?.get("interval"));
+  const redirectTo = intent ? subscribeIntentPath(intent.plan, intent.interval) : DEFAULT_LOGIN_REDIRECT;
   const [isPending, startTransition] = useTransition();
   const [isResending, startResendTransition] = useTransition();
   const [needsVerification, setNeedsVerification] = useState(false);
@@ -69,7 +73,7 @@ const LoginForm = (): React.JSX.Element => {
         const { error } = await authClient.signIn.email({
           email: values.email.trim(),
           password: values.password,
-          callbackURL: DEFAULT_LOGIN_REDIRECT,
+          callbackURL: redirectTo,
         });
 
         if (error) {
@@ -98,7 +102,7 @@ const LoginForm = (): React.JSX.Element => {
           message: t("signedIn"),
           success: true,
         });
-        router.push(DEFAULT_LOGIN_REDIRECT);
+        router.push(redirectTo);
         router.refresh();
       } catch {
         setResponse({
@@ -116,7 +120,7 @@ const LoginForm = (): React.JSX.Element => {
       try {
         await authClient.sendVerificationEmail({
           email,
-          callbackURL: DEFAULT_LOGIN_REDIRECT,
+          callbackURL: redirectTo,
         });
         setResponse({
           message: t("resendSent"),

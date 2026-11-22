@@ -576,6 +576,48 @@ export async function grantPlan(
 }
 
 /**
+ * Adds `amount` plan credits on top of the current balance (Step 8.5: an
+ * upgrade mid-period adds the difference between the two plans' allowances).
+ * Unlike `grantPlanInTx` nothing expires. Idempotent by `key`.
+ */
+export async function addPlanCreditsInTx(
+  tx: Prisma.TransactionClient,
+  accountId: string,
+  amount: number,
+  reason: string,
+  key: string
+): Promise<BalanceResult & { granted: boolean }> {
+  const rows = await tx.$queryRaw<{ plan_balance: number; topup_balance: number }[]>`
+    SELECT plan_balance, topup_balance FROM credit_accounts WHERE id = ${accountId} FOR UPDATE
+  `;
+  const current = rows[0];
+  if (!current) throw Errors.notFound("CreditAccount");
+  const existing = await tx.creditLedger.findUnique({ where: { idempotencyKey: key } });
+  if (existing) return { planBalance: existing.planAfter, topupBalance: existing.topupAfter, granted: false };
+  const add = Math.max(0, Math.floor(amount));
+  const updated = await tx.$queryRaw<{ plan_balance: number; topup_balance: number }[]>`
+    UPDATE credit_accounts SET plan_balance = plan_balance + ${add}, updated_at = now()
+    WHERE id = ${accountId}
+    RETURNING plan_balance, topup_balance
+  `;
+  const row = updated[0];
+  if (!row) throw Errors.notFound("CreditAccount");
+  await tx.creditLedger.create({
+    data: {
+      accountId,
+      type: "GRANT",
+      planDelta: add,
+      topupDelta: 0,
+      planAfter: row.plan_balance,
+      topupAfter: row.topup_balance,
+      reason,
+      idempotencyKey: key,
+    },
+  });
+  return { planBalance: row.plan_balance, topupBalance: row.topup_balance, granted: true };
+}
+
+/**
  * Takes back up to `amount` plan credits after a refund (Step 8.3), never more
  * than the plan balance: the balance floors at 0 and top-up credits are not
  * touched. Writes a `REFUND` ledger entry (also when nothing was left to take,

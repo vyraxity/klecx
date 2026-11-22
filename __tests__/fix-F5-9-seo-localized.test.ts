@@ -1,3 +1,4 @@
+import { PLAN_ORDER } from "@/lib/entitlements/shared";
 import {
   LOCALES,
   LOCALE_CODES,
@@ -214,6 +215,18 @@ describe("Step F5.9 — SEO files localized", () => {
       const d = data(SoftwareApplicationJsonLd({ locale: "en" }));
       expect(d.offers).toHaveLength(1);
       expect(d.offers[0].price).toBe(0);
+    });
+
+    it("SoftwareApplicationJsonLd lists every plan with its translated name and price once billing is on (Step 8.5)", () => {
+      setSiteConfigForTesting({ billingEnabled: true });
+      const d = data(SoftwareApplicationJsonLd({ locale: "fr" }));
+      expect(d.offers.map((o: { price: number }) => o.price)).toEqual(
+        PLAN_ORDER.map((plan) => PLANS[plan].priceMonthly)
+      );
+      expect(d.offers.map((o: { name: string }) => o.name)).toEqual(
+        PLAN_ORDER.map((plan) => PLANS[plan].name.split(".").reduce((m: any, k) => m[k], frMessages))
+      );
+      setSiteConfigForTesting({ billingEnabled: false });
     });
 
     it("PricingFaqJsonLd equals the visible FAQ, in each locale and billing state", () => {

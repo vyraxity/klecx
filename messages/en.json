@@ -255,7 +255,8 @@
       "SOCIAL_ACCOUNT_ALREADY_LINKED": "This sign-in account is already linked to another user.",
       "CREDENTIAL_ACCOUNT_NOT_FOUND": "This account doesn't use a password. Sign in with your provider instead.",
       "DISPOSABLE_EMAIL": "This email service isn't accepted. Please sign up with a permanent email address."
-    }
+    },
+    "planIntent": "You chose {plan} ({interval}). After you confirm your email, you'll continue to payment."
   },
   "Chat": {
     "newChat": "New Workspace",
@@ -401,7 +402,8 @@
       "unknownOs": "Unknown system",
       "deviceOn": "{browser} on {os}",
       "deviceInfo": "{browser} • {os}"
-    }
+    },
+    "billing": "Plan & billing"
   },
   "Email": {
     "common": {
@@ -607,6 +609,11 @@
         "subject": "Your account is paused during a payment dispute",
         "heading": "Payment dispute opened",
         "body": "A dispute was opened on one of your payments. While it is open, AI generation on your account is paused. If you didn't mean to open it, contact our support team."
+      },
+      "plan_changed": {
+        "subject": "Your plan has been upgraded",
+        "heading": "Plan upgraded",
+        "body": "Your plan has been upgraded and is active now. The extra credits of the new plan for this period have been added to your balance. Our payment partner charges the prorated difference."
       }
     },
     "billingAlert": {
@@ -1172,11 +1179,11 @@
       "subscribeTo": "Subscribe to {name}",
       "footnoteTitle": "How credits translate to real computational turns",
       "standardTurnTitle": "Standard Text Turn",
-      "standardTurnDesc": "≈ 7 credits per standard conversation turn",
+      "standardTurnDesc": "≈ {credits} credits per standard conversation turn",
       "imageGenTitle": "AI Image Generation",
-      "imageGenDesc": "≈ 34 credits per generated 1K image",
+      "imageGenDesc": "≈ {credits} credits per generated 1K image",
       "groundingTitle": "Web Search Grounding",
-      "groundingDesc": "+3 credits surcharge per grounded query",
+      "groundingDesc": "+{credits} credits surcharge per grounded query",
       "footnoteDisclaimer": "* Plan credits reset each billing period; unused credits don't carry over.",
       "comparison": {
         "title": "Detailed Plan Comparison",
@@ -1196,25 +1203,19 @@
         "teamMembers": "Collaborators (across all your workspaces)",
         "responseVersions": "Response Versions",
         "inAppCancel": "In-App Cancellation",
-        "turn1": "1 turn",
-        "turns2": "2 turns",
-        "turns3": "3 turns",
-        "turns5": "5 turns",
         "economyOnly": "Fast",
         "economyStandard": "Fast + Standard",
         "no": "No",
-        "yesApprox": "Yes (≈ 34 credits)",
-        "files3": "3 files (5 MB)",
-        "files10": "10 files (15 MB)",
-        "files25": "25 files (25 MB)",
-        "files50": "50 files (50 MB)",
+        "yesApprox": "Yes (≈ {credits} credits)",
         "markdownOnly": "Markdown",
         "allExportFormats": "MD, PDF, DOCX",
         "collaborators": "{count, plural, =0 {None} one {# person} other {# people}}",
         "unlimited": "Unlimited",
         "capCredits": "{count, plural, one {# credit} other {# credits}}",
         "notApplicable": "—",
-        "anytime": "Anytime, from Settings"
+        "anytime": "Anytime, from Settings",
+        "filesCount": "{count, plural, one {# file} other {# files}} ({mb} MB)",
+        "turnsCount": "{count, plural, one {# turn} other {# turns}}"
       },
       "priceFormat": "${price}",
       "creditsCount": "{count, plural, one {# Credit} other {# Credits}}",
@@ -1322,7 +1323,7 @@
     }
   },
   "Legal": {
-    "updatedAt": "2026-11-18",
+    "updatedAt": "2026-11-21",
     "lastUpdated": "Last updated {date}",
     "contents": "Contents",
     "languageClause": "This document is available in several languages for convenience. If there is any conflict between language versions, the English version prevails.",
@@ -1383,8 +1384,11 @@
           "heading": "6. Subscriptions, cancellation and refunds",
           "paragraphs": [
             "Paid plans are sold by our payment partner, Creem, which acts as the merchant of record: Creem is the seller of the subscription, processes your payment and handles invoices and sales taxes. Its terms also apply to your purchase.",
-            "Subscriptions renew automatically at the end of each period until you cancel. You can cancel at any time from Settings; your plan stays active until the end of the period you have paid for.",
-            "Refunds: new subscribers get a full refund within 14 days of their first payment if they have used less than 20 % of the credits of that period. A renewal is refunded within 7 days if you haven't used any credits since it renewed. Duplicate charges and billing errors are always refunded. To ask for a refund, write to {billingEmail}.",
+            "Prices are shown in USD without taxes. Applicable sales taxes (such as VAT or GST) are calculated and added at checkout by our payment partner.",
+            "Your plan starts as soon as the payment is confirmed. Before paying, you ask us to start the service immediately and acknowledge that, once it has started, you lose any statutory right to withdraw from the purchase within 14 days (for example as a consumer in the EU or UK). This doesn't affect the refunds described below.",
+            "Subscriptions renew automatically at the end of each period until you cancel. You can cancel at any time in Settings → Plan & billing; your plan stays active until the end of the period you have paid for. Cancelling in our payment partner's customer portal ends the plan immediately.",
+            "You can upgrade at any time in Settings → Plan & billing: the new plan starts immediately, the prorated difference for the rest of the period is charged at once, and the extra credits of the new plan are added. To move to a smaller plan or to monthly billing, cancel and subscribe to the new plan when the current period ends.",
+            "Refunds: new subscribers get a full refund within 14 days of their first payment if they have used less than 20 % of the credits of that period (once per customer). A renewal is refunded within 7 days if you haven't used any credits since it renewed. Duplicate charges and billing errors are always refunded. A full refund ends the paid plan immediately and removes the unused credits of that payment. To ask for a refund, use Request a refund in Settings → Plan & billing, or write to {billingEmail}.",
             "We may change prices. We will tell you at least 30 days before a new price applies to your subscription, and you can cancel before it does."
           ]
         },
@@ -1881,7 +1885,8 @@
         "tooMany": "You can attach at most {max} screenshots.",
         "totalTooLarge": "These screenshots are too large together. Remove one or use smaller images."
       }
-    }
+    },
+    "refundRequestMessage": "I'd like to request a refund of my last payment. Reason: "
   },
   "Status": {
     "title": "System Status",
@@ -2056,7 +2061,11 @@
       "screenshots_too_large": "The screenshots are too large together. Remove one or use smaller images.",
       "screenshot_type_unsupported": "Screenshots must be PNG, JPEG or WebP images.",
       "screenshot_unreadable": "A screenshot couldn't be read. Try saving it again as PNG.",
-      "screenshot_dimensions_too_large": "A screenshot is too large: at most 4096 × 4096 pixels."
+      "screenshot_dimensions_too_large": "A screenshot is too large: at most 4096 × 4096 pixels.",
+      "plan_change_not_supported": "Only upgrades can be made here. To move to a smaller plan, cancel and subscribe again when the period ends.",
+      "same_plan": "This is already your plan.",
+      "cancel_scheduled": "Your plan is set to end. Keep it first, then change it.",
+      "nothing_to_resume": "There's no cancellation to undo."
     }
   },
   "Gates": {
@@ -2460,7 +2469,8 @@
         "paused": "Your subscription is paused. Your account uses the Free plan meanwhile.",
         "refunded": "Your payment was refunded and your paid plan has ended.",
         "refunded_partial": "Part of your payment was refunded. Your plan stays active.",
-        "disputed": "A payment dispute is open. AI generation is paused on your account."
+        "disputed": "A payment dispute is open. AI generation is paused on your account.",
+        "plan_changed": "Your plan was upgraded. The extra credits have been added."
       },
       "NEW_SIGN_IN": {
         "title": "New sign-in detected",
@@ -3193,5 +3203,109 @@
     "accept": "Accept",
     "policy": "Cookie policy",
     "close": "Close the cookie notice"
+  },
+  "Billing": {
+    "page": {
+      "metaTitle": "Billing",
+      "back": "Settings",
+      "eyebrow": "Billing",
+      "title": "Plan & billing",
+      "description": "Your plan, payments and invoices."
+    },
+    "loading": "Loading your plan…",
+    "loadFailed": "Your plan couldn't be loaded. Refresh the page to try again.",
+    "activation": {
+      "waiting": "Activating your plan… This usually takes a few seconds.",
+      "slow": "This is taking longer than usual. Your payment went through if you saw the confirmation; your plan will appear here within a few minutes. Contact support if it doesn't.",
+      "done": "Your plan is active."
+    },
+    "pastDue": {
+      "body": "Your last payment for {plan} failed. Update your payment method to keep your plan.",
+      "action": "Update payment method"
+    },
+    "intent": {
+      "title": "You chose {plan} ({interval}). Continue to payment to start it.",
+      "action": "Continue to payment"
+    },
+    "taxNote": "Prices in USD, plus applicable taxes, calculated at checkout by our payment partner.",
+    "interval": {
+      "month": "Monthly",
+      "year": "Yearly"
+    },
+    "intervalLabel": "Billing period",
+    "currentPlan": "Current plan",
+    "status": {
+      "active": "Active",
+      "trial": "Trial",
+      "cancelScheduled": "Ends on {date}",
+      "paused": "Paused",
+      "paymentIssue": "Payment issue",
+      "onHold": "On hold",
+      "ended": "Ended",
+      "free": "Free plan"
+    },
+    "renewsOn": "Renews on",
+    "endsOn": "Ends on",
+    "creditsResetOn": "Credits reset on",
+    "launchingSoon": "Paid plans are launching soon.",
+    "upgrade": "Upgrade",
+    "upgradeTitle": "Choose a plan",
+    "upgradeDescription": "You'll pay on our payment partner's secure page. Your plan starts as soon as the payment is confirmed.",
+    "pricePerMonth": "{price} / month",
+    "pricePerYear": "{price} / year",
+    "creditsPerMonth": "{count, plural, one {# credit a month} other {# credits a month}}",
+    "changePlan": {
+      "open": "Change plan",
+      "title": "Upgrade your plan",
+      "description": "The new plan starts now. Its extra credits for this period are added to your balance at once.",
+      "pick": "Upgrade",
+      "done": "You're now on {plan}.",
+      "failed": "Your plan couldn't be changed. Nothing was charged.",
+      "prorationNote": "Our payment partner charges the prorated difference for the rest of the current period now.",
+      "downgradeNote": "To move to a smaller plan or to monthly billing, cancel your plan and subscribe to the new one when the current period ends."
+    },
+    "checkout": {
+      "pick": "Subscribe",
+      "failed": "The payment page couldn't be opened. Please try again.",
+      "note": "Cancel anytime. Your plan stays active until the end of the period you paid for."
+    },
+    "resume": {
+      "action": "Keep my plan",
+      "done": "Your plan will renew as usual.",
+      "failed": "Your plan couldn't be resumed. Please try again."
+    },
+    "portal": {
+      "action": "Payment methods & invoices",
+      "failed": "The billing portal couldn't be opened. Please try again.",
+      "note": "To keep your plan until the end of the paid period, cancel here. Cancelling in the payment portal ends it immediately."
+    },
+    "cancel": {
+      "action": "Cancel plan",
+      "title": "Cancel your plan?",
+      "body": "You keep {plan} and its credits until {date}. It won't renew after that.",
+      "after": "Then your account moves to the Free plan. Your workspaces and content are kept, and you can subscribe again at any time.",
+      "confirm": "Cancel plan",
+      "keep": "Keep plan",
+      "done": "Your plan is cancelled. You keep it until {date}.",
+      "failed": "Your plan couldn't be cancelled. Please try again."
+    },
+    "refund": {
+      "title": "Need a refund?",
+      "body": "Ask us and we'll check it against the refund policy.",
+      "policyLink": "Read the refund policy",
+      "action": "Request a refund"
+    },
+    "consent": {
+      "label": "I want my plan to start right away. I understand that once it has started I lose any legal right to cancel within 14 days and get my money back (for example in the EU or UK). The Klecx refund policy still applies.",
+      "policyLink": "Refund policy",
+      "required": "Tick the box above to continue."
+    }
+  },
+  "UpgradeDialog": {
+    "title": "Upgrade to {plan}",
+    "creditsLow": "{count, plural, one {You have # credit left this period.} other {You have # credits left this period.}} A bigger plan gives you more every month.",
+    "seePlans": "See all plans",
+    "upgradeTo": "Upgrade to {plan}",
+    "manage": "Manage plan"
   }
 }

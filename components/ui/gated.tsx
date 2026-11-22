@@ -8,6 +8,7 @@ import { PLANS } from "@/server/billing/plans";
 import { useSiteConfig } from "@/components/providers/site-config-provider";
 import { PLAN_UPGRADE_HREF } from "@/lib/billing/links";
 import type { GateReason } from "@/lib/entitlements/shared";
+import { openUpgradeDialog } from "@/lib/billing/upgrade";
 import {
   Tooltip,
   TooltipContent,
@@ -26,7 +27,7 @@ type GateTranslator = (
   values?: Record<string, string | number>
 ) => string;
 
-function gateMessage(
+export function gateMessage(
   reason: GateReason,
   t: GateTranslator,
   tPlans: (key: string) => string
@@ -176,6 +177,13 @@ export function Gated({
           <Link
             href={PLAN_UPGRADE_HREF}
             className="font-semibold text-accent underline underline-offset-2 hover:opacity-80"
+            onClick={(e) => {
+              // Step 8.5: in the app, the upgrade dialog recommends the plan that unlocks this.
+              if (openUpgradeDialog(reason)) {
+                e.preventDefault();
+                setOpen(false);
+              }
+            }}
           >
             {upgradeLabel}
           </Link>

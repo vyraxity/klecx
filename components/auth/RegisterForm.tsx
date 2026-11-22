@@ -25,7 +25,8 @@ import {
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 
-const RegisterForm = (): React.JSX.Element => {
+/** `callbackURL`: where the verification link lands (Step 8.5: Settings → Billing for a chosen plan). */
+const RegisterForm = ({ callbackURL = DEFAULT_LOGIN_REDIRECT }: { callbackURL?: string } = {}): React.JSX.Element => {
   const t = useTranslations("Auth");
   const tRoot = useTranslations();
   const router = useRouter();
@@ -54,7 +55,7 @@ const RegisterForm = (): React.JSX.Element => {
           email: values.email,
           name: values.name,
           password: values.password,
-          callbackURL: DEFAULT_LOGIN_REDIRECT,
+          callbackURL,
         });
 
         if (error) {

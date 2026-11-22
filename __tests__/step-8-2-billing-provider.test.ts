@@ -23,6 +23,7 @@ import {
   type CreateCheckoutInput,
 } from "@/server/billing/provider";
 import { validateEnv } from "@/server/env";
+import { CHECKOUT_CONSENT_VERSION } from "@/lib/billing/consent";
 import { POST as checkoutRoute } from "@/app/api/v1/billing/checkout/route";
 import { POST as portalRoute } from "@/app/api/v1/billing/portal/route";
 import { POST as cancelRoute } from "@/app/api/v1/billing/cancel/route";
@@ -280,6 +281,8 @@ describe("Step 8.2 — billing endpoints", () => {
     planForProduct() {
       return null;
     },
+    async resumeSubscription() {},
+    async changeSubscriptionPlan() {},
   };
 
   const post = (url: string, body?: unknown) =>
@@ -322,7 +325,7 @@ describe("Step 8.2 — billing endpoints", () => {
   });
 
   it("every endpoint needs a session", async () => {
-    expect((await checkoutRoute(post("/api/v1/billing/checkout", { plan: "LITE", interval: "month" }))).status).toBe(401);
+    expect((await checkoutRoute(post("/api/v1/billing/checkout", { plan: "LITE", interval: "month", consentImmediateStart: true }))).status).toBe(401);
     expect((await portalRoute(post("/api/v1/billing/portal"))).status).toBe(401);
     expect((await cancelRoute(post("/api/v1/billing/cancel", { atPeriodEnd: true }))).status).toBe(401);
     expect((await mySubscriptionRoute(new NextRequest("http://localhost:3000/api/v1/me/subscription"))).status).toBe(401);
@@ -331,7 +334,7 @@ describe("Step 8.2 — billing endpoints", () => {
 
   it("checkout: the server picks the product and sends the caller's id and email", async () => {
     mockActor = actorFor(buyer);
-    const res = await checkoutRoute(post("/api/v1/billing/checkout", { plan: "PRO", interval: "year" }));
+    const res = await checkoutRoute(post("/api/v1/billing/checkout", { plan: "PRO", interval: "year", consentImmediateStart: true }));
     expect(res.status).toBe(200);
     expect((await res.json()).data).toEqual({ url: "https://checkout.example/PRO-year" });
     expect(calls.checkout).toHaveLength(1);
@@ -341,7 +344,7 @@ describe("Step 8.2 — billing endpoints", () => {
       customerId: null,
       plan: "PRO",
       interval: "year",
-      successUrl: "http://localhost:3000/settings?checkout=success",
+      successUrl: "http://localhost:3000/settings/billing?checkout=success",
     });
   });
 
@@ -358,9 +361,26 @@ describe("Step 8.2 — billing endpoints", () => {
     expect(calls.checkout).toHaveLength(0);
   });
 
+  it("checkout: without the consent to immediate start → 422 and nothing recorded (Step 8.5)", async () => {
+    mockActor = actorFor(buyer);
+    const before = await db.billingConsent.count({ where: { userId: buyer } });
+    for (const body of [{ plan: "PRO", interval: "year" }, { plan: "PRO", interval: "year", consentImmediateStart: false }]) {
+      expect((await checkoutRoute(post("/api/v1/billing/checkout", body))).status).toBe(422);
+    }
+    expect(calls.checkout).toHaveLength(0);
+    expect(await db.billingConsent.count({ where: { userId: buyer } })).toBe(before);
+  });
+
+  it("checkout: the consent is recorded with the checkout and its wording version", async () => {
+    mockActor = actorFor(buyer);
+    expect((await checkoutRoute(post("/api/v1/billing/checkout", { plan: "LITE", interval: "year", consentImmediateStart: true }))).status).toBe(200);
+    const consent = await db.billingConsent.findFirst({ where: { userId: buyer, kind: "checkout" }, orderBy: { createdAt: "desc" } });
+    expect(consent).toMatchObject({ plan: "LITE", interval: "year", version: CHECKOUT_CONSENT_VERSION, checkoutId: calls.checkout[0]?.requestId });
+  });
+
   it("checkout: someone with a paid plan can't start a second subscription", async () => {
     mockActor = actorFor(subscriber);
-    const res = await checkoutRoute(post("/api/v1/billing/checkout", { plan: "PRO", interval: "month" }));
+    const res = await checkoutRoute(post("/api/v1/billing/checkout", { plan: "PRO", interval: "month", consentImmediateStart: true }));
     expect(res.status).toBe(409);
     expect((await res.json()).error.code).toBe("subscription_exists");
     expect(calls.checkout).toHaveLength(0);
@@ -370,7 +390,7 @@ describe("Step 8.2 — billing endpoints", () => {
     mockActor = actorFor(buyer);
     fail = true;
     const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
-    const res = await checkoutRoute(post("/api/v1/billing/checkout", { plan: "LITE", interval: "month" }));
+    const res = await checkoutRoute(post("/api/v1/billing/checkout", { plan: "LITE", interval: "month", consentImmediateStart: true }));
     expect(res.status).toBe(503);
     const body = await res.json();
     expect(body.error.code).toBe("billing_unavailable");
@@ -385,7 +405,7 @@ describe("Step 8.2 — billing endpoints", () => {
     mockActor = actorFor(buyer);
     setBillingProviderForTests(null);
     const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
-    const res = await checkoutRoute(post("/api/v1/billing/checkout", { plan: "LITE", interval: "month" }));
+    const res = await checkoutRoute(post("/api/v1/billing/checkout", { plan: "LITE", interval: "month", consentImmediateStart: true }));
     expect(res.status).toBe(503);
     errorSpy.mockRestore();
   });
@@ -414,7 +434,7 @@ describe("Step 8.2 — billing endpoints", () => {
   it("GET /me/subscription answers for the caller only and hides provider ids", async () => {
     mockActor = actorFor(buyer);
     const none = await (await mySubscriptionRoute(new NextRequest("http://localhost:3000/api/v1/me/subscription"))).json();
-    expect(none.data).toEqual({ effectivePlan: "FREE", subscription: null });
+    expect(none.data).toEqual({ effectivePlan: "FREE", resetsAt: null, balance: 0, subscription: null });
 
     mockActor = actorFor(subscriber);
     const res = await mySubscriptionRoute(new NextRequest("http://localhost:3000/api/v1/me/subscription"));
@@ -422,7 +442,8 @@ describe("Step 8.2 — billing endpoints", () => {
     const { data } = await res.json();
     expect(data).toMatchObject({
       effectivePlan: "STANDARD",
-      subscription: { plan: "STANDARD", interval: "month", status: "ACTIVE", cancelAtPeriodEnd: false, canManage: true },
+      // The cancel test above scheduled a cancellation; Step 8.5 records it once the provider confirms.
+      subscription: { plan: "STANDARD", interval: "month", status: "ACTIVE", cancelAtPeriodEnd: true, canManage: true, canResume: true, canCancel: false },
     });
     expect(JSON.stringify(data)).not.toMatch(/cust_|sub_/);
   });
