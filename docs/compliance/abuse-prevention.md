@@ -20,6 +20,7 @@ One page, written for the Creem account review (main guide Step 8.6). Paste it i
 - Each plan has a **daily credit cap** (Free 30 credits a day; paid plans 20–25 % of the monthly allowance a day) and a limit on **AI answers running at the same time** (1 to 5 by plan), counted on the workspace owner's account, so collaborators can't multiply them.
 - **Web search** runs only when the model decides it needs it, costs extra credits, and is capped per person per day (10 to 200 searches by plan).
 - Voice input has its own daily limit (2 to 40 minutes by plan).
+- Read-aloud with natural voices (paid plans only) costs credits from the listener's own balance and has a daily limit (30 to 120 minutes of audio by plan); it is limited to 20 read-aloud requests per hour and 20,000 characters per request. The free alternative uses the device's own voices.
 - Every API endpoint is rate-limited per account (e.g. 20 answer starts per minute, 120 requests per minute overall).
 
 ## Content

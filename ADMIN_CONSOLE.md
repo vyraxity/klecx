@@ -95,3 +95,8 @@ How to use this file:
 - **Found:** Step 9.3.
 - **Why:** "where did my credits go?", disputes and refund checks (the refund policy depends on how much of a payment was used) need the same view the person has, from the admin side.
 - **Today:** `getUsageSummary()`, `getUsageTimeseries()`, `getUsageByMember()` and `listCreditHistory()` in `server/services/usage.ts` take a user id; the `/api/v1/me/*` routes only serve the signed-in person. Needed: admin routes (or console reads) that call these for a looked-up user, read-only.
+
+### 17. Read-aloud audio cache
+- **Found:** Step 9.4.
+- **Why:** a wrongly pronounced or broken clip should be regenerated, and storage use watched; also to see how much natural-voice audio a person generated (support, refund checks).
+- **Today:** `speech_cache` rows (key, voice, model, seconds, `storage_id`, `last_used_at`) and the private files under `speech/` in storage; SPEECH generations (with `usage.seconds`) per person. Needed: list/search cache entries, delete one (file + row: the next play regenerates it), and a person's read-aloud history (already in their usage page via `kind = SPEECH`).
