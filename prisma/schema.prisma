@@ -42,6 +42,10 @@ model User {
   updatedAt            DateTime          @updatedAt
   /// Soft delete: the account is marked, the row stays (see server/services/account-deletion.ts).
   deletedAt            DateTime?         @map("deleted_at")
+  /// Step 8.6: suspended by an admin (abuse, AUP violation). Can't sign in; sessions are revoked.
+  suspendedAt          DateTime?         @map("suspended_at")
+  /// Internal note on why (never shown to the person).
+  suspendedReason      String?           @map("suspended_reason")
   sessions             Session[]
   accounts             Account[]
   projects             Project[]
@@ -246,6 +250,9 @@ model CreditAccount {
   topupBalance Int            @default(0) @map("topup_balance")
   /// Plan whose allowance `planBalance` holds (Step 8.4). FREE after a paid plan ends.
   allowancePlan PlanKey       @default(FREE) @map("allowance_plan")
+  /// Step 8.6: frozen by an admin; nothing may spend these credits (`reserve()` → `credits_frozen`).
+  frozenAt     DateTime?      @map("frozen_at")
+  frozenReason String?        @map("frozen_reason")
   /// Ledger key of the current allowance, e.g. `free:<userId>:2026-11`,
   /// `creem:paid:<transaction>` or `yearly:<subscription>:<start>:<n>`. Null = not stamped yet.
   allowanceKey String?        @map("allowance_key")

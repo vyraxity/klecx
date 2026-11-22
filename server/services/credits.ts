@@ -22,15 +22,19 @@ export type BalanceResult = {
 };
 
 /**
- * Throws `billing_frozen` (403) when the account's owner has a DISPUTED
- * subscription: nothing may spend their credits until the dispute is settled.
+ * Throws 403 when nothing may spend the account's credits:
+ * - `billing_frozen`: its owner has a DISPUTED subscription (chargeback, Step 8.1);
+ * - `credits_frozen`: an admin froze the account (Step 8.6, abuse operations).
  */
 export async function assertAccountNotFrozen(accountId: string): Promise<void> {
-  const disputed = await db.subscription.findFirst({
-    where: { status: "DISPUTED", user: { creditAccount: { id: accountId } } },
-    select: { id: true },
+  const account = await db.creditAccount.findUnique({
+    where: { id: accountId },
+    select: { frozenAt: true, user: { select: { subscription: { select: { status: true } } } } },
   });
-  if (disputed) {
+  if (account?.frozenAt) {
+    throw Errors.forbidden("Generation is paused for this account", "credits_frozen");
+  }
+  if (account?.user.subscription?.status === "DISPUTED") {
     throw Errors.forbidden(
       "Generation is paused for this account while a payment dispute is open",
       "billing_frozen"

@@ -77,6 +77,14 @@ const LoginForm = (): React.JSX.Element => {
         });
 
         if (error) {
+          // Step 8.6: a suspended account (403 ACCOUNT_SUSPENDED) isn't an unverified one.
+          if (error.code === "ACCOUNT_SUSPENDED") {
+            setResponse({
+              message: getAuthErrorMessage(error, tRoot, t("errors.INVALID_EMAIL_OR_PASSWORD")),
+              success: false,
+            });
+            return;
+          }
           const isUnverified =
             error.status === 403 ||
             error.code === "EMAIL_NOT_VERIFIED" ||

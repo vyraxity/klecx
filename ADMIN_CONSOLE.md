@@ -79,3 +79,8 @@ How to use this file:
 - **Found:** Step 8.5.
 - **Why:** "I paid but my plan isn't active" (the billing page says so after 60 s). The admin needs the person's `billing_checkouts` (our checkout ids sent as `request_id`), the matching `billing_events` and their status, side by side.
 - **Today:** the `billing_checkouts` and `billing_events` tables only.
+
+### 14. Suspend an account, freeze its credits
+- **Found:** Step 8.6.
+- **Why:** abuse reports and AUP violations (Creem asks merchants to be able to act on abuse), fraud, card testing.
+- **Today:** built in this app (admins only, `User.role = ADMIN`, every change in `audit_logs`): `POST /api/v1/admin/users/:id/suspend { reason, freezeCredits? }` (sign-in refused with `ACCOUNT_SUSPENDED`, all sessions revoked), `/unsuspend`, `/freeze-credits { reason }` (`reserve()` → 403 `credits_frozen`), `/unfreeze-credits` (`server/services/account-moderation.ts`). The console needs the screens: find a person, see `suspendedAt` / `frozenAt` and the reason, act, and read the audit history.

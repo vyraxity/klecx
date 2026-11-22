@@ -10,6 +10,7 @@ import { sendEmail } from "@/server/email/send";
 import { authSecondaryStorage } from "@/server/http/rate-limit";
 import { createAccountWithFreeGrant } from "@/server/services/credits";
 import { isDisposableEmail } from "@/server/auth/disposable-email";
+import { isUserSuspended } from "@/server/services/account-moderation";
 import { generateUniqueDefaultUsername } from "@/server/services/username";
 import { parseDeviceMetadata, checkAndAlertNewSignIn } from "@/server/services/device";
 import { welcomeOnUserCreated, welcomeOnUserUpdated } from "@/server/services/welcome";
@@ -58,6 +59,13 @@ export const auth = betterAuth({
     session: {
       create: {
         before: async (session, ctx) => {
+          // Step 8.6: a suspended account can't sign in (any method).
+          if (await isUserSuspended(session.userId)) {
+            throw new APIError("FORBIDDEN", {
+              message: "This account is suspended",
+              code: "ACCOUNT_SUSPENDED",
+            });
+          }
           const country =
             ctx?.headers?.get?.("x-vercel-ip-country") ||
             ctx?.headers?.get?.("cf-ipcountry") ||
@@ -171,6 +179,12 @@ export const auth = betterAuth({
         type: "number",
         required: false,
         defaultValue: 0,
+        input: false,
+      },
+      // Step 8.6: read by getActor (a suspended person counts as signed out).
+      suspendedAt: {
+        type: "date",
+        required: false,
         input: false,
       },
     },
