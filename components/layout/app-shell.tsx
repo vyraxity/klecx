@@ -463,7 +463,9 @@ export function AppShell({
     }
   };
 
-  const sidebarWidthVar = collapsed ? "64px" : "280px";
+  // Same unit as the sidebar's own w-16 / w-70, so the column always matches
+  // it, including in the compact density (Step 9.2), which scales --spacing.
+  const sidebarWidthVar = collapsed ? "calc(var(--spacing) * 16)" : "calc(var(--spacing) * 70)";
 
   const desktopSidebarProps = {
     user,
