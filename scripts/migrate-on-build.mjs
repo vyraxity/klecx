@@ -1,8 +1,9 @@
 // Runs `prisma migrate deploy` as part of `npm run build`.
 //
-// - Vercel preview builds skip it (unless MIGRATE_ON_PREVIEW=true): previews share
-//   the database with production, so an unmerged PR's migration must not reach it,
-//   and several previews building at once fight over Prisma's migration lock (P1002).
+// - Vercel preview builds skip it (unless MIGRATE_ON_PREVIEW=true): every preview
+//   branch uses the Preview environment's database, so an unmerged PR's migration
+//   must not reach it, and several previews building at once fight over Prisma's
+//   migration lock (P1002). Set MIGRATE_ON_PREVIEW=true for the `dev` branch only.
 // - Production, CI and local builds run it. A P1002 (lock held by another build) is
 //   retried a few times before failing.
 import { spawnSync } from "node:child_process";
