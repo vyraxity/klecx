@@ -112,6 +112,13 @@ describe("Step F0.2 — Site configuration: emails, company identity, links from
       "password-changed": {
         time: "2026-11-08 10:05 UTC",
       },
+      "change-email-confirm": {
+        url: "https://app.example.test/api/auth/verify-email?token=c1",
+        newEmail: "new@example.test",
+      },
+      "change-email-verify": {
+        url: "https://app.example.test/api/auth/verify-email?token=c2",
+      },
       "share-created": {
         title: "Architecture Spec",
         shareUrl: "https://app.example.test/s/t4",
@@ -188,6 +195,8 @@ describe("Step F0.2 — Site configuration: emails, company identity, links from
       "invitation",
       "new-sign-in",
       "password-changed",
+      "change-email-confirm",
+      "change-email-verify",
       "share-created",
       "credits-low",
       "payment-failed",

@@ -69,6 +69,7 @@ How to use this file:
 - **Found:** F5.8 / Step 8.4.
 - **Why:** today every request is only an email to `SUPPORT_EMAIL` (and a `support_tickets` row). A console view would show the ticket, the person's plan and subscription, the refund check for billing topics, and the screenshots (signed links expire after 7 days).
 - **Today:** `support_tickets`, `support_attachments` tables; `supportScreenshotLinks()` in `server/services/support-screenshots.ts`.
+- **Step 9.1:** Settings → Support now shows each person their own requests **with their status** (`GET /api/v1/me/support-tickets`). Nothing in the app changes `support_tickets.status`, so every request shows **Open** until an admin sets it (today a database edit). The console needs "set status" (Open / In progress / Resolved / Closed) on a ticket.
 
 ### 12. Change a customer's plan by hand
 - **Found:** Step 8.5.
@@ -84,3 +85,8 @@ How to use this file:
 - **Found:** Step 8.6.
 - **Why:** abuse reports and AUP violations (Creem asks merchants to be able to act on abuse), fraud, card testing.
 - **Today:** built in this app (admins only, `User.role = ADMIN`, every change in `audit_logs`): `POST /api/v1/admin/users/:id/suspend { reason, freezeCredits? }` (sign-in refused with `ACCOUNT_SUSPENDED`, all sessions revoked), `/unsuspend`, `/freeze-credits { reason }` (`reserve()` → 403 `credits_frozen`), `/unfreeze-credits` (`server/services/account-moderation.ts`). The console needs the screens: find a person, see `suspendedAt` / `frozenAt` and the reason, act, and read the audit history.
+
+### 15. Account access recovery (email and sign-in methods)
+- **Found:** Step 9.1.
+- **Why:** someone who lost access to their email inbox can't change their email address (Settings → Profile sends the approval link to the **current** address first), and someone whose only sign-in method is a social account they lost can't get back in. Support has to verify the person, then change the email or the sign-in methods for them.
+- **Today:** the person's own actions only: `POST /api/v1/me/email` (Better Auth's two-step change), `GET /api/v1/me/linked-accounts`, `DELETE /api/v1/me/linked-accounts/:provider` (`server/services/account-security.ts`; never the last method; `ACCOUNT_UNLINKED` and `PASSWORD_CHANGED` in `audit_logs`). Needed: admin actions to see a person's sign-in methods (the `accounts` table, provider ids only), change the email directly (then revoke sessions and email both addresses), remove a sign-in method or send a set-password link, each with an audit entry.

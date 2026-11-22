@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { collectClientDiagnostics, type AppVersionInfo } from "@/lib/support/diagnostics";
 import { useFormatter, useTranslations } from "next-intl";
 import { getApiErrorMessage } from "@/lib/api/error-message";
 import { Mail, Clock, ShieldCheck, CheckCircle2, AlertCircle, Send, Info } from "lucide-react";
@@ -11,14 +12,18 @@ import { authClient } from "@/lib/auth-client";
 import { ScreenshotPicker, type PickedScreenshot } from "@/components/support/screenshot-picker";
 
 
+const UNKNOWN_APP: AppVersionInfo = { version: "unknown", build: null };
+
 export interface SupportFormProps {
   /** Pre-selected topic (`/support?topic=billing`). */
   initialTopic?: string;
   /** Pre-filled message (Step 8.5: a refund request from Settings → Billing). */
   initialMessage?: string;
+  /** App version and build for the optional diagnostics (from the server). */
+  app?: AppVersionInfo;
 }
 
-export function SupportForm({ initialTopic, initialMessage }: SupportFormProps = {}) {
+export function SupportForm({ initialTopic, initialMessage, app = UNKNOWN_APP }: SupportFormProps = {}) {
   const t = useTranslations("Support");
   const tRoot = useTranslations();
   const format = useFormatter();
@@ -75,17 +80,7 @@ export function SupportForm({ initialTopic, initialMessage }: SupportFormProps =
 
     try {
       const diagnosticsData = attachDiagnostics
-        ? {
-            appVersion: "0.1.0",
-            clientTimestamp: new Date().toISOString(),
-            userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "unknown",
-            language: typeof navigator !== "undefined" ? navigator.language : "unknown",
-            screen:
-              typeof window !== "undefined"
-                ? `${window.innerWidth}x${window.innerHeight}`
-                : "unknown",
-            hasActiveSession: Boolean(session?.user),
-          }
+        ? collectClientDiagnostics(Boolean(session?.user), app)
         : undefined;
 
       const fields = {

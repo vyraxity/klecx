@@ -271,7 +271,7 @@ export function Topbar({
 
         {currentUserId && <NotificationBell />}
 
-        <LocaleSwitcher compact />
+        <LocaleSwitcher compact saveToAccount />
 
         {activeWorkspace && (
           <DropdownMenu>

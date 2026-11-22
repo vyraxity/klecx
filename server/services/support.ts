@@ -123,3 +123,34 @@ export async function createSupportTicket(
     screenshotCount: attachments.length,
   };
 }
+
+/** Step 9.1: Settings → Support lists the person's own requests (sent while signed in). */
+export const MY_TICKETS_LIMIT = 20;
+const TICKET_EXCERPT_CHARS = 160;
+
+export async function listMySupportTickets(userId: string) {
+  const tickets = await db.supportTicket.findMany({
+    where: { userId },
+    select: {
+      id: true,
+      topic: true,
+      message: true,
+      status: true,
+      createdAt: true,
+      _count: { select: { attachments: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: MY_TICKETS_LIMIT,
+  });
+  return tickets.map((t) => ({
+    id: t.id,
+    topic: t.topic,
+    excerpt:
+      t.message.length > TICKET_EXCERPT_CHARS
+        ? `${t.message.slice(0, TICKET_EXCERPT_CHARS).trimEnd()}…`
+        : t.message,
+    status: t.status,
+    createdAt: t.createdAt,
+    screenshotCount: t._count.attachments,
+  }));
+}

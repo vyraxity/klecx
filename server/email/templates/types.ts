@@ -43,6 +43,15 @@ export interface NewSignInData {
   location?: string;
 }
 
+export interface ChangeEmailConfirmData {
+  url: string;
+  newEmail: string;
+}
+
+export interface ChangeEmailVerifyData {
+  url: string;
+}
+
 export interface PasswordChangedData {
   time: string;
 }
@@ -156,6 +165,8 @@ export interface EmailTemplateMap {
   invitation: InvitationData;
   "new-sign-in": NewSignInData;
   "password-changed": PasswordChangedData;
+  "change-email-confirm": ChangeEmailConfirmData;
+  "change-email-verify": ChangeEmailVerifyData;
   "share-created": ShareCreatedData;
   "credits-low": CreditsLowData;
   "payment-failed": PaymentFailedData;

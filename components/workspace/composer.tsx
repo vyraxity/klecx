@@ -896,7 +896,7 @@ export function Composer({
             <>
               <span>{t("outOfCreditsReason")}</span>
               <Link
-                href="/settings"
+                href="/settings/billing"
                 className="font-semibold underline hover:text-fg transition-colors"
               >
                 {t("upgradeCta")}
@@ -1366,7 +1366,7 @@ export function Composer({
       {webSearchOff && (
         <p className="mt-1.5 text-center text-[11px] text-muted">
           {t("webSearchOff")} ·{" "}
-          <Link href="/settings" className="underline hover:text-fg">
+          <Link href="/settings/language" className="underline hover:text-fg">
             {t("changeInSettings")}
           </Link>
         </p>

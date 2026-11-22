@@ -26,6 +26,9 @@ export const PATCH = route({
         maxAge: 60 * 60 * 24 * 365, // 1 year
         sameSite: "lax",
       });
+    } else if (body.uiLocale === null) {
+      // Step 9.1: "Automatic" — the browser's language decides again (Accept-Language).
+      res.cookies.delete(LOCALE_COOKIE);
     }
 
     return res;

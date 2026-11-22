@@ -9,11 +9,17 @@ import { Globe } from "lucide-react";
 export interface LocaleSwitcherProps {
   compact?: boolean;
   className?: string;
+  /**
+   * Signed-in pages: also save the choice on the account (`uiLocale`), which
+   * wins over the cookie on the server and follows the person to other devices.
+   */
+  saveToAccount?: boolean;
 }
 
 export const LocaleSwitcher: React.FC<LocaleSwitcherProps> = ({
   compact = false,
   className = "",
+  saveToAccount = false,
 }) => {
   const t = useTranslations("Common");
   const currentLocale = useLocale() as Locale;
@@ -23,7 +29,15 @@ export const LocaleSwitcher: React.FC<LocaleSwitcherProps> = ({
   const handleLocaleChange = (newLocale: Locale) => {
     if (newLocale === currentLocale) return;
     document.cookie = `${LOCALE_COOKIE}=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
-    startTransition(() => {
+    startTransition(async () => {
+      if (saveToAccount) {
+        // Best effort: the cookie above already switches this device.
+        await fetch("/api/v1/me/preferences", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uiLocale: newLocale }),
+        }).catch(() => undefined);
+      }
       router.refresh();
     });
   };
