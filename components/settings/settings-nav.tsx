@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
+  BarChart3,
   Bell,
   CreditCard,
   Languages,
@@ -31,6 +32,7 @@ const ICONS: Record<SettingsPage, LucideIcon> = {
   language: Languages,
   appearance: Palette,
   notifications: Bell,
+  usage: BarChart3,
   billing: CreditCard,
   support: LifeBuoy,
 };

@@ -385,7 +385,8 @@
       "appearance": "Apparence",
       "notifications": "Notifications",
       "billing": "Forfait et facturation",
-      "support": "Assistance"
+      "support": "Assistance",
+      "usage": "Utilisation"
     },
     "errors": {
       "pageTitle": "Impossible de charger cette page",
@@ -3454,5 +3455,113 @@
     "message": "Klecx est aussi disponible en français.",
     "switch": "Passer en français",
     "dismiss": "Non merci"
+  },
+  "Usage": {
+    "title": "Utilisation",
+    "description": "Où sont allés vos crédits : cette période, jour par jour, par type, par modèle et par personne.",
+    "loadError": "Impossible de charger votre utilisation.",
+    "retry": "Réessayer",
+    "empty": "Aucun crédit utilisé sur cette période.",
+    "unknownModel": "Autre modèle",
+    "seconds": "{count, plural, one {# seconde} other {# secondes}}",
+    "searches": "{count, plural, one {# recherche} other {# recherches}}",
+    "filters": {
+      "period": "Période",
+      "current": "Cette période",
+      "previous": "Période précédente",
+      "range": "Graphique",
+      "lastDays": "{count, plural, one {Dernier jour} other {# derniers jours}}"
+    },
+    "allowance": {
+      "title": "Crédits",
+      "periodRange": "Du {start} au {end}",
+      "periodSince": "Depuis le {start}",
+      "usedOf": "crédits utilisés sur les {allowance} de votre forfait {plan}",
+      "remaining": "Restants",
+      "topup": "Recharge",
+      "resets": "Renouvellement le",
+      "left": "Crédits restants sur cette période",
+      "today": "Utilisés aujourd'hui (limite quotidienne)",
+      "low": "Il vous reste peu de crédits pour cette période.",
+      "upgrade": "Voir les forfaits"
+    },
+    "chart": {
+      "title": "Utilisation quotidienne",
+      "hint": "Crédits par jour (UTC).",
+      "empty": "Aucun crédit utilisé sur cette plage.",
+      "asTable": "Afficher sous forme de tableau",
+      "callsHeader": "Appels à l'IA",
+      "label": "Crédits quotidiens : {total} sur {days} jours. Utilisez les flèches pour lire chaque jour.",
+      "credits": "{count, plural, one {# crédit} other {# crédits}}",
+      "calls": "{count, plural, one {# appel à l'IA} other {# appels à l'IA}}"
+    },
+    "kinds": {
+      "text": "Réponses",
+      "images": "Images",
+      "asks": "Questions",
+      "reviews": "Relectures",
+      "transcription": "Saisie vocale",
+      "speech": "Lecture à voix haute",
+      "other": "Autres",
+      "webSearch": "Recherches web"
+    },
+    "byKind": {
+      "title": "Par type",
+      "hint": "Les questions comprennent les questions sur un passage et la file de questions. Les recherches web sont comptées à part des réponses qui les ont lancées."
+    },
+    "byModel": {
+      "title": "Par modèle",
+      "hint": "Crédits par niveau de modèle d'IA."
+    },
+    "byMember": {
+      "title": "Par personne",
+      "hint": "Crédits facturés sur votre compte pour chaque personne de vos espaces de travail.",
+      "person": "Personne",
+      "prompts": "Messages",
+      "asks": "Questions",
+      "other": "Autres",
+      "total": "Total",
+      "you": "Vous",
+      "deleted": "Compte supprimé"
+    },
+    "history": {
+      "title": "Historique des crédits",
+      "hint": "Une ligne par appel à l'IA, plus vos allocations et autres changements. Les plus récents d'abord.",
+      "filter": "Afficher",
+      "types": {
+        "all": "Tout",
+        "usage": "Utilisation de l'IA",
+        "grants": "Allocations",
+        "other": "Autres changements"
+      },
+      "loadError": "Impossible de charger votre historique de crédits.",
+      "empty": "Rien à afficher pour l'instant.",
+      "more": "Charger plus",
+      "inWorkspace": "{kind} dans {workspace}",
+      "by": "par {name}",
+      "someone": "un collaborateur",
+      "csv": {
+        "download": "Télécharger le CSV",
+        "date": "Date",
+        "description": "Description",
+        "workspace": "Espace de travail",
+        "by": "Par",
+        "model": "Modèle",
+        "credits": "Crédits",
+        "balance": "Solde"
+      },
+      "reasons": {
+        "signupGrant": "Crédits de bienvenue",
+        "monthlyAllowance": "Allocation mensuelle",
+        "planAllowance": "Allocation du forfait",
+        "planUpgrade": "Passage à un forfait supérieur",
+        "planEnded": "Fin du forfait",
+        "grant": "Crédits ajoutés",
+        "expired": "Crédits non utilisés expirés",
+        "expiredPlanEnded": "Crédits expirés (fin du forfait)",
+        "refund": "Remboursement",
+        "adjustment": "Ajustement"
+      }
+    }
   }
 }

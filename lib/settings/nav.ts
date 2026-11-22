@@ -1,6 +1,6 @@
 /**
- * Step 9.1: the Settings pages, in nav order. Voice (9.4), Usage (9.3) and
- * Your data (9.5) are added by their own steps, so the nav never shows a page
+ * Step 9.1: the Settings pages, in nav order (Usage since Step 9.3). Voice
+ * (9.4) and Your data (9.5) are added by their own steps, so the nav never shows a page
  * that doesn't work yet.
  */
 export const SETTINGS_PAGES = [
@@ -10,6 +10,7 @@ export const SETTINGS_PAGES = [
   "language",
   "appearance",
   "notifications",
+  "usage",
   "billing",
   "support",
 ] as const;
