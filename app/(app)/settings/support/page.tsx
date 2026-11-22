@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { BookOpen, ChevronRight, MessageSquare } from "lucide-react";
 import { requireActor } from "@/server/auth/session";
 import { getArticle } from "@/lib/help/articles";
+import { getAppVersionInfo } from "@/server/config/app-version";
 import { MyTicketsCard } from "@/components/settings/support/my-tickets-card";
 import { DiagnosticsCard } from "@/components/settings/support/diagnostics-card";
 import { SettingsPageHeader, SettingsSection } from "@/components/settings/settings-section";
@@ -60,7 +61,7 @@ export default async function SupportSettingsPage() {
       </SettingsSection>
 
       <MyTicketsCard userId={actor.userId} />
-      <DiagnosticsCard />
+      <DiagnosticsCard app={getAppVersionInfo()} />
     </>
   );
 }

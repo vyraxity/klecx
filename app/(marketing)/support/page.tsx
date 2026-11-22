@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { publicPageMetadata } from "@/lib/seo/metadata";
 import { Mail, Clock, ShieldAlert, BookOpen, ArrowRight } from "lucide-react";
 import { SupportForm } from "@/components/support/support-form";
+import { getAppVersionInfo } from "@/server/config/app-version";
 import { getSiteConfig } from "@/server/config/site";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -59,6 +60,7 @@ export default async function SupportPage({
 
         {/* Main Form */}
         <SupportForm
+          app={getAppVersionInfo()}
           initialTopic={initialTopic}
           initialMessage={refundRequest ? t("refundRequestMessage") : undefined}
         />

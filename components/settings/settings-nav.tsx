@@ -57,7 +57,12 @@ export function SettingsNav() {
   }, [active]);
 
   return (
-    <nav aria-label={t("label")} className="md:w-52 md:shrink-0">
+    // Desktop: stays at the top of the settings scroll area while a long page
+    // scrolls (top-10 matches the layout's md:py-10). Mobile: tabs above the page.
+    <nav
+      aria-label={t("label")}
+      className="md:sticky md:top-10 md:max-h-[calc(100dvh-10rem)] md:w-52 md:shrink-0 md:self-start md:overflow-y-auto"
+    >
       <ul
         className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:flex-col md:overflow-visible md:px-0 md:pb-0"
         data-testid="settings-nav"

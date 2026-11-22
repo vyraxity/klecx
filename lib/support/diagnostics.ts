@@ -1,12 +1,7 @@
-/**
- * The app version shown in Settings → Support and sent with support
- * diagnostics (`package.json`'s version, inlined by next.config.mjs).
- */
-export const APP_VERSION: string = process.env.NEXT_PUBLIC_APP_VERSION || "0.0.0";
-
-/** The deployed commit, when the host exposes it (Vercel: system env vars). */
-export const APP_BUILD: string | null =
-  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || null;
+export interface AppVersionInfo {
+  version: string;
+  build: string | null;
+}
 
 export interface ClientDiagnostics {
   appVersion: string;
@@ -21,9 +16,13 @@ export interface ClientDiagnostics {
 
 /**
  * Non-sensitive browser details for support (F5.8 / Step 9.1): no content,
- * no identifiers beyond what the person sends themselves.
+ * no identifiers beyond what the person sends themselves. The version comes
+ * from the server (`getAppVersionInfo()`).
  */
-export function collectClientDiagnostics(hasActiveSession: boolean): ClientDiagnostics {
+export function collectClientDiagnostics(
+  hasActiveSession: boolean,
+  app: AppVersionInfo
+): ClientDiagnostics {
   const nav = typeof navigator !== "undefined" ? navigator : undefined;
   let timeZone = "unknown";
   try {
@@ -32,8 +31,8 @@ export function collectClientDiagnostics(hasActiveSession: boolean): ClientDiagn
     // Older browsers.
   }
   return {
-    appVersion: APP_VERSION,
-    build: APP_BUILD,
+    appVersion: app.version,
+    build: app.build,
     clientTimestamp: new Date().toISOString(),
     userAgent: nav?.userAgent ?? "unknown",
     language: nav?.language ?? "unknown",

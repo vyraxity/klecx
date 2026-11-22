@@ -1,18 +1,9 @@
-import { readFileSync } from "node:fs";
 import createNextIntlPlugin from "next-intl/plugin";
-
-// Step 9.1: the app version for Settings → Support and support diagnostics.
-const { version: appVersion } = JSON.parse(
-  readFileSync(new URL("./package.json", import.meta.url), "utf8")
-);
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  env: {
-    NEXT_PUBLIC_APP_VERSION: appVersion,
-  },
   images: {
     remotePatterns: [
       {
