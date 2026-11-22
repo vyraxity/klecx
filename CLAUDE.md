@@ -76,6 +76,46 @@ CI and `verify` fail when `schema.prisma` and the migrations disagree (`prisma m
 
 **Admin console needs live in `ADMIN_CONSOLE.md`** (see Workflow). **Undecided product questions live in `OPEN_DECISIONS.md`.** Read it before a step that touches one of its entries. Keep the behaviour it describes until the owner decides; add an entry when a review finds a choice the owner hasn't made.
 
+## Environments and deploys (as of 2026-11-22)
+
+- **Three environments:** local (the owner's machine), **preview** = the `dev` branch on Vercel at `dev.klecx.com` (test mode, no real users), **production** = `main` at `klecx.com` (deployment protection on until launch). `dev` is merged into `main` only near launch (before the Creem application).
+- **Preview and production share one database**, and Vercel preview builds **skip migrations** (`scripts/migrate-on-build.mjs`). After a PR with a migration merges into `dev`, preview code runs before the shared database has the change: run `npx prisma migrate deploy` against it, or deploy `main`. Migrations are additive, so the old production code keeps working. (Step 10.6 wants separate databases per environment.)
+- **After pulling a branch that changes `prisma/schema.prisma`**, the owner runs `npx prisma migrate dev` (applies the migration and regenerates the Prisma client in `server/db/generated`, which isn't committed); otherwise new models are `undefined` at runtime ("Cannot read properties of undefined (reading 'create')").
+- **`BILLING_ENABLED`** is off on preview and production until go-live. To see or test the billing UI locally, set `BILLING_ENABLED="true"` in `.env.local` and restart `npm run dev` (rule 9: with it off, Plan & billing hides every action and the pricing page shows "Coming soon").
+- **Creem in test mode:** locally, `creem listen --forward-to http://localhost:3000/api/webhooks/creem` (Creem CLI). It prints a **new signing secret every run**: put it in `.env.local` as `CREEM_WEBHOOK_SECRET` and restart `npm run dev` (a stale secret shows as `401` in the `creem listen` output). Preview uses a test-mode webhook registered in the dashboard (`https://dev.klecx.com/api/webhooks/creem`); production gets its own **live** webhook at go-live. A test purchase: pricing → Plan & billing → tick the consent → card `4111 1111 1111 1111`. Never use a product's payment link from the dashboard (no `request_id`: the webhook can't find the buyer).
+- **The repository is public** (the owner plans to make it private later). Never commit real values, even in `.env.example` or docs.
+
+## Claude Code cloud sessions (as of 2026-11-22)
+
+- **Setup:** the cloud environment `klecx` can have a setup script (proposed 2026-11-22) that runs `npm ci` (with the local `DATABASE_URL` below set, because `postinstall` runs `prisma generate`) and creates a local PostgreSQL 16 cluster in `/var/tmp/pg/data`. If `node_modules` or `/var/tmp/pg/data` is missing, do it by hand: `DATABASE_URL="postgresql://postgres:postgres@localhost:55432/klecx_ci" npm ci`, then `mkdir -p /var/tmp/pg && chown postgres /var/tmp/pg && su postgres -c "/usr/lib/postgresql/16/bin/initdb -D /var/tmp/pg/data -U postgres --auth=trust"`. Docker isn't available, so `npm run verify` can't run as a whole: run its steps one by one (below).
+- **Start the test database** (each session, and again whenever the container was recycled and tests suddenly fail with "Can't reach database server"):
+
+  ```bash
+  rm -f /var/tmp/pg/data/postmaster.pid; su postgres -c "/usr/lib/postgresql/16/bin/pg_ctl -D /var/tmp/pg/data -o '-p 55432 -k /var/tmp/pg' -l /var/tmp/pg/log start"
+  ```
+
+  ```bash
+  psql -h localhost -p 55432 -U postgres -tc "select 1 from pg_database where datname='klecx_ci'" | grep -q 1 || psql -h localhost -p 55432 -U postgres -c "create database klecx_ci"
+  ```
+
+- **Test environment** (dummy values, not secrets), exported before `npx prisma migrate deploy`, `npm test -- --ci` and `npm run build`:
+
+  ```bash
+  export DATABASE_URL="postgresql://postgres:postgres@localhost:55432/klecx_ci" APP_URL="http://localhost:3000" GEMINI_API_KEY=ci-dummy-key-0000 RESEND_API_KEY=re_ci_dummy EMAIL_FROM="Klecx <ci@example.com>" BETTER_AUTH_SECRET="ci-dummy-auth-secret-min-32-chars-long!"
+  ```
+
+  A full test run right after (re)starting the database can show a few spurious failures; run it again before investigating.
+- **The checks before pushing** (what `verify` runs): `npx prisma validate`, `npx prisma migrate deploy`, `npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code`, `npm run lint` (0 errors; the existing warnings are known), `npm run check:tokens`, `npm run check:i18n`, `npm run typecheck`, `npm test -- --ci`, `npm run build`, `npm run check:audit`, and Gitleaks on the branch's commits: `go install github.com/zricethezav/gitleaks/v8@v8.28.0` (into the scratchpad), then `gitleaks git --log-opts="origin/dev..HEAD" .`.
+- **Migrations:** `npx prisma migrate dev --create-only --name <name>`, then rename the folder to the repo's style (`YYYYMMDD_name`, a letter suffix for a second one the same day, e.g. `20261121b_billing_consents`) and run `migrate deploy` + `generate`.
+- **GitHub:** only `gh api` (REST) works here; GraphQL and `gh pr …` don't. The owner creates PRs from the Claude Code UI and asks Claude to watch them when wanted.
+- **Reading docs:** fetch `docs.creem.io` (allowed host) before any Creem guidance; start at `https://docs.creem.io/llms.txt`.
+
+## Working with the owner
+
+- Explain in plain words; say what was done, what was verified and what's left for the owner. Before code that needs a dashboard (Creem, Vercel, Google), give numbered steps first (see the Creem section).
+- When a choice is the owner's, ask once with a recommendation; record undecided ones in `OPEN_DECISIONS.md`, admin needs in `ADMIN_CONSOLE.md`, decided ones under "Key decisions".
+- **Wording in translations:** plan names stay untranslated (Free, Lite, Standard, Pro). In French a plan is a **forfait** (not "offre"). The billing page is "Plan & billing" / "Plan y facturación" / "Forfait et facturation"; Spanish help and legal text call Settings **Configuración**.
+
 ## Code layout
 
 - `app/` — routes: `(marketing)` public pages, `(app)` signed-in app, `api/v1/*` JSON/SSE endpoints, `s/[token]` public share pages.
