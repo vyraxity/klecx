@@ -713,7 +713,7 @@ export function Sidebar({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/settings/billing"
+                  href="/settings/usage"
                   aria-label={t("creditsBalance", {
                     count: user.creditBalance,
                   })}
@@ -756,7 +756,7 @@ export function Sidebar({
                 </div>
               </div>
               <Link
-                href="/settings/billing"
+                href="/settings/usage"
                 onClick={onNavigate}
                 className="text-accent focus-visible:ring-ring shrink-0 rounded-sm font-medium hover:underline focus-visible:ring-2 focus-visible:outline-none"
               >

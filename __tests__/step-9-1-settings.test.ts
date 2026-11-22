@@ -335,9 +335,9 @@ describe("Step 9.1 — settings navigation", () => {
     expect(activeSettingsPage("/workspaces")).toBeNull();
   });
 
-  it("lists only pages that exist (no voice/usage/data until their steps)", () => {
+  it("lists only pages that exist (no voice/data until their steps)", () => {
     expect(SETTINGS_PAGES).not.toContain("voice");
-    expect(SETTINGS_PAGES).not.toContain("usage");
+    expect(SETTINGS_PAGES).toContain("usage"); // Step 9.3
     expect(SETTINGS_PAGES).not.toContain("data");
     for (const page of SETTINGS_PAGES) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports

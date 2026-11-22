@@ -385,7 +385,8 @@
       "appearance": "Apariencia",
       "notifications": "Notificaciones",
       "billing": "Plan y facturación",
-      "support": "Soporte"
+      "support": "Soporte",
+      "usage": "Uso"
     },
     "errors": {
       "pageTitle": "No se pudo cargar esta página",
@@ -2206,7 +2207,9 @@
       "same_password": "La nueva contraseña debe ser distinta de la actual.",
       "same_email": "Esta ya es tu dirección de correo electrónico.",
       "email_change_failed": "No se pudo iniciar el cambio de correo. Inténtalo de nuevo.",
-      "DISPOSABLE_EMAIL": "Este servicio de correo no se acepta. Usa una dirección de correo permanente."
+      "DISPOSABLE_EMAIL": "Este servicio de correo no se acepta. Usa una dirección de correo permanente.",
+      "invalid_range": "La fecha final no puede ser anterior a la inicial.",
+      "range_too_long": "Elige un rango de 366 días como máximo."
     }
   },
   "Gates": {
@@ -3454,5 +3457,113 @@
     "message": "Klecx también está disponible en español.",
     "switch": "Cambiar a español",
     "dismiss": "No, gracias"
+  },
+  "Usage": {
+    "title": "Uso",
+    "description": "En qué se fueron tus créditos: este periodo, día a día, por tipo, por modelo y por persona.",
+    "loadError": "No se pudo cargar tu uso.",
+    "retry": "Reintentar",
+    "empty": "No se usaron créditos en este periodo.",
+    "unknownModel": "Otro modelo",
+    "seconds": "{count, plural, one {# segundo} other {# segundos}}",
+    "searches": "{count, plural, one {# búsqueda} other {# búsquedas}}",
+    "filters": {
+      "period": "Periodo",
+      "current": "Este periodo",
+      "previous": "Periodo anterior",
+      "range": "Gráfico",
+      "lastDays": "{count, plural, one {Último día} other {Últimos # días}}"
+    },
+    "allowance": {
+      "title": "Créditos",
+      "periodRange": "Del {start} al {end}",
+      "periodSince": "Desde el {start}",
+      "usedOf": "créditos usados de los {allowance} de tu plan {plan}",
+      "remaining": "Quedan",
+      "topup": "Recarga",
+      "resets": "Se renuevan el",
+      "left": "Créditos restantes en este periodo",
+      "today": "Usados hoy (límite diario)",
+      "low": "Te quedan pocos créditos para este periodo.",
+      "upgrade": "Ver planes"
+    },
+    "chart": {
+      "title": "Uso diario",
+      "hint": "Créditos por día (UTC).",
+      "empty": "No se usaron créditos en este rango.",
+      "asTable": "Ver como tabla",
+      "callsHeader": "Llamadas a la IA",
+      "label": "Créditos diarios: {total} en {days} días. Usa las flechas para leer cada día.",
+      "credits": "{count, plural, one {# crédito} other {# créditos}}",
+      "calls": "{count, plural, one {# llamada a la IA} other {# llamadas a la IA}}"
+    },
+    "kinds": {
+      "text": "Respuestas",
+      "images": "Imágenes",
+      "asks": "Preguntas",
+      "reviews": "Revisiones",
+      "transcription": "Entrada de voz",
+      "speech": "Lectura en voz alta",
+      "other": "Otros",
+      "webSearch": "Búsquedas web"
+    },
+    "byKind": {
+      "title": "Por tipo",
+      "hint": "Las preguntas incluyen las preguntas sobre un fragmento y la cola de preguntas. Las búsquedas web se cuentan aparte de las respuestas que las hicieron."
+    },
+    "byModel": {
+      "title": "Por modelo",
+      "hint": "Créditos por nivel de modelo de IA."
+    },
+    "byMember": {
+      "title": "Por persona",
+      "hint": "Créditos que se te cobran por cada persona de tus espacios de trabajo.",
+      "person": "Persona",
+      "prompts": "Mensajes",
+      "asks": "Preguntas",
+      "other": "Otros",
+      "total": "Total",
+      "you": "Tú",
+      "deleted": "Cuenta eliminada"
+    },
+    "history": {
+      "title": "Historial de créditos",
+      "hint": "Una línea por llamada a la IA, más tus asignaciones y otros cambios. Lo más reciente primero.",
+      "filter": "Mostrar",
+      "types": {
+        "all": "Todo",
+        "usage": "Uso de la IA",
+        "grants": "Asignaciones",
+        "other": "Otros cambios"
+      },
+      "loadError": "No se pudo cargar tu historial de créditos.",
+      "empty": "Todavía no hay nada que mostrar.",
+      "more": "Cargar más",
+      "inWorkspace": "{kind} en {workspace}",
+      "by": "por {name}",
+      "someone": "un colaborador",
+      "csv": {
+        "download": "Descargar CSV",
+        "date": "Fecha",
+        "description": "Descripción",
+        "workspace": "Espacio de trabajo",
+        "by": "Por",
+        "model": "Modelo",
+        "credits": "Créditos",
+        "balance": "Saldo"
+      },
+      "reasons": {
+        "signupGrant": "Créditos de bienvenida",
+        "monthlyAllowance": "Asignación mensual",
+        "planAllowance": "Asignación del plan",
+        "planUpgrade": "Mejora de plan",
+        "planEnded": "Plan finalizado",
+        "grant": "Créditos añadidos",
+        "expired": "Créditos no usados caducados",
+        "expiredPlanEnded": "Créditos caducados (plan finalizado)",
+        "refund": "Reembolso",
+        "adjustment": "Ajuste"
+      }
+    }
   }
 }

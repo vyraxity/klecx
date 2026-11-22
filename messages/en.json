@@ -385,7 +385,8 @@
       "appearance": "Appearance",
       "notifications": "Notifications",
       "billing": "Plan & billing",
-      "support": "Support"
+      "support": "Support",
+      "usage": "Usage"
     },
     "errors": {
       "pageTitle": "This page couldn't load",
@@ -2206,7 +2207,9 @@
       "same_password": "The new password must be different from the current one.",
       "same_email": "This is already your email address.",
       "email_change_failed": "Couldn't start the email change. Try again.",
-      "DISPOSABLE_EMAIL": "This email service isn't accepted. Please use a permanent email address."
+      "DISPOSABLE_EMAIL": "This email service isn't accepted. Please use a permanent email address.",
+      "invalid_range": "The end date must not be before the start date.",
+      "range_too_long": "Choose a range of at most 366 days."
     }
   },
   "Gates": {
@@ -3454,5 +3457,113 @@
     "message": "Klecx is also available in English.",
     "switch": "Switch to English",
     "dismiss": "No thanks"
+  },
+  "Usage": {
+    "title": "Usage",
+    "description": "Where your credits went: this period, day by day, by kind, by model and by person.",
+    "loadError": "Couldn't load your usage.",
+    "retry": "Try again",
+    "empty": "No credits used in this period.",
+    "unknownModel": "Other model",
+    "seconds": "{count, plural, one {# second} other {# seconds}}",
+    "searches": "{count, plural, one {# search} other {# searches}}",
+    "filters": {
+      "period": "Period",
+      "current": "This period",
+      "previous": "Previous period",
+      "range": "Chart",
+      "lastDays": "{count, plural, one {Last day} other {Last # days}}"
+    },
+    "allowance": {
+      "title": "Credits",
+      "periodRange": "From {start} to {end}",
+      "periodSince": "Since {start}",
+      "usedOf": "credits used of the {allowance} in your {plan} plan",
+      "remaining": "Left",
+      "topup": "Top-up",
+      "resets": "Resets on",
+      "left": "Credits left this period",
+      "today": "Used today (daily limit)",
+      "low": "You're running low on credits for this period.",
+      "upgrade": "See plans"
+    },
+    "chart": {
+      "title": "Daily usage",
+      "hint": "Credits per day (UTC).",
+      "empty": "No credits used in this range.",
+      "asTable": "Show as a table",
+      "callsHeader": "AI calls",
+      "label": "Daily credits: {total} over {days} days. Use the arrow keys to read each day.",
+      "credits": "{count, plural, one {# credit} other {# credits}}",
+      "calls": "{count, plural, one {# AI call} other {# AI calls}}"
+    },
+    "kinds": {
+      "text": "Answers",
+      "images": "Images",
+      "asks": "Asks",
+      "reviews": "Reviews",
+      "transcription": "Voice input",
+      "speech": "Read-aloud",
+      "other": "Other",
+      "webSearch": "Web searches"
+    },
+    "byKind": {
+      "title": "By kind",
+      "hint": "Asks include highlight questions and the question queue. Web searches are counted apart from the answers that ran them."
+    },
+    "byModel": {
+      "title": "By model",
+      "hint": "Credits per AI model tier."
+    },
+    "byMember": {
+      "title": "By person",
+      "hint": "Credits billed to you by each person in your workspaces.",
+      "person": "Person",
+      "prompts": "Prompts",
+      "asks": "Asks",
+      "other": "Other",
+      "total": "Total",
+      "you": "You",
+      "deleted": "Deleted account"
+    },
+    "history": {
+      "title": "Credit history",
+      "hint": "One line per AI call, plus your allowances and other changes. Newest first.",
+      "filter": "Show",
+      "types": {
+        "all": "Everything",
+        "usage": "AI usage",
+        "grants": "Allowances",
+        "other": "Other changes"
+      },
+      "loadError": "Couldn't load your credit history.",
+      "empty": "Nothing to show yet.",
+      "more": "Load more",
+      "inWorkspace": "{kind} in {workspace}",
+      "by": "by {name}",
+      "someone": "a collaborator",
+      "csv": {
+        "download": "Download CSV",
+        "date": "Date",
+        "description": "Description",
+        "workspace": "Workspace",
+        "by": "By",
+        "model": "Model",
+        "credits": "Credits",
+        "balance": "Balance"
+      },
+      "reasons": {
+        "signupGrant": "Welcome credits",
+        "monthlyAllowance": "Monthly allowance",
+        "planAllowance": "Plan allowance",
+        "planUpgrade": "Plan upgrade",
+        "planEnded": "Plan ended",
+        "grant": "Credits added",
+        "expired": "Unused credits expired",
+        "expiredPlanEnded": "Credits expired (plan ended)",
+        "refund": "Refund",
+        "adjustment": "Adjustment"
+      }
+    }
   }
 }

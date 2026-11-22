@@ -212,3 +212,24 @@ Known gap: the credit hold before an answer covers the base cost only (decided 2
 | C | Immediate downgrade with `proration-none` | One click, no refund, the bigger plan's remaining time is lost; the balance is capped at the smaller allowance. Needs clear copy before confirming. |
 
 **If nothing is decided:** stays at A.
+
+---
+
+## 10. Dates in the Usage page's period selector
+
+- **Found:** 2026-11-22, Step 9.3 (owner: "good for now, maybe in a later release").
+- **Where:** `components/settings/usage/usage-view.tsx` (the "Period" select), `GET /api/v1/me/usage/summary`.
+
+**The situation.** Settings → Usage has a **Period** selector with "This period" and "Previous period". A credit period runs from one credit refill to the next (Free: the sign-up day each month; paid: each renewal or yearly month; a plan ending starts a new one; upgrades don't). The option labels don't say which dates they cover: the dates only appear under the "Credits" heading after choosing.
+
+**Today.** Labels without dates; the chosen period's dates show as "From … to …" / "Since …" under "Credits".
+
+**Options.**
+
+| | Option | Effect |
+|---|---|---|
+| A | Keep as is (today) | Simple; the dates are one click away. |
+| B | Dates in the labels | "Previous period (14 Oct – 14 Nov)". The summary endpoint (or a small new one) must return both periods' dates up front, since today each call returns only the period asked for. |
+| C | More periods | A list of the last few periods with their dates (e.g. the last 12), instead of only two. Needs a periods endpoint built from `getUsagePeriods()`. |
+
+**If nothing is decided:** stays at A.

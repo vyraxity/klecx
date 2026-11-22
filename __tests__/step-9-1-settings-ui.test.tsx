@@ -35,6 +35,7 @@ describe("Step 9.1 — Settings UI", () => {
       "/settings/language",
       "/settings/appearance",
       "/settings/notifications",
+      "/settings/usage",
       "/settings/billing",
       "/settings/support",
     ]);
