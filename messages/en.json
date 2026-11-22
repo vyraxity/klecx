@@ -2207,7 +2207,9 @@
       "same_password": "The new password must be different from the current one.",
       "same_email": "This is already your email address.",
       "email_change_failed": "Couldn't start the email change. Try again.",
-      "DISPOSABLE_EMAIL": "This email service isn't accepted. Please use a permanent email address."
+      "DISPOSABLE_EMAIL": "This email service isn't accepted. Please use a permanent email address.",
+      "invalid_range": "The end date must not be before the start date.",
+      "range_too_long": "Choose a range of at most 366 days."
     }
   },
   "Gates": {

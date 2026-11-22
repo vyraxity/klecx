@@ -5,6 +5,8 @@ import { useFormatter, useTranslations } from "next-intl";
 import type { UsageTimeseriesPoint } from "@/lib/usage/types";
 
 const HEIGHT = 180;
+/** SVG text-anchor keywords (not user-visible text): first, middle, last tick. */
+const TEXT_ANCHOR = ["start", "middle", "end"] as const;
 const PAD = { top: 12, right: 12, bottom: 24, left: 40 };
 
 /** Clean axis maximum and 3 ticks (0, half, max). */
@@ -106,7 +108,7 @@ export function UsageAreaChart({ points }: { points: UsageTimeseriesPoint[] }) {
               // Regular ticks, plus the last day; a tick too close to the last is dropped.
               const show = i === last || (i % labelEvery === 0 && last - i >= labelEvery * 0.75);
               if (!show) return null;
-              const anchor = points.length > 1 && i === 0 ? "start" : i === last && points.length > 1 ? "end" : "middle";
+              const anchor = TEXT_ANCHOR[points.length > 1 && i === 0 ? 0 : points.length > 1 && i === last ? 2 : 1];
               return (
                 <text key={p.day} x={x(i)} y={HEIGHT - 6} textAnchor={anchor} className="fill-muted text-[10px]">
                   {dayLabel(p.day)}

@@ -2207,7 +2207,9 @@
       "same_password": "Le nouveau mot de passe doit être différent de l'actuel.",
       "same_email": "C'est déjà votre adresse e-mail.",
       "email_change_failed": "Impossible de lancer la modification de l'e-mail. Réessayez.",
-      "DISPOSABLE_EMAIL": "Ce service d'e-mail n'est pas accepté. Utilisez une adresse e-mail permanente."
+      "DISPOSABLE_EMAIL": "Ce service d'e-mail n'est pas accepté. Utilisez une adresse e-mail permanente.",
+      "invalid_range": "La date de fin ne peut pas précéder la date de début.",
+      "range_too_long": "Choisissez une plage de 366 jours au maximum."
     }
   },
   "Gates": {

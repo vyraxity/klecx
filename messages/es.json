@@ -2207,7 +2207,9 @@
       "same_password": "La nueva contraseña debe ser distinta de la actual.",
       "same_email": "Esta ya es tu dirección de correo electrónico.",
       "email_change_failed": "No se pudo iniciar el cambio de correo. Inténtalo de nuevo.",
-      "DISPOSABLE_EMAIL": "Este servicio de correo no se acepta. Usa una dirección de correo permanente."
+      "DISPOSABLE_EMAIL": "Este servicio de correo no se acepta. Usa una dirección de correo permanente.",
+      "invalid_range": "La fecha final no puede ser anterior a la inicial.",
+      "range_too_long": "Elige un rango de 366 días como máximo."
     }
   },
   "Gates": {
