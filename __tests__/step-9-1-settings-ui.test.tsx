@@ -34,6 +34,7 @@ describe("Step 9.1 — Settings UI", () => {
       "/settings/sessions",
       "/settings/language",
       "/settings/appearance",
+      "/settings/voice",
       "/settings/notifications",
       "/settings/usage",
       "/settings/billing",

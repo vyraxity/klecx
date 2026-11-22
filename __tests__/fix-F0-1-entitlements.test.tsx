@@ -115,8 +115,10 @@ describe("Step F0.1 — Interim entitlements + plan-gating primitives", () => {
         webSearch: true,
         documentReview: true,
         voiceInput: true,
+        naturalVoices: false, // Step 9.4: browser voices only on Free
         collaboration: false,
       });
+      expect(entitlementsForPlan("LITE").features.naturalVoices).toBe(true);
 
       const liteEnt = entitlementsForPlan("LITE");
       expect(liteEnt.plan).toBe("LITE");
@@ -131,6 +133,7 @@ describe("Step F0.1 — Interim entitlements + plan-gating primitives", () => {
         webSearch: true,
         documentReview: true,
         voiceInput: true,
+        naturalVoices: true,
         collaboration: false,
       });
     });
