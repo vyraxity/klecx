@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/providers/theme-provider";
 import { useTranslations } from "next-intl";
 import { Monitor, Moon, Sun, type LucideIcon } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -17,8 +17,8 @@ const THEMES: { value: "system" | "light" | "dark"; icon: LucideIcon }[] = [
 const noopSubscribe = () => () => {};
 
 /**
- * Step 9.1: the theme (system / light / dark). Kept on this device for now;
- * Step 9.2 saves it on the account so other devices follow.
+ * Step 9.1: the theme (system / light / dark). Since Step 9.2 `setTheme()`
+ * also saves it on the account, so other devices follow on their next load.
  */
 export function ThemeCard() {
   const t = useTranslations("Settings.appearance");
@@ -26,7 +26,8 @@ export function ThemeCard() {
   // The theme is only known in the browser: render nothing selected on the
   // server and the first client render, so the HTML matches.
   const mounted = React.useSyncExternalStore(noopSubscribe, () => true, () => false);
-  const value = mounted ? (theme ?? "system") : undefined;
+  // "" (nothing selected) rather than undefined keeps the radio group controlled.
+  const value = mounted ? (theme ?? "system") : "";
 
   return (
     <SettingsSection title={t("themeTitle")} description={t("themeHint")} data-testid="settings-theme">

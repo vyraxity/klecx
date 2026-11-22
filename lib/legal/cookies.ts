@@ -35,9 +35,12 @@ export const STORAGE_ITEMS: StorageItem[] = [
   // F5.6: set by Accept on the cookie notice (lib/cookie-notice.ts).
   { names: ["klecx_cookie_notice"], kind: "cookie", category: "essential", purpose: "cookieNotice", duration: "oneYear" },
   { names: ["NEXT_LOCALE"], kind: "cookie", category: "preference", purpose: "locale", duration: "oneYear" },
+  // Step 9.2: the answer to the "also available in …" banner (lib/i18n/locale-suggestion.ts).
+  { names: ["klecx_locale_suggestion"], kind: "cookie", category: "preference", purpose: "localeSuggestion", duration: "oneYear" },
   { names: ["sidebar"], kind: "cookie", category: "preference", purpose: "sidebar", duration: "oneYear" },
-  // next-themes keeps the theme in localStorage under its default key.
-  { names: ["theme"], kind: "localStorage", category: "preference", purpose: "theme", duration: "untilCleared" },
+  // Step 9.2: the theme is a cookie (read by the server, so pages render in the
+  // right colours at once); it was in localStorage before (lib/theme.ts).
+  { names: ["theme"], kind: "cookie", category: "preference", purpose: "theme", duration: "oneYear" },
   { names: ["klecx-ui-store"], kind: "localStorage", category: "preference", purpose: "uiStore", duration: "untilCleared" },
   {
     names: ["klecx-panel-width", "klecx-ask-col-width", "klecx-doc-col-width"],

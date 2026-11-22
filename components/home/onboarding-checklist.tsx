@@ -91,7 +91,7 @@ export function OnboardingChecklist({
   const totalCount = steps.length;
   const allCompleted = completedCount === totalCount;
 
-  if (onboardingDismissed || allCompleted) {
+  if (onboarding.dismissed || onboardingDismissed || allCompleted) {
     return null;
   }
 
@@ -119,7 +119,15 @@ export function OnboardingChecklist({
           variant="ghost"
           size="icon"
           aria-label={tHome("dismiss")}
-          onClick={() => setOnboardingDismissed(true)}
+          onClick={() => {
+            setOnboardingDismissed(true);
+            // Step 9.2: saved on the account, so other devices hide it too (best effort).
+            void fetch("/api/v1/me/preferences", {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ onboardingDismissed: true }),
+            }).catch(() => undefined);
+          }}
           className="h-7 w-7 text-subtle hover:text-fg -mt-1 -mr-1"
         >
           <X className="h-4 w-4" strokeWidth={1.5} />

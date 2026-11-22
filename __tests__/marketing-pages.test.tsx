@@ -27,12 +27,12 @@ jest.mock("next/navigation", () => ({
   }),
 }));
 
-// Mock next-themes
+// Mock the theme provider (Step 9.2)
 jest.mock("next-intl/server", () =>
   jest.requireActual("../test-utils/next-intl").serverIntlMock(() => "en")
 );
 
-jest.mock("next-themes", () => ({
+jest.mock("@/components/providers/theme-provider", () => ({
   useTheme: () => ({
     resolvedTheme: "light",
     setTheme: jest.fn(),

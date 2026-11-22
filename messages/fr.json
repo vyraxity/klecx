@@ -481,14 +481,22 @@
     },
     "appearance": {
       "title": "Apparence",
-      "description": "L'apparence de Klecx sur cet appareil.",
+      "description": "L'apparence et le fonctionnement de Klecx. Enregistrés dans votre compte, ils s'appliquent à tous vos appareils.",
       "themeTitle": "Thème",
       "themeHint": "Système suit le mode clair ou sombre de votre appareil.",
       "theme": {
         "system": "Système",
         "light": "Clair",
         "dark": "Sombre"
-      }
+      },
+      "behaviorTitle": "Comportement",
+      "behaviorHint": "Le fonctionnement de la zone de saisie et des animations.",
+      "enterToSend": "Envoyer avec Entrée",
+      "enterToSendOn": "Entrée envoie votre message ; Maj + Entrée ajoute une nouvelle ligne.",
+      "enterToSendOff": "Entrée ajoute une nouvelle ligne ; Ctrl + Entrée (⌘ + Entrée sur Mac) envoie.",
+      "reduceMotion": "Réduire les animations",
+      "reduceMotionHint": "Désactive les animations et les transitions. Désactivé, Klecx suit le réglage de votre appareil.",
+      "saveError": "Impossible d'enregistrer ce réglage. Réessayez."
     },
     "support": {
       "title": "Assistance",
@@ -1897,7 +1905,8 @@
         "projectView": "Retient l'affichage en liste ou en grille des pages de projet.",
         "documentDrafts": "Conserve les modifications de documents non enregistrées si vous rechargez la page.",
         "usernamePrompt": "Évite d'afficher deux fois dans une même visite la demande de nom d'utilisateur.",
-        "cookieNotice": "Mémorise que vous avez vu l'avis sur les cookies."
+        "cookieNotice": "Mémorise que vous avez vu l'avis sur les cookies.",
+        "localeSuggestion": "Retient votre réponse à la suggestion de passer à la langue de votre pays, pour ne plus l'afficher."
       }
     }
   },
@@ -3431,5 +3440,11 @@
     "seePlans": "Voir tous les forfaits",
     "upgradeTo": "Passer à {plan}",
     "manage": "Gérer le forfait"
+  },
+  "LocaleSuggestion": {
+    "label": "Suggestion de langue",
+    "message": "Klecx est aussi disponible en français.",
+    "switch": "Passer en français",
+    "dismiss": "Non merci"
   }
 }

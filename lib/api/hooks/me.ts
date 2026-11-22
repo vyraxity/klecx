@@ -12,12 +12,21 @@ import {
 import { api } from "@/lib/api/client";
 import { queryKeys } from "./query-keys";
 import type { UpdatePreferencesInput } from "@/lib/schemas/user-preferences";
+import type { Theme } from "@/lib/theme";
 
+/** Step 9.2: the full object `GET /api/v1/me/preferences` returns (defaults applied). */
 export interface UserPreferencesDto {
-  userId: string;
   uiLocale: string | null;
   aiLanguage: string | null;
   webSearchEnabled: boolean;
+  theme: Theme;
+  themeSaved: boolean;
+  enterToSend: boolean;
+  reduceMotion: boolean | null;
+  voiceProvider: string | null;
+  voiceId: string | null;
+  voiceSpeed: number;
+  onboardingDismissed: boolean;
 }
 
 export interface UserCreditsDto {
@@ -71,15 +80,14 @@ export function useUpdateUserPreferences(userId: string) {
 
       const previous = queryClient.getQueryData<UserPreferencesDto>(key);
       if (previous) {
+        // Optimistic: every field the request sets (undefined = unchanged).
+        const changes = Object.fromEntries(
+          Object.entries(input).filter(([, v]) => v !== undefined)
+        ) as Partial<UserPreferencesDto>;
         queryClient.setQueryData<UserPreferencesDto>(key, {
           ...previous,
-          ...(input.uiLocale !== undefined ? { uiLocale: input.uiLocale } : {}),
-          ...(input.aiLanguage !== undefined
-            ? { aiLanguage: input.aiLanguage }
-            : {}),
-          ...(input.webSearchEnabled !== undefined
-            ? { webSearchEnabled: input.webSearchEnabled }
-            : {}),
+          ...changes,
+          ...(input.theme !== undefined ? { themeSaved: true } : {}),
         });
       }
 

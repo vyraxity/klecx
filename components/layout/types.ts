@@ -7,6 +7,8 @@ export interface AppShellUser {
   creditBalance: number;
   username?: string | null;
   usernameClaimedAt?: string | null;
+  /** Step 9.2: account preferences the shell applies on every device. */
+  preferences?: { enterToSend: boolean; onboardingDismissed: boolean };
 }
 
 export interface SidebarProjectItem {

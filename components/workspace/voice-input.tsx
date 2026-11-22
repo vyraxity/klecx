@@ -14,6 +14,8 @@ import {
   type RecordedAudio,
 } from "@/lib/voice/recorder";
 
+
+const noopSubscribe = () => () => {};
 export interface VoiceInputProps {
   onInsertTranscript: (text: string) => void;
   onSendTranscript?: (text: string) => void;
@@ -69,7 +71,15 @@ export function VoiceInput({
     setState(next);
   }, []);
 
-  const isSupported = React.useMemo(() => isVoiceSupported(), []);
+  // Unknown (null) on the server and during hydration, then the browser's
+  // answer: rendering "unsupported" on the server made hydration fail and
+  // React rebuild the whole page (found in F5.1, fixed in Step 9.2).
+  const support = React.useSyncExternalStore(
+    noopSubscribe,
+    isVoiceSupported,
+    () => null
+  );
+  const isSupported = support === true;
 
   const announce = React.useCallback((msg: string) => {
     setAnnouncement(msg);
@@ -274,7 +284,7 @@ export function VoiceInput({
   }, []);
 
   // Determine effective gate reason
-  const effectiveGateReason: GateReason | null = !isSupported
+  const effectiveGateReason: GateReason | null = support === false
     ? { code: "unsupported_browser" }
     : gateReason ?? (dailyLimitReached ? { code: "daily_voice_limit" } : null);
 
@@ -383,7 +393,7 @@ export function VoiceInput({
                 void handleStartRecording();
               }
             }}
-            disabled={disabled || state === "requesting-permission"}
+            disabled={disabled || support === null || state === "requesting-permission"}
             aria-label={t("start")}
             aria-pressed={false}
             data-testid="voice-record-btn"

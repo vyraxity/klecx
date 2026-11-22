@@ -197,6 +197,18 @@
 /* The annotation highlight rules (CSS Custom Highlight API) are in
    lib/annotations/highlight-styles.ts, rendered by app/layout.tsx. */
 
+  /* Step 9.2: Settings → Appearance → "Reduce motion" (always), on top of the device setting below. */
+  [data-reduce-motion="true"] ::view-transition-group(*),
+  [data-reduce-motion="true"] ::view-transition-old(*),
+  [data-reduce-motion="true"] ::view-transition-new(*),
+  [data-reduce-motion="true"] *,
+  [data-reduce-motion="true"] ::before,
+  [data-reduce-motion="true"] ::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     ::view-transition-group(*),
     ::view-transition-old(*),

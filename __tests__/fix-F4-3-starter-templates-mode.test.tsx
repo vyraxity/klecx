@@ -39,6 +39,7 @@ describe("Step F4.3 — Starter templates switch composer mode", () => {
       usernameChosen: true,
       hasWorkspace: true,
       hasProject: true,
+      dismissed: false,
     },
   };
 

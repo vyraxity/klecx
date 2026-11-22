@@ -6,6 +6,9 @@ import { useSiteConfig } from "@/components/providers/site-config-provider";
 import { Sparkles } from "lucide-react";
 import { Composer, type ComposerPrefill } from "@/components/workspace/composer";
 
+const noopSubscribe = () => () => {};
+const currentHour = () => new Date().getHours();
+
 export interface GreetingSectionProps {
   userName: string;
   userId?: string;
@@ -23,17 +26,19 @@ export function GreetingSection({
   const tHome = useTranslations("Home");
   const site = useSiteConfig();
 
-  const greeting = React.useMemo(() => {
-    const hour = new Date().getHours();
-    const name = userName ? userName.split(" ")[0] : "";
-    if (hour < 12) {
-      return tHome("greetingMorning", { name: name || "there" });
-    }
-    if (hour < 18) {
-      return tHome("greetingAfternoon", { name: name || "there" });
-    }
-    return tHome("greetingEvening", { name: name || "there" });
-  }, [userName, tHome]);
+  // The hour is the browser's: unknown on the server and during hydration
+  // (the welcome line), then the time-of-day greeting. Computing it during
+  // render made server and browser disagree across time zones (Step 9.2).
+  const hour = React.useSyncExternalStore(noopSubscribe, currentHour, () => null);
+  const name = userName ? userName.split(" ")[0] : "";
+  const greeting =
+    hour === null
+      ? tHome("greetingDefault", { name: name || "there" })
+      : hour < 12
+        ? tHome("greetingMorning", { name: name || "there" })
+        : hour < 18
+          ? tHome("greetingAfternoon", { name: name || "there" })
+          : tHome("greetingEvening", { name: name || "there" });
 
   return (
     <section className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto w-full pt-4 pb-2">

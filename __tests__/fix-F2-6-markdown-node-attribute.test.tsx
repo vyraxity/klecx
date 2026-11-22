@@ -11,7 +11,7 @@ jest.mock("next-intl", () => ({
   useTranslations: () => (key: string) => key,
 }));
 
-jest.mock("next-themes", () => ({
+jest.mock("@/components/providers/theme-provider", () => ({
   useTheme: () => ({ resolvedTheme: "light" }),
 }));
 

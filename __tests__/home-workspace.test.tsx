@@ -241,6 +241,7 @@ describe("Step 3.5 — Workspace Home (/workspaces)", () => {
         usernameChosen: true,
         hasWorkspace: true,
         hasProject: true,
+      dismissed: false,
       },
     };
 
@@ -258,6 +259,7 @@ describe("Step 3.5 — Workspace Home (/workspaces)", () => {
         usernameChosen: false,
         hasWorkspace: false,
         hasProject: false,
+      dismissed: false,
       },
     };
 
@@ -340,8 +342,15 @@ describe("Step 3.5 — Workspace Home (/workspaces)", () => {
       expect(screen.getByText(/Create your first project/i)).toBeInTheDocument();
 
       // Dismiss onboarding
+      const fetchMock = jest.fn(async () => new Response("{}"));
+      global.fetch = fetchMock as unknown as typeof fetch;
       const dismissBtn = screen.getByRole("button", { name: /Dismiss/i });
       fireEvent.click(dismissBtn);
+      // Step 9.2: the dismissal is saved on the account too.
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/api/v1/me/preferences",
+        expect.objectContaining({ method: "PATCH", body: JSON.stringify({ onboardingDismissed: true }) })
+      );
 
       expect(useUiStore.getState().onboardingDismissed).toBe(true);
       expect(
