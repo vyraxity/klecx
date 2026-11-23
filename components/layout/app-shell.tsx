@@ -48,6 +48,7 @@ import { AllAnnotationsDrawer } from "@/components/annotations";
 import { ClaimUsernameDialog } from "@/components/user/claim-username-dialog";
 import { ClaimUsernameBanner } from "@/components/user/claim-username-banner";
 import { UpgradeDialogHost } from "@/components/billing/upgrade-dialog";
+import { ReadAloudDock } from "@/components/speech/read-aloud-dock";
 import type {
   AppShellUser,
   SidebarProjectItem,
@@ -608,6 +609,8 @@ export function AppShell({
 
         <main className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
           {children}
+          {/* Step 9.4: the floating read-aloud player (shown only while reading). */}
+          <ReadAloudDock />
         </main>
       </div>
 

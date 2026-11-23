@@ -3632,7 +3632,9 @@
   },
   "Speech": {
     "readAloud": "Read aloud",
+    "reading": "Reading…",
     "player": "Read-aloud player",
+    "showText": "Go to the text being read",
     "previous": "Previous part",
     "next": "Next part",
     "pause": "Pause",

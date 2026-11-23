@@ -10,6 +10,8 @@ import { MockStorageProvider } from "@/server/storage/mock";
 import { setNaturalSpeechProviderForTesting } from "@/server/speech/gemini-tts";
 import { SpeechProviderError, type SpeechProvider } from "@/server/speech/provider";
 import { pcmToWav, wavDurationSeconds, isWav } from "@/server/speech/wav";
+import { wavToMp3 } from "@/server/speech/mp3";
+import { storagePath } from "@/server/storage";
 import {
   prepareReadAloud,
   synthesizeReadAloudSegment,
@@ -194,6 +196,24 @@ describe("Step 9.4 — text preparation", () => {
     expect(speechCreditsFor(60, 900, new Date("2027-02-01"))).toBe(10);
     expect(speechCreditsFor(0, 10, new Date("2026-12-01"))).toBe(1);
   });
+
+  it("stores audio as MP3, about an eighth of the WAV's size", () => {
+    const pcm = Buffer.alloc(24_000 * 2 * 3);
+    for (let i = 0; i < pcm.length / 2; i++) pcm.writeInt16LE(Math.round(8000 * Math.sin(i / 10)), i * 2);
+    const wav = pcmToWav(pcm);
+    const mp3 = wavToMp3(wav);
+    // An MPEG audio frame starts with 11 set bits.
+    expect(mp3[0]).toBe(0xff);
+    expect(mp3[1]! & 0xe0).toBe(0xe0);
+    // 48 kbps × 3 s ≈ 18 KB (plus encoder padding) instead of 144 KB.
+    expect(mp3.length).toBeLessThan(25_000);
+    expect(mp3.length).toBeGreaterThan(15_000);
+  });
+
+  it("every stored file goes under CLOUDINARY_UPLOAD_FOLDER", () => {
+    expect(storagePath("speech", "abc")).toBe("klecx/dev/speech/abc");
+    expect(storagePath("/support/", "t1", "x")).toBe("klecx/dev/support/t1/x");
+  });
 });
 
 describe("Step 9.4 — read-aloud service", () => {
@@ -220,6 +240,9 @@ describe("Step 9.4 — read-aloud service", () => {
     expect(await balance(A.id)).toBe(ownerBefore); // the workspace owner doesn't pay for read-aloud
     const gen = await db.generation.findFirstOrThrow({ where: { actorId: B.id, kind: "SPEECH" } });
     expect(gen).toMatchObject({ status: "COMPLETED", chargedCredits: first.credits, workspaceId: W });
+    const row = await db.speechCache.findFirstOrThrow({ where: { chars: "Second draft.".length } });
+    expect(row.mime).toBe("audio/mpeg");
+    expect(row.storageId).toMatch(/^klecx\/dev\/speech\/[0-9a-f]{64}$/);
 
     const replay = await synthesizeReadAloudSegment(actor(A), { type: "DOCUMENT_REVISION", id: documentId }, 0, OPTS);
     expect(replay).toMatchObject({ cached: true, credits: 0 });

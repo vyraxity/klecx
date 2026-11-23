@@ -233,3 +233,66 @@ Known gap: the credit hold before an answer covers the base cost only (decided 2
 | C | More periods | A list of the last few periods with their dates (e.g. the last 12), instead of only two. Needs a periods endpoint built from `getUsagePeriods()`. |
 
 **If nothing is decided:** stays at A.
+
+---
+
+## 11. Read-aloud parts that follow the text's structure (future feature)
+
+- **Found:** 2026-11-23, Step 9.4 (owner: for a later release).
+- **Where:** `chunkSpeech()` in `lib/speech/prepare.ts`.
+
+**The situation.** Natural-voice audio is made one part at a time (at most 1,500 characters). If someone stops before the next part is made, the parts made so far are paid for and cached. The owner wants every part to end at a natural break, so a part never stops in the middle of a thought.
+
+**Today.** A part already ends at the **end of a sentence**, never inside a word or a sentence: sentences are found with the browser/Node sentence segmenter (`Intl.Segmenter`) and added to a part while they fit; paragraphs stay together while they fit. Only a **single sentence longer than 1,500 characters** is cut, between two words. What it doesn't do: prefer the end of a **paragraph** or a **section** (a heading starts a new part only by chance), so a part can end after the first sentence of a paragraph.
+
+**To build it:** score the possible break points inside the 1,500-character window and take the best one near the end: the end of a section (before a heading) first, then the end of a paragraph or list, then the end of a sentence; never make a part much shorter than, say, 600 characters just to reach a better break. Cut an over-long sentence at a clause (`;`, `:`, `,`, a dash) before falling back to a word. Note: changing how parts are cut changes their text, so audio cached under the old cutting is no longer reused (made again once, then cached).
+
+**If nothing is decided:** stays as today.
+
+---
+
+## 12. Read-aloud remembers where you stopped (future feature)
+
+- **Found:** 2026-11-23, Step 9.4 (owner: for a later release).
+- **Where:** the player (`lib/speech/player-store.ts`), `POST /api/v1/speech` (prepare).
+
+**Today.** Read aloud always starts at part 1. Parts already made with the same voice come from the cache (free, quick), and "Next part" skips ahead.
+
+**To build it:** save the part reached per person and text (e.g. a `ReadAloudProgress` row: user, text key — the same key the player uses, which changes when the text is edited — part index, updated at), written when reading pauses, stops or moves to a new part, so it follows the person across devices. Read aloud then offers "Resume from part 3" or "Start over". Forget it when the text changes or after the last part. Saving the position inside a part (seconds) is possible for natural voices only (the browser voice can't seek), so the part is the unit.
+
+**If nothing is decided:** not built.
+
+---
+
+## 13. Follow the text while reading aloud (future feature)
+
+- **Found:** 2026-11-23, Step 9.4 (owner: for a later release; goes with the floating player built in 9.4).
+- **Where:** the floating player (`components/speech/read-aloud-dock.tsx`), `UserPreference`.
+
+**The situation.** While a text is read aloud, highlight the part (or sentence) being read and scroll the page so it stays in view. The floating player gets a switch "Highlight while reading"; the choice is saved on the account (a new `UserPreference` field, like the theme) so it applies on every device and to every later reading.
+
+**Today.** Not built. The player has "Go to the text being read", which scrolls back to the text's Read aloud button.
+
+**What makes it work:** the spoken text is a cleaned-up copy of the Markdown (`lib/speech/prepare.ts` drops code, links' URLs, citation markers…), so each part must keep a map back to its place in the rendered text (offsets in the source, the way annotations anchor passages). Then: with the **browser voice**, the browser reports each word as it's spoken (`boundary` events), so word or sentence highlighting is exact; with **natural voices**, only the part's audio and its length are known, so highlight the whole part, or estimate the sentence from the time played. Respect reduced motion (no smooth scrolling) and stop following when the person scrolls away by hand.
+
+**If nothing is decided:** not built.
+
+---
+
+## 14. Reading aloud texts longer than 20,000 characters (future feature)
+
+- **Found:** 2026-11-23, Step 9.4 (owner: for a later release).
+- **Where:** `MAX_SPEECH_CHARS` and `prepareSpeech()` (`lib/speech/prepare.ts`), `prepareReadAloud()` (`server/services/speech.ts`), the player.
+
+**Today.** One reading covers at most 20,000 characters (about 13 parts, 20–25 minutes); a longer answer or document reads only its start and the player says "This text is long: only the first part is read aloud."
+
+**The owner's idea.** Long texts can be read in full. Before starting a text over the limit, a dialog says it's long, gives an **estimate of the credits** it will use (from its length: `estimateAudioSeconds()` and `speechCreditsFor()`, "about N credits") and offers **Read all**, **Read the first part** (as today) and **Cancel**.
+
+**Points to settle when building it:**
+- Raise the server's limit for a confirmed request (e.g. `confirmLong: true` in the prepare call) to a hard ceiling that still protects the server (say 200,000 characters), and return the estimate in the prepare response so the dialog shows the server's number.
+- The **daily natural-voice limit** (30 / 60 / 120 min) still applies: a long text can run past it, and the player then carries on with the browser voice. The dialog should say how much natural-voice time is left today.
+- Credits are still charged per part as it's made, so stopping early costs only what was made (the estimate is the most it can cost).
+- With the **browser voice** nothing is charged, so no credit estimate: either read it all without asking, or only mention the length.
+- Pairs well with §12 (resume where you stopped) for long documents.
+
+**If nothing is decided:** stays at 20,000 characters.

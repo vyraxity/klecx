@@ -20,6 +20,7 @@
     "verify": "bash scripts/verify.sh"
   },
   "dependencies": {
+    "@breezystack/lamejs": "^1.2.7",
     "@google/genai": "^2.30.0",
     "@hookform/resolvers": "^7.0.1",
     "@mozilla/readability": "^0.6.0",

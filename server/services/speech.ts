@@ -5,7 +5,7 @@ import { db } from "@/server/db/client";
 import { ApiError, Errors } from "@/server/http/errors";
 import { requireWorkspace } from "@/server/authz/access";
 import { getEntitlements } from "@/server/billing/entitlements";
-import { getStorageProvider } from "@/server/storage";
+import { getStorageProvider, storagePath } from "@/server/storage";
 import {
   createAccountWithFreeGrant,
   getAccountByUserId,
@@ -16,6 +16,7 @@ import {
 import { getUserPreferences } from "@/server/services/user-preferences";
 import { getNaturalSpeechProvider } from "@/server/speech/gemini-tts";
 import { SpeechProviderError } from "@/server/speech/provider";
+import { wavToMp3 } from "@/server/speech/mp3";
 import type { Actor } from "@/server/auth/session";
 import { prepareSpeech } from "@/lib/speech/prepare";
 import { estimateAudioSeconds, speechCreditsFor } from "@/lib/speech/pricing";
@@ -130,7 +131,8 @@ export async function resolveVoiceSettings(userId: string): Promise<VoiceSetting
 }
 
 export function speechCacheKey(text: string, modelId: string, voiceId: string): string {
-  return createHash("sha256").update(JSON.stringify(["natural", modelId, voiceId, text])).digest("hex");
+  // "mp3": the stored format (WAV files from before the switch are never reused).
+  return createHash("sha256").update(JSON.stringify(["natural", "mp3", modelId, voiceId, text])).digest("hex");
 }
 
 export interface PreparedReadAloud {
@@ -201,21 +203,26 @@ function dailyLimitError() {
   return new ApiError(402, "daily_read_aloud_limit", "Daily natural-voice limit reached for your plan");
 }
 
-async function signedUrl(storageId: string): Promise<string> {
+async function signedUrl(storageId: string, mime: string): Promise<string> {
   return getStorageProvider().privateUrl(storageId, {
     resourceType: "video",
     expiresInSeconds: SIGNED_URL_SECONDS,
-    format: "wav",
+    format: mime === "audio/wav" ? "wav" : "mp3",
   });
 }
 
-/** Stores synthesized audio and its cache row (a concurrent duplicate is fine). */
-async function storeAudio(key: string, voiceId: string, modelId: string, text: string, audio: Buffer, seconds: number) {
+/**
+ * Stores synthesized audio as MP3 under `<CLOUDINARY_UPLOAD_FOLDER>/speech/<key>`
+ * (Cloudinary files audio under its "video" type) with its cache row; a
+ * concurrent duplicate is fine.
+ */
+async function storeAudio(key: string, voiceId: string, modelId: string, text: string, wav: Buffer, seconds: number) {
+  const audio = wavToMp3(wav);
   const upload = await getStorageProvider().uploadBuffer(audio, {
-    publicId: `speech/${key}`,
+    publicId: storagePath("speech", key),
     resourceType: "video",
-    format: "wav",
-    mime: "audio/wav",
+    format: "mp3",
+    mime: "audio/mpeg",
     isPublic: false,
     tags: ["speech"],
   });
@@ -229,7 +236,7 @@ async function storeAudio(key: string, voiceId: string, modelId: string, text: s
       chars: text.length,
       seconds,
       storageId: upload.publicId,
-      mime: "audio/wav",
+      mime: "audio/mpeg",
       bytes: upload.bytes,
     },
     update: { lastUsedAt: new Date() },
@@ -268,7 +275,7 @@ export async function synthesizeReadAloudSegment(
   const hit = await db.speechCache.findUnique({ where: { key } });
   if (hit) {
     await db.speechCache.update({ where: { key }, data: { lastUsedAt: new Date() } });
-    return { url: await signedUrl(hit.storageId), seconds: hit.seconds, cached: true, credits: 0 };
+    return { url: await signedUrl(hit.storageId, hit.mime), seconds: hit.seconds, cached: true, credits: 0 };
   }
 
   // Not cached: check the day's seconds, reserve on the listener's own account.
@@ -323,7 +330,7 @@ export async function synthesizeReadAloudSegment(
         finishedAt: new Date(),
       },
     });
-    return { url: await signedUrl(cache.storageId), seconds, cached: false, credits };
+    return { url: await signedUrl(cache.storageId, cache.mime), seconds, cached: false, credits };
   } catch (err) {
     await release(account.id, generationId, `rel_speech_${generationId}`).catch(() => undefined);
     await db.generation
@@ -355,11 +362,11 @@ export async function previewVoice(actor: Actor, voiceId: string, sampleText: st
   const provider = getNaturalSpeechProvider();
   const key = speechCacheKey(`${PREVIEW_SPEAKER}:${sampleText}`, provider.modelId, voiceId);
   const hit = await db.speechCache.findUnique({ where: { key } });
-  if (hit) return { url: await signedUrl(hit.storageId) };
+  if (hit) return { url: await signedUrl(hit.storageId, hit.mime) };
   try {
     const result = await provider.synthesize({ text: sampleText, voiceId });
     const cache = await storeAudio(key, voiceId, provider.modelId, sampleText, result.audio, result.usage.audioSeconds);
-    return { url: await signedUrl(cache.storageId) };
+    return { url: await signedUrl(cache.storageId, cache.mime) };
   } catch {
     throw new ApiError(503, "speech_unavailable", "Natural voices are unavailable right now");
   }
