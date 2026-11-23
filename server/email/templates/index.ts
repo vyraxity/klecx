@@ -7,6 +7,7 @@ export * from "./reset-password";
 export * from "./invitation";
 export * from "./new-sign-in";
 export * from "./password-changed";
+export * from "./two-factor-changed";
 export * from "./change-email";
 export * from "./share-created";
 export * from "./credits-low";

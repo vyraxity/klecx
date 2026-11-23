@@ -228,7 +228,8 @@ async function buildAccount(userId: string) {
   const [user, prefs, accounts, sessions, sub, consents, credit] = await Promise.all([
     db.user.findUniqueOrThrow({
       where: { id: userId },
-      select: { id: true, name: true, email: true, emailVerified: true, username: true, createdAt: true },
+      // Two-factor: only whether it is on; never the secret or the backup codes.
+      select: { id: true, name: true, email: true, emailVerified: true, username: true, twoFactorEnabled: true, createdAt: true },
     }),
     db.userPreference.findUnique({ where: { userId } }),
     db.account.findMany({ where: { userId }, select: { providerId: true, createdAt: true } }),

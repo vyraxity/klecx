@@ -9,6 +9,7 @@ jest.mock("better-auth/react", () => ({
 
 jest.mock("better-auth/client/plugins", () => ({
   inferAdditionalFields: () => ({}),
+  twoFactorClient: () => ({ id: "two-factor" }),
 }));
 
 jest.mock("next-intl/plugin", () => () => (config: any) => config);

@@ -56,6 +56,12 @@ export interface PasswordChangedData {
   time: string;
 }
 
+/** Two-factor sign-in changed (on, off, new backup codes, or reset by support). */
+export interface TwoFactorChangedData {
+  kind: "enabled" | "disabled" | "backupCodes" | "resetBySupport";
+  time: string;
+}
+
 export interface ShareCreatedData {
   title: string;
   shareUrl: string;
@@ -178,6 +184,7 @@ export interface EmailTemplateMap {
   invitation: InvitationData;
   "new-sign-in": NewSignInData;
   "password-changed": PasswordChangedData;
+  "two-factor-changed": TwoFactorChangedData;
   "change-email-confirm": ChangeEmailConfirmData;
   "change-email-verify": ChangeEmailVerifyData;
   "share-created": ShareCreatedData;

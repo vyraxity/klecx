@@ -47,6 +47,10 @@ model User {
   suspendedAt             DateTime?           @map("suspended_at")
   /// Internal note on why (never shown to the person).
   suspendedReason         String?             @map("suspended_reason")
+  /// Two-factor sign-in (TOTP app + backup codes) is on. Set by Better Auth's
+  /// twoFactor plugin once the first code is verified.
+  twoFactorEnabled        Boolean             @default(false) @map("two_factor_enabled")
+  twoFactor               TwoFactor?
   sessions                Session[]
   accounts                Account[]
   projects                Project[]
@@ -87,6 +91,24 @@ model User {
   accountDeletion         AccountDeletion?
 
   @@map("users")
+}
+
+/// Two-factor sign-in (Better Auth `twoFactor` plugin). The TOTP secret and the
+/// backup codes are encrypted with BETTER_AUTH_SECRET. `verified` is false until
+/// the first code is entered during setup. Repeated wrong codes lock it briefly.
+model TwoFactor {
+  id                      String    @id
+  userId                  String    @unique @map("user_id")
+  secret                  String
+  backupCodes             String    @map("backup_codes")
+  verified                Boolean   @default(true)
+  failedVerificationCount Int       @default(0) @map("failed_verification_count")
+  lockedUntil             DateTime? @map("locked_until")
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @default(now()) @updatedAt @map("updated_at")
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("two_factors")
 }
 
 model Session {

@@ -112,6 +112,7 @@ describe("Step F0.2 — Site configuration: emails, company identity, links from
       "password-changed": {
         time: "2026-11-08 10:05 UTC",
       },
+      "two-factor-changed": { kind: "enabled", time: "2026-11-23 10:00 UTC" },
       "change-email-confirm": {
         url: "https://app.example.test/api/auth/verify-email?token=c1",
         newEmail: "new@example.test",

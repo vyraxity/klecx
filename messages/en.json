@@ -35,7 +35,9 @@
       "resetPasswordTitle": "Reset Password",
       "resetPasswordDescription": "Set a new secure password for your Klecx account.",
       "verifyEmailTitle": "Verify Email",
-      "verifyEmailDescription": "Verify your email address for your Klecx account."
+      "verifyEmailDescription": "Verify your email address for your Klecx account.",
+      "twoFactorTitle": "Two-factor sign-in",
+      "twoFactorDescription": "Enter the code from your authenticator app to finish signing in."
     },
     "settings": {
       "title": "Settings",
@@ -257,10 +259,33 @@
       "DISPOSABLE_EMAIL": "This email service isn't accepted. Please sign up with a permanent email address.",
       "ACCOUNT_SUSPENDED": "This account is suspended. If you think this is a mistake, contact our support team.",
       "ACCOUNT_DELETED": "This account was deleted. Use the link in the email we sent you to restore it.",
-      "PASSWORD_COMPROMISED": "This password appears in a known data breach. Choose a different one."
+      "PASSWORD_COMPROMISED": "This password appears in a known data breach. Choose a different one.",
+      "INVALID_CODE": "That code isn't right. Check your authenticator app and try again.",
+      "INVALID_BACKUP_CODE": "That backup code isn't right, or it was already used.",
+      "TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE": "Too many wrong codes. Sign in again to get a new chance.",
+      "ACCOUNT_TEMPORARILY_LOCKED": "Too many wrong codes. Two-factor sign-in is locked for a few minutes; try again later.",
+      "INVALID_TWO_FACTOR_COOKIE": "This sign-in has expired. Sign in again with your email and password."
     },
     "planIntent": "You chose {plan} ({interval}). After you confirm your email, you'll continue to payment.",
-    "accountDeleted": "Your account is deleted. Check your email for the link to restore it if you change your mind."
+    "accountDeleted": "Your account is deleted. Check your email for the link to restore it if you change your mind.",
+    "twoFactor": {
+      "title": "Two-factor sign-in",
+      "subtitleTotp": "Enter the 6-digit code from your authenticator app.",
+      "subtitleBackup": "Enter one of the backup codes you saved. Each code works once.",
+      "codeLabel": "Authentication code",
+      "backupLabel": "Backup code",
+      "codePlaceholder": "123456",
+      "backupPlaceholder": "abcde-12345",
+      "trustDevice": "Don't ask again on this device for {days} days",
+      "verify": "Verify",
+      "verifying": "Verifying…",
+      "useBackup": "Use a backup code instead",
+      "useApp": "Use your authenticator app instead",
+      "lostAccess": "Lost your phone and your backup codes? Write to {email} from your account's email address; we'll check it's you before removing two-factor sign-in.",
+      "backToSignIn": "Back to sign in",
+      "signInAgain": "Sign in again",
+      "errorGeneric": "Couldn't check the code. Try again."
+    }
   },
   "Chat": {
     "newChat": "New Workspace",
@@ -472,7 +497,41 @@
       "cancel": "Cancel",
       "sessionsTitle": "Sessions and devices",
       "sessionsHint": "See where you're signed in and sign out of devices you don't recognize.",
-      "sessionsLink": "Manage sessions"
+      "sessionsLink": "Manage sessions",
+      "twoFactor": {
+        "title": "Two-factor sign-in",
+        "hint": "After your password, Klecx also asks for a code from an authenticator app on your phone, so a stolen password alone can't open your account. Signing in with a connected account (another sign-in method) uses that account's own protection.",
+        "needsPassword": "Two-factor sign-in protects signing in with your email and password. Set a password above first; signing in with a connected account uses that account's own protection.",
+        "statusOn": "On",
+        "statusOff": "Off",
+        "turnOn": "Turn on",
+        "turnOff": "Turn off",
+        "newBackupCodes": "New backup codes",
+        "passwordForSetup": "Enter your password to start.",
+        "passwordForDisable": "Enter your password to turn off two-factor sign-in. Devices you trusted will be asked for a code again if you turn it back on.",
+        "passwordForCodes": "Enter your password to make new backup codes. Your old codes will stop working.",
+        "passwordLabel": "Password",
+        "continue": "Continue",
+        "cancel": "Cancel",
+        "scanStep1": "Open an authenticator app on your phone (any app that supports time-based codes).",
+        "scanStep2": "Scan this QR code, or type the key by hand.",
+        "scanStep3": "Enter the 6-digit code the app shows.",
+        "qrLabel": "QR code to add Klecx to your authenticator app",
+        "manualKeyLabel": "Can't scan it? Enter this key:",
+        "copyKey": "Copy key",
+        "codeLabel": "Code from the app",
+        "codePlaceholder": "123456",
+        "confirm": "Turn on",
+        "codesWarning": "Save these backup codes somewhere safe. If you lose your phone, each one lets you sign in once. They won't be shown again.",
+        "codesListLabel": "Backup codes",
+        "copyCodes": "Copy codes",
+        "downloadCodes": "Download",
+        "savedCodes": "I've saved them",
+        "codesFileHeader": "Klecx backup codes. Each code can be used once to sign in.",
+        "enabledToast": "Two-factor sign-in is on.",
+        "disabledToast": "Two-factor sign-in is off.",
+        "actionError": "Couldn't update two-factor sign-in. Try again."
+      }
     },
     "language": {
       "title": "Language & AI",
@@ -902,6 +961,31 @@
       "body": "Your Klecx account is restored. You can sign in again; your workspaces and settings are as you left them.",
       "button": "Sign in",
       "disclaimer": "If you didn't restore your account, contact support."
+    },
+    "twoFactorChanged": {
+      "greeting": "Hi,",
+      "button": "Review security settings",
+      "disclaimer": "If you made this change, you can ignore this email. If you didn't, change your password right away and contact support.",
+      "enabled": {
+        "subject": "Two-factor sign-in is on for your Klecx account",
+        "heading": "Two-factor sign-in turned on",
+        "body": "Two-factor sign-in was turned on for your Klecx account on {time}. From now on, signing in with your password also needs a code from your authenticator app."
+      },
+      "disabled": {
+        "subject": "Two-factor sign-in was turned off on your Klecx account",
+        "heading": "Two-factor sign-in turned off",
+        "body": "Two-factor sign-in was turned off for your Klecx account on {time}. Signing in with your password no longer asks for a code."
+      },
+      "backupCodes": {
+        "subject": "New backup codes for your Klecx account",
+        "heading": "New backup codes created",
+        "body": "New two-factor backup codes were created for your Klecx account on {time}. Your previous backup codes no longer work."
+      },
+      "resetBySupport": {
+        "subject": "Two-factor sign-in was removed by Klecx support",
+        "heading": "Two-factor sign-in removed",
+        "body": "At your request, Klecx support removed two-factor sign-in from your account on {time}. You can turn it back on in your security settings."
+      }
     }
   },
   "AppShell": {
@@ -1864,7 +1948,7 @@
           "id": "security",
           "heading": "9. Security",
           "paragraphs": [
-            "We protect your data with encrypted connections (HTTPS), hashed passwords, access controls that limit each workspace to the people invited to it, private storage for uploaded files with short-lived download links, sign-in alerts and rate limits against abuse. No system is perfectly secure; if a breach affects your data, we will tell you and the authorities as the law requires."
+            "We protect your data with encrypted connections (HTTPS), hashed passwords, a check that refuses passwords found in known data breaches (only a short, anonymous part of the password's hash is compared, never the password itself), optional two-factor sign-in with an authenticator app (its secret and backup codes are stored encrypted), access controls that limit each workspace to the people invited to it, private storage for uploaded files with short-lived download links, sign-in alerts and rate limits against abuse. No system is perfectly secure; if a breach affects your data, we will tell you and the authorities as the law requires."
           ]
         },
         {
@@ -2359,7 +2443,12 @@
       "purge_not_due": "The account's grace period hasn't ended yet.",
       "origin_mismatch": "This request came from another site and was blocked. Reload Klecx and try again.",
       "payload_too_large": "This is too long to send. Shorten it and try again.",
-      "PASSWORD_COMPROMISED": "This password appears in a known data breach. Choose a different one."
+      "PASSWORD_COMPROMISED": "This password appears in a known data breach. Choose a different one.",
+      "invalid_code": "That code isn't right. Check your authenticator app and try again.",
+      "two_factor_already_on": "Two-factor sign-in is already on.",
+      "two_factor_not_on": "Two-factor sign-in isn't on.",
+      "two_factor_not_started": "Start again: enter your password to get a new QR code.",
+      "password_required": "Set a password first to use two-factor sign-in."
     }
   },
   "Gates": {

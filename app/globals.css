@@ -115,6 +115,9 @@
   --color-info: var(--info);
   --color-ring: var(--ring);
   --color-overlay: var(--overlay);
+  /* QR codes stay dark on light in both themes (scanners expect it). */
+  --color-qr-light: oklch(1 0 0);
+  --color-qr-dark: oklch(0.15 0 0);
 
   /* shadcn/ui mapped Tailwind theme colors */
   --color-background: var(--background);

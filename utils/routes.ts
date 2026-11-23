@@ -23,6 +23,8 @@ export const authRoutes = [
   '/auth/registered',
   '/auth/forgot-password',
   '/auth/reset-password',
+  // Two-factor sign-in: the code after the password (no session yet).
+  '/auth/two-factor',
   '/login',
   '/register',
   '/forgot-password',

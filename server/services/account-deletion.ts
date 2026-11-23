@@ -375,6 +375,9 @@ export async function purgeDeletedAccount(
     await tx.userPreference.deleteMany({ where: { userId } });
     await tx.session.deleteMany({ where: { userId } });
     await tx.account.deleteMany({ where: { userId } });
+    // Two-factor sign-in: secret, backup codes and trusted devices.
+    await tx.twoFactor.deleteMany({ where: { userId } });
+    await tx.verification.deleteMany({ where: { identifier: { startsWith: "trust-device-" }, value: userId } });
     await tx.verification.deleteMany({ where: { identifier: { contains: email, mode: "insensitive" } } });
     await tx.user.update({
       where: { id: userId },
@@ -382,6 +385,7 @@ export async function purgeDeletedAccount(
         name: DELETED_USER_NAME,
         email: deletedUserEmail(userId),
         emailVerified: false,
+        twoFactorEnabled: false,
         image: null,
         username: null,
         displayUsername: null,
