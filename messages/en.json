@@ -256,7 +256,8 @@
       "CREDENTIAL_ACCOUNT_NOT_FOUND": "This account doesn't use a password. Sign in with your provider instead.",
       "DISPOSABLE_EMAIL": "This email service isn't accepted. Please sign up with a permanent email address.",
       "ACCOUNT_SUSPENDED": "This account is suspended. If you think this is a mistake, contact our support team.",
-      "ACCOUNT_DELETED": "This account was deleted. Use the link in the email we sent you to restore it."
+      "ACCOUNT_DELETED": "This account was deleted. Use the link in the email we sent you to restore it.",
+      "PASSWORD_COMPROMISED": "This password appears in a known data breach. Choose a different one."
     },
     "planIntent": "You chose {plan} ({interval}). After you confirm your email, you'll continue to payment.",
     "accountDeleted": "Your account is deleted. Check your email for the link to restore it if you change your mind."
@@ -1967,6 +1968,14 @@
           "paragraphs": [
             "To report content or behaviour that breaks this policy, including a public share link, write to {abuseEmail} with a link or description and why you think it breaks the policy. For copyright complaints, see our Terms of Service. We review every report and reply within 3 business days."
           ]
+        },
+        {
+          "id": "security",
+          "heading": "5. Reporting security issues",
+          "paragraphs": [
+            "If you find a security weakness in Klecx, write to {securityEmail} with what you found and how to reproduce it. We confirm receipt within 3 business days and tell you when it's fixed.",
+            "While you look into it, test only with accounts and workspaces you own, don't access, change or delete other people's data, don't degrade the Service (no denial-of-service, spam or automated scanning at volume), and give us reasonable time to fix the issue before telling anyone else. If you act in good faith within these rules, we won't take legal action against you for your research."
+          ]
         }
       ]
     },
@@ -2347,7 +2356,10 @@
       "deletion_blocked": "Transfer or delete the workspaces and projects you share first.",
       "confirmation_mismatch": "The email address doesn't match your account.",
       "restore_link_invalid": "This link has expired or was already used.",
-      "purge_not_due": "The account's grace period hasn't ended yet."
+      "purge_not_due": "The account's grace period hasn't ended yet.",
+      "origin_mismatch": "This request came from another site and was blocked. Reload Klecx and try again.",
+      "payload_too_large": "This is too long to send. Shorten it and try again.",
+      "PASSWORD_COMPROMISED": "This password appears in a known data breach. Choose a different one."
     }
   },
   "Gates": {

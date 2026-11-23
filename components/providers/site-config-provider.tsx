@@ -12,6 +12,7 @@ export interface PublicSiteConfig {
     abuse: string;
     legal: string;
     billing: string;
+    security: string;
   };
   company: {
     legalName: string;
@@ -36,6 +37,7 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
     abuse: "abuse@example.test",
     legal: "support@example.test",
     billing: "support@example.test",
+    security: "support@example.test",
   },
   company: {
     legalName: "Vyraxity",

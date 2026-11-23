@@ -25,6 +25,8 @@ export const envSchema = z
     ABUSE_EMAIL: emptyToUndefined(z.string().min(3).optional()),
     LEGAL_EMAIL: emptyToUndefined(z.string().min(3).optional()),
     BILLING_EMAIL: emptyToUndefined(z.string().min(3).optional()),
+    // Step 10.1: security reports (security.txt). Defaults to SUPPORT_EMAIL.
+    SECURITY_EMAIL: emptyToUndefined(z.string().min(3).optional()),
     COMPANY_LEGAL_NAME: emptyToUndefined(z.string().min(1).optional()),
     COMPANY_ADDRESS: emptyToUndefined(z.string().min(1).optional()),
     COMPANY_COUNTRY: emptyToUndefined(z.string().min(2).optional()),
@@ -173,6 +175,7 @@ export const envSchema = z
     const abuseEmail = data.ABUSE_EMAIL || "abuse@example.test";
     const legalEmail = data.LEGAL_EMAIL || supportEmail;
     const billingEmail = data.BILLING_EMAIL || supportEmail;
+    const securityEmail = data.SECURITY_EMAIL || supportEmail;
 
     return {
       ...data,
@@ -181,6 +184,7 @@ export const envSchema = z
       ABUSE_EMAIL: abuseEmail,
       LEGAL_EMAIL: legalEmail,
       BILLING_EMAIL: billingEmail,
+      SECURITY_EMAIL: securityEmail,
       COMPANY_LEGAL_NAME: data.COMPANY_LEGAL_NAME || "Vyraxity",
       COMPANY_ADDRESS: data.COMPANY_ADDRESS || "Lagos, Nigeria",
       COMPANY_COUNTRY: data.COMPANY_COUNTRY || "NG",
@@ -215,6 +219,7 @@ export function validateEnv(input: Record<string, unknown> = process.env) {
     ABUSE_EMAIL: input.ABUSE_EMAIL || undefined,
     LEGAL_EMAIL: input.LEGAL_EMAIL || undefined,
     BILLING_EMAIL: input.BILLING_EMAIL || undefined,
+    SECURITY_EMAIL: input.SECURITY_EMAIL || undefined,
     COMPANY_LEGAL_NAME: input.COMPANY_LEGAL_NAME || undefined,
     COMPANY_ADDRESS: input.COMPANY_ADDRESS || undefined,
     COMPANY_COUNTRY: input.COMPANY_COUNTRY || undefined,

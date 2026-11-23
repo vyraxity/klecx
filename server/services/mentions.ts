@@ -4,6 +4,7 @@ import { db } from "@/server/db/client";
 import { Errors } from "@/server/http/errors";
 import { notify } from "@/server/services/notify";
 import { logActivity } from "@/server/services/activity";
+import { limit } from "@/server/http/rate-limit";
 import type { Actor } from "@/server/auth/session";
 import type { Permission } from "@/server/authz/permissions";
 import type { Prisma } from "@/server/db/generated/client";
@@ -163,6 +164,8 @@ export interface SyncMentionsResult {
     quote: string;
     excerpt: string;
     authorName: string;
+    /** Who wrote the message (not part of the notification payload). */
+    authorId: string;
     href: string;
     userIds: string[];
   };
@@ -314,6 +317,7 @@ export async function syncMentionsAndNotes(
           ? `${text.slice(0, EXCERPT_MAX - 1)}…`
           : text,
       authorName: actor.name ?? "",
+      authorId: actor.userId,
       href: `/workspaces/${workspaceId}`,
       // New messages notify everyone mentioned; edits only the newly added.
       userIds: newUserIds.filter((id) => id !== actor.userId),
@@ -329,9 +333,16 @@ export async function syncMentionsAndNotes(
 export async function sendMentionNotifications(
   pending: SyncMentionsResult["pendingNotifications"]
 ): Promise<void> {
-  const { userIds, messageId, ...payload } = pending;
+  const { userIds, messageId, authorId, ...payload } = pending;
   for (const userId of userIds) {
     try {
+      // Step 10.1: mention spam. One author can notify one person a limited
+      // number of times; beyond that the mention is kept but not notified.
+      const allowed = await limit("mention:notify", `${authorId}:${userId}`).then(
+        () => true,
+        () => false
+      );
+      if (!allowed) continue;
       await notify(userId, "MENTIONED", payload, {
         dedupeKey: `mention:${messageId}:${userId}`,
         email: true,

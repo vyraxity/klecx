@@ -70,11 +70,15 @@ Internal server errors (`500`) never expose stack traces or raw exception messag
 | `401` | `unauthorized` | Missing or invalid session cookie / Bearer token |
 | `402` | `insufficient_credits` | User or workspace owner does not have enough credits |
 | `403` | `forbidden` | Authenticated user has access to the resource but lacks permission for the action |
+| `403` | `origin_mismatch` | A cookie-authenticated `POST/PUT/PATCH/DELETE` came from another origin than `APP_URL` (Step 10.1). Requests with `Authorization: Bearer …` are exempt |
 | `404` | `not_found` | Resource does not exist **or** caller has no access to it |
 | `409` | `conflict` | State conflict (e.g., mutating an archived workspace, duplicate resource) |
+| `413` | `payload_too_large` | JSON body over 1 MB (Step 10.1) |
 | `422` | `validation_error` | Request body or query parameters failed Zod validation |
 | `429` | `rate_limited` | Rate limit exceeded; includes `Retry-After` header (in seconds) and `{ retryAfter }` in `details` |
 | `500` | `internal_error` | Unhandled server error (logged server-side with `requestId`) |
+
+Before validation, `route()` removes NUL and other control characters (except tab, line feed and carriage return) from every string in the JSON body and query (Step 10.1). The API sends no CORS headers: other origins can't call it from a browser.
 
 ---
 

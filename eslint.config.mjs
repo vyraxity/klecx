@@ -16,6 +16,19 @@ const eslintConfig = [
   ...typescript,
   {
     rules: {
+      // Step 10.1: SQL only through Prisma's query API or tagged templates
+      // ($queryRaw`…`), which parameterize every value.
+      "no-restricted-properties": [
+        "error",
+        {
+          property: "$queryRawUnsafe",
+          message: "Use $queryRaw`…` (tagged template): values are parameterized.",
+        },
+        {
+          property: "$executeRawUnsafe",
+          message: "Use $executeRaw`…` (tagged template): values are parameterized.",
+        },
+      ],
       "@typescript-eslint/no-explicit-any": "warn",
       "react/no-children-prop": "warn",
       "react-hooks/set-state-in-effect": "warn",

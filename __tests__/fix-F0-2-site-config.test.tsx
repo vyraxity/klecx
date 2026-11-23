@@ -220,6 +220,7 @@ describe("Step F0.2 — Site configuration: emails, company identity, links from
           abuse: "custom-abuse@vyraxity.test",
           legal: "custom-legal@vyraxity.test",
           billing: "custom-billing@vyraxity.test",
+          security: "custom-security@vyraxity.test",
         },
         company: {
           legalName: "Vyraxity Ltd",
@@ -275,6 +276,7 @@ describe("Step F0.2 — Site configuration: emails, company identity, links from
           abuse: "abuse@vyraxity.com",
           legal: "support@vyraxity.com",
           billing: "support@vyraxity.com",
+          security: "support@vyraxity.com",
         },
         social: {},
       });
@@ -366,6 +368,7 @@ describe("Step F0.2 — Site configuration: emails, company identity, links from
           abuse: "abuse@vyraxity.com",
           legal: "helpdesk@vyraxity.com",
           billing: "helpdesk@vyraxity.com",
+          security: "helpdesk@vyraxity.com",
         },
       });
 

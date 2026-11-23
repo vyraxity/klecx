@@ -256,7 +256,8 @@
       "CREDENTIAL_ACCOUNT_NOT_FOUND": "Esta cuenta no usa contraseña. Inicia sesión con tu proveedor.",
       "DISPOSABLE_EMAIL": "Este servicio de correo no se acepta. Regístrate con una dirección de correo permanente.",
       "ACCOUNT_SUSPENDED": "Esta cuenta está suspendida. Si crees que es un error, contacta con nuestro equipo de soporte.",
-      "ACCOUNT_DELETED": "Esta cuenta se eliminó. Usa el enlace del correo que te enviamos para restaurarla."
+      "ACCOUNT_DELETED": "Esta cuenta se eliminó. Usa el enlace del correo que te enviamos para restaurarla.",
+      "PASSWORD_COMPROMISED": "Esta contraseña aparece en una filtración de datos conocida. Elige otra."
     },
     "planIntent": "Elegiste {plan} ({interval}). Después de confirmar tu correo, continuarás al pago.",
     "accountDeleted": "Tu cuenta está eliminada. Revisa tu correo: ahí está el enlace para restaurarla si cambias de opinión."
@@ -1967,6 +1968,14 @@
           "paragraphs": [
             "Para denunciar contenido o conductas que incumplan esta política, incluido un enlace público, escribe a {abuseEmail} con un enlace o una descripción y el motivo por el que crees que la incumple. Para reclamaciones por derechos de autor, consulta nuestros Términos del servicio. Revisamos todas las denuncias y respondemos en un plazo de 3 días hábiles."
           ]
+        },
+        {
+          "id": "security",
+          "heading": "5. Informar de problemas de seguridad",
+          "paragraphs": [
+            "Si encuentras un fallo de seguridad en Klecx, escribe a {securityEmail} explicando lo que has encontrado y cómo reproducirlo. Confirmamos la recepción en un plazo de 3 días hábiles y te avisamos cuando esté corregido.",
+            "Mientras lo investigas, haz pruebas solo con cuentas y espacios de trabajo que sean tuyos, no accedas a datos de otras personas ni los modifiques o elimines, no perjudiques el Servicio (nada de denegación de servicio, spam ni escaneos automatizados masivos) y danos un plazo razonable para corregir el problema antes de contárselo a nadie más. Si actúas de buena fe y dentro de estas reglas, no emprenderemos acciones legales contra ti por tu investigación."
+          ]
         }
       ]
     },
@@ -2347,7 +2356,10 @@
       "deletion_blocked": "Primero transfiere o elimina los espacios de trabajo y proyectos que compartes.",
       "confirmation_mismatch": "El correo electrónico no coincide con tu cuenta.",
       "restore_link_invalid": "Este enlace ha caducado o ya se usó.",
-      "purge_not_due": "El período de gracia de la cuenta aún no ha terminado."
+      "purge_not_due": "El período de gracia de la cuenta aún no ha terminado.",
+      "origin_mismatch": "Esta solicitud venía de otro sitio y se bloqueó. Vuelve a cargar Klecx e inténtalo de nuevo.",
+      "payload_too_large": "Es demasiado largo para enviarlo. Acórtalo e inténtalo de nuevo.",
+      "PASSWORD_COMPROMISED": "Esta contraseña aparece en una filtración de datos conocida. Elige otra."
     }
   },
   "Gates": {

@@ -256,7 +256,8 @@
       "CREDENTIAL_ACCOUNT_NOT_FOUND": "Ce compte n'utilise pas de mot de passe. Connectez-vous avec votre fournisseur.",
       "DISPOSABLE_EMAIL": "Ce service de messagerie n'est pas accepté. Inscrivez-vous avec une adresse e-mail permanente.",
       "ACCOUNT_SUSPENDED": "Ce compte est suspendu. Si vous pensez qu'il s'agit d'une erreur, contactez notre équipe d'assistance.",
-      "ACCOUNT_DELETED": "Ce compte a été supprimé. Utilisez le lien de l'e-mail que nous vous avons envoyé pour le restaurer."
+      "ACCOUNT_DELETED": "Ce compte a été supprimé. Utilisez le lien de l'e-mail que nous vous avons envoyé pour le restaurer.",
+      "PASSWORD_COMPROMISED": "Ce mot de passe figure dans une fuite de données connue. Choisissez-en un autre."
     },
     "planIntent": "Vous avez choisi {plan} ({interval}). Après avoir confirmé votre e-mail, vous passerez au paiement.",
     "accountDeleted": "Votre compte est supprimé. Consultez vos e-mails : vous y trouverez le lien pour le restaurer si vous changez d'avis."
@@ -1967,6 +1968,14 @@
           "paragraphs": [
             "Pour signaler un contenu ou un comportement contraire à cette politique, y compris un lien public, écrivez à {abuseEmail} avec un lien ou une description et la raison pour laquelle vous pensez qu'il l'enfreint. Pour les réclamations relatives au droit d'auteur, voir nos Conditions d'utilisation. Nous examinons chaque signalement et répondons sous 3 jours ouvrés."
           ]
+        },
+        {
+          "id": "security",
+          "heading": "5. Signaler un problème de sécurité",
+          "paragraphs": [
+            "Si vous découvrez une faille de sécurité dans Klecx, écrivez à {securityEmail} en décrivant ce que vous avez trouvé et comment le reproduire. Nous accusons réception sous 3 jours ouvrés et vous prévenons quand le problème est corrigé.",
+            "Pendant vos recherches, ne faites des tests qu'avec des comptes et des espaces de travail qui vous appartiennent, n'accédez pas aux données d'autres personnes et ne les modifiez ni ne les supprimez pas, ne perturbez pas le Service (pas de déni de service, de spam ni d'analyse automatisée à grande échelle) et laissez-nous un délai raisonnable pour corriger le problème avant d'en parler à qui que ce soit. Si vous agissez de bonne foi et dans le respect de ces règles, nous n'engagerons pas de poursuites contre vous pour vos recherches."
+          ]
         }
       ]
     },
@@ -2347,7 +2356,10 @@
       "deletion_blocked": "Transférez ou supprimez d'abord les espaces de travail et projets que vous partagez.",
       "confirmation_mismatch": "L'adresse e-mail ne correspond pas à votre compte.",
       "restore_link_invalid": "Ce lien a expiré ou a déjà été utilisé.",
-      "purge_not_due": "Le délai de grâce du compte n'est pas encore terminé."
+      "purge_not_due": "Le délai de grâce du compte n'est pas encore terminé.",
+      "origin_mismatch": "Cette requête venait d'un autre site et a été bloquée. Rechargez Klecx et réessayez.",
+      "payload_too_large": "C'est trop long pour être envoyé. Raccourcissez le texte et réessayez.",
+      "PASSWORD_COMPROMISED": "Ce mot de passe figure dans une fuite de données connue. Choisissez-en un autre."
     }
   },
   "Gates": {

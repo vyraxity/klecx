@@ -11,6 +11,7 @@ export interface SiteConfig {
     abuse: string;
     legal: string;
     billing: string;
+    security: string;
   };
   company: {
     legalName: string;
@@ -48,6 +49,7 @@ export function getSiteConfig(): SiteConfig {
       abuse: env.ABUSE_EMAIL,
       legal: env.LEGAL_EMAIL,
       billing: env.BILLING_EMAIL,
+      security: env.SECURITY_EMAIL,
     },
     company: {
       legalName: env.COMPANY_LEGAL_NAME,

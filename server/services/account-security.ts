@@ -1,4 +1,5 @@
 import "server-only";
+import { shouldRefusePassword } from "@/server/auth/pwned-passwords";
 import { hashPassword, verifyPassword } from "better-auth/crypto";
 import { APIError } from "better-auth/api";
 import { db } from "@/server/db/client";
@@ -119,6 +120,14 @@ export async function changePassword(
 
   if (input.currentPassword === input.newPassword) {
     throw Errors.unprocessable("The new password is the same as the current one", "same_password");
+  }
+
+  // Step 10.1: never accept a password found in a known data breach.
+  if (await shouldRefusePassword(input.newPassword)) {
+    throw Errors.unprocessable(
+      "This password appears in a known data breach",
+      "PASSWORD_COMPROMISED"
+    );
   }
 
   const hash = await hashPassword(input.newPassword);

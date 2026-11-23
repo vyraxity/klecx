@@ -5,7 +5,7 @@ import { checkUsernameAvailability } from "@/server/services/username";
 export const GET = route({
   auth: "optional",
   query: z.object({
-    u: z.string().default(""),
+    u: z.string().max(64).default(""),
   }),
   rateLimit: {
     policy: "username:check",
