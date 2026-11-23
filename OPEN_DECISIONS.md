@@ -296,3 +296,16 @@ Known gap: the credit hold before an answer covers the base cost only (decided 2
 - Pairs well with §12 (resume where you stopped) for long documents.
 
 **If nothing is decided:** stays at 20,000 characters.
+
+---
+
+## 15. Antivirus scanning of uploaded files
+
+- **Found:** 2026-11-23, Step 10.1 (guide: "consider antivirus scanning before text extraction").
+- **Where:** upload completion (`completeAttachment()` in `server/services/attachment.ts`), text extraction (`server/files/extract.ts`), support screenshots.
+
+**Today.** No scanning. Uploads are checked by content sniffing against an allow-list, size limits per plan and extraction timeouts; files are only read as text, never run, and downloads from our origin are sent as `attachment` with `nosniff` and a sandboxing CSP. Other members can download a file someone uploaded to a shared workspace, so a malicious DOCX/PDF could reach a collaborator's computer.
+
+**Options.** (a) Nothing until there's a real need (recommended for launch: low risk, no extra cost). (b) A Cloudinary add-on that scans uploads (paid per file; check the plan). (c) A ClamAV service (needs hosting outside Vercel).
+
+**If nothing is decided:** (a); `docs/security-review.md` keeps it as gap G6.

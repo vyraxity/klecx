@@ -4,7 +4,7 @@ import { listMentionables } from "@/server/services/members";
 
 export const GET = route({
   query: z.object({
-    q: z.string().optional().default(""),
+    q: z.string().max(100).optional().default(""),
   }),
   rateLimit: {
     policy: "mentionables:list",

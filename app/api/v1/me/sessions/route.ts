@@ -22,10 +22,10 @@ export const DELETE = route({
   disableCookieCache: true,
   query: z.object({
     scope: z.enum(["others", "all"]).optional(),
-    id: z.string().optional(),
+    id: z.string().max(200).optional(),
   }).optional(),
   body: z.object({
-    password: z.string().optional(),
+    password: z.string().max(128).optional(),
   }).optional(),
   handler: async (c) => {
     const scope = c.query?.scope;

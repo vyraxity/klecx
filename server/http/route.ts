@@ -4,6 +4,12 @@ import { z, ZodTypeAny } from "zod";
 import { ApiError, Errors } from "./errors";
 import { limit, type RateLimitPolicy } from "./rate-limit";
 import { getActor, type Actor } from "@/server/auth/session";
+import { env } from "@/server/env";
+import {
+  MAX_JSON_BODY_BYTES,
+  isAllowedRequestOrigin,
+  sanitizeJsonStrings,
+} from "@/lib/security/input";
 
 export type Ctx<B, Q, P> = {
   req: NextRequest;
@@ -33,6 +39,12 @@ export function clearResponseAuthCookies(res: NextResponse) {
   }
 }
 
+function payloadTooLarge() {
+  return new ApiError(413, "payload_too_large", "Request body is too large", {
+    maxBytes: MAX_JSON_BODY_BYTES,
+  });
+}
+
 export function route<
   B extends ZodTypeAny = z.ZodUndefined,
   Q extends ZodTypeAny = z.ZodUndefined,
@@ -54,6 +66,11 @@ export function route<
   ): Promise<Response> => {
     const requestId = req.headers.get("x-request-id") ?? crypto.randomUUID();
     try {
+      // Step 10.1: a cookie-authenticated change must come from our own origin.
+      if (!isAllowedRequestOrigin(req, env.APP_URL)) {
+        throw Errors.forbidden("Cross-site request refused", "origin_mismatch");
+      }
+
       const actor = await getActor(req, { disableCookieCache: opts.disableCookieCache }); // session cookie OR Bearer token
       if ((opts.auth ?? "required") === "required" && !actor) {
         throw Errors.unauthorized();
@@ -62,8 +79,14 @@ export function route<
       let parsedBody: z.infer<B> = undefined as z.infer<B>;
       if (opts.body) {
         let rawJson: unknown = {};
+        // Step 10.1: JSON bodies are capped at 1 MB (uploads never carry the file).
+        const declared = Number(req.headers.get("content-length") ?? "0");
+        if (declared > MAX_JSON_BODY_BYTES) throw payloadTooLarge();
         if (typeof req.text === "function") {
           const rawText = await req.text();
+          if (Buffer.byteLength(rawText, "utf8") > MAX_JSON_BODY_BYTES) {
+            throw payloadTooLarge();
+          }
           if (rawText.trim().length > 0) {
             try {
               rawJson = JSON.parse(rawText);
@@ -74,7 +97,8 @@ export function route<
         } else {
           rawJson = await req.json().catch(() => ({}));
         }
-        const bodyResult = opts.body.safeParse(rawJson);
+        // NUL and other control characters never reach a service.
+        const bodyResult = opts.body.safeParse(sanitizeJsonStrings(rawJson));
         if (!bodyResult.success) {
           throw Errors.validation(bodyResult.error.flatten());
         }
@@ -83,7 +107,9 @@ export function route<
 
       let parsedQuery: z.infer<Q> = undefined as z.infer<Q>;
       if (opts.query) {
-        const rawQuery = Object.fromEntries(req.nextUrl.searchParams);
+        const rawQuery = sanitizeJsonStrings(
+          Object.fromEntries(req.nextUrl.searchParams)
+        );
         const queryResult = opts.query.safeParse(rawQuery);
         if (!queryResult.success) {
           throw Errors.validation(queryResult.error.flatten());

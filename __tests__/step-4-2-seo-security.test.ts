@@ -157,7 +157,8 @@ describe("Step 4.2 — SEO and Security Headers", () => {
       expect(headerMap.get("referrer-policy")).toBe("strict-origin-when-cross-origin");
       expect(headerMap.get("x-frame-options")).toBe("DENY");
       expect(headerMap.get("permissions-policy")).toContain("microphone=(self)");
-      expect(headerMap.get("content-security-policy-report-only")).toBeDefined();
+      // The CSP moved to proxy.ts in Step 10.1 (per-request nonce).
+      expect(headerMap.has("content-security-policy-report-only")).toBe(false);
     });
 
     test("configures X-Robots-Tag: noindex, nofollow for private routes", async () => {

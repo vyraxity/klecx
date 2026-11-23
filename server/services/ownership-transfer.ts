@@ -214,10 +214,9 @@ export async function requestOwnershipTransfer(
   if (!confirmationText) throw Errors.badRequest("Confirmation text is required");
   const previousOwnerAction = input.previousOwnerAction ?? "STAY_ADMIN";
 
-  if (toUserId === actor.userId) throw Errors.badRequest("You are already the owner");
-
-  // 1. Owner + typed confirmation
+  // 1. Owner + typed confirmation (access first: a stranger learns nothing, Step 10.1)
   const resourceName = await requireOwnerOf(actor, scope);
+  if (toUserId === actor.userId) throw Errors.badRequest("You are already the owner");
   if (confirmationText !== "TRANSFER" && confirmationText !== resourceName.trim()) {
     throw Errors.badRequest("Invalid confirmation text", "invalid_confirmation");
   }

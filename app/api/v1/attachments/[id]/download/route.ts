@@ -42,6 +42,8 @@ export const GET = route({
       headers: {
         "Content-Type": attachment.mime || "application/octet-stream",
         "Content-Disposition": `attachment; filename="${filename}"; filename*=UTF-8''${encoded}`,
+        // Step 10.1: user files served from our origin never run anything.
+        "Content-Security-Policy": "default-src 'none'; sandbox",
         "Content-Length": String(buffer.byteLength),
         "Cache-Control": "private, no-store",
       },

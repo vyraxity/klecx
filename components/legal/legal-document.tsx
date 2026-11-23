@@ -31,6 +31,7 @@ export function legalValues() {
     abuseEmail: site.emails.abuse,
     legalEmail: site.emails.legal,
     billingEmail: site.emails.billing,
+    securityEmail: site.emails.security,
   };
 }
 

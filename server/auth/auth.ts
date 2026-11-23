@@ -10,6 +10,7 @@ import { sendEmail } from "@/server/email/send";
 import { authSecondaryStorage } from "@/server/http/rate-limit";
 import { createAccountWithFreeGrant } from "@/server/services/credits";
 import { isDisposableEmail } from "@/server/auth/disposable-email";
+import { PASSWORD_SETTING_PATHS, shouldRefusePassword } from "@/server/auth/pwned-passwords";
 import { getSignInBlock } from "@/server/services/account-moderation";
 import { generateUniqueDefaultUsername } from "@/server/services/username";
 import { parseDeviceMetadata, checkAndAlertNewSignIn } from "@/server/services/device";
@@ -122,6 +123,17 @@ export const auth = betterAuth({
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
+      // Step 10.1: a password found in a known data breach is refused.
+      const passwordField = PASSWORD_SETTING_PATHS[ctx.path];
+      if (passwordField && ctx.body && typeof ctx.body === "object") {
+        const candidate = (ctx.body as Record<string, unknown>)[passwordField];
+        if (await shouldRefusePassword(candidate)) {
+          throw new APIError("BAD_REQUEST", {
+            message: "This password appears in a known data breach. Choose a different one.",
+            code: "PASSWORD_COMPROMISED",
+          });
+        }
+      }
       if (ctx.path === "/update-user") {
         if (
           ctx.body &&

@@ -1,4 +1,3 @@
-import crypto from "node:crypto";
 
 export const RESERVED_USERNAMES = new Set([
   "admin",
@@ -65,7 +64,9 @@ export function normalizeUsername(input: string): string {
 export function generateDefaultUsername(): string {
   // `user_` + 8 random base-36 chars
   const chars = "0123456789abcdefghijklmnopqrstuvwxyz";
-  const bytes = crypto.randomBytes(8);
+  // Web Crypto (browser and server): importing node:crypto here pulled a
+  // ~430 KB polyfill into every app page (Step 10.1).
+  const bytes = globalThis.crypto.getRandomValues(new Uint8Array(8));
   let suffix = "";
   for (let i = 0; i < 8; i++) {
     const byte = bytes[i] ?? 0;

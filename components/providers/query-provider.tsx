@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import "@/lib/security/zod-browser";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useUiStore } from "@/lib/stores/ui";
 import { useGenerationStore } from "@/lib/stores/generation";

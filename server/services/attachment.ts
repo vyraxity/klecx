@@ -265,21 +265,22 @@ export async function completeAttachment(
     throw Errors.notFound("Attachment");
   }
 
+  // Authorization first (Step 10.1): a READY attachment used to be returned to
+  // anyone holding its id, extracted text included. Strangers get 404.
+  if (attachment.ownerId !== actor.userId) {
+    if (attachment.workspaceId) {
+      await requireWorkspace(actor, attachment.workspaceId, "workspace.upload");
+    } else {
+      throw Errors.notFound("Attachment");
+    }
+  }
+
   if (attachment.status === "READY") {
     return attachment;
   }
 
   if (attachment.status !== "PENDING") {
     throw Errors.badRequest("Attachment is not pending verification");
-  }
-
-  // Authorization check
-  if (attachment.ownerId !== actor.userId) {
-    if (attachment.workspaceId) {
-      await requireWorkspace(actor, attachment.workspaceId, "workspace.upload");
-    } else {
-      throw Errors.forbidden("You do not own this attachment");
-    }
   }
 
   const storage = getStorageProvider();

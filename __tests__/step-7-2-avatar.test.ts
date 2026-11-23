@@ -311,7 +311,7 @@ describe("Step 7.2 — Profile picture with precedence", () => {
       expect(att2?.status).toBe("DELETED");
     });
 
-    test("PUT /api/v1/me/avatar rejects non-owner attachment (403)", async () => {
+    test("PUT /api/v1/me/avatar rejects non-owner attachment (404, Step 10.1)", async () => {
       mockActorId = userOtherId;
 
       // userGoogle uploads avatar
@@ -331,7 +331,7 @@ describe("Step 7.2 — Profile picture with precedence", () => {
       });
 
       const res = await setAvatarRoute(req);
-      expect(res.status).toBe(403);
+      expect(res.status).toBe(404);
     });
   });
 });

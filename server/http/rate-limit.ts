@@ -22,6 +22,7 @@ export const policies = {
   "link:fetch":   { n: 10,  window: "1 m"  as Duration }, // key: userId
   "document:upload": { n: 20, window: "1 m" as Duration }, // key: userId
   "annotation:create": { n: 60, window: "1 m"  as Duration }, // key: userId
+  "mention:notify":    { n: 10, window: "10 m" as Duration }, // key: authorId:recipientId (Step 10.1, mention spam)
   "mentionables:list": { n: 60, window: "1 m"  as Duration }, // key: userId
   "notes:list":        { n: 60, window: "1 m"  as Duration }, // key: userId
   "notes:mutate":      { n: 30, window: "1 m"  as Duration }, // key: userId
@@ -36,6 +37,8 @@ export const policies = {
   "data:export":       { n: 5,  window: "1 h"  as Duration }, // key: userId
   "account:delete":    { n: 5,  window: "1 h"  as Duration }, // key: userId
   "account:restore":   { n: 10, window: "1 h"  as Duration }, // key: ip
+  "csp:report":        { n: 30, window: "1 m"  as Duration }, // key: ip (Step 10.1, browser CSP reports)
+  "favicon:fetch":     { n: 120, window: "1 m" as Duration }, // key: ip (Step 10.1, remote favicon fetches)
 } as const;
 
 export type RateLimitPolicy = keyof typeof policies;

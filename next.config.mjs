@@ -64,19 +64,8 @@ const nextConfig = {
             key: "X-Frame-Options",
             value: "DENY",
           },
-          {
-            key: "Content-Security-Policy-Report-Only",
-            value: [
-              "default-src 'self'",
-              "img-src 'self' data: blob: https://res.cloudinary.com https://*.cloudinary.com https://lh3.googleusercontent.com https://avatars.githubusercontent.com",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
-              "style-src 'self' 'unsafe-inline'",
-              "connect-src 'self' https://*.upstash.io https://api.cloudinary.com https://*.cloudinary.com",
-              "frame-src https://checkout.creem.io",
-              "base-uri 'none'",
-              "form-action 'self'",
-            ].join("; "),
-          },
+          // The Content-Security-Policy is set per request in proxy.ts (it
+          // carries a nonce): lib/security/csp.ts (Step 10.1).
         ],
       },
       {

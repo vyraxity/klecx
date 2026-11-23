@@ -1,5 +1,25 @@
 import { NextResponse } from "next/server";
 import { safeFetch } from "@/server/files/safe-fetch";
+import { getClientIp, limit } from "@/server/http/rate-limit";
+
+/**
+ * Step 10.1: these bytes come from other sites but are served from our origin.
+ * Never accept remote SVG (it can carry scripts), and sandbox every response
+ * so even a mislabelled file opened directly can't run anything here.
+ */
+const FILE_CSP = "default-src 'none'; style-src 'unsafe-inline'; sandbox";
+
+function imageResponse(body: Buffer, mime: string, maxAge: number) {
+  return new NextResponse(new Uint8Array(body), {
+    status: 200,
+    headers: {
+      "Content-Type": mime,
+      "Cache-Control": `public, max-age=${maxAge}`,
+      "Content-Security-Policy": FILE_CSP,
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
+}
 
 interface CachedFavicon {
   buffer: Buffer;
@@ -30,25 +50,20 @@ export async function GET(req: Request) {
   const rawHost = (searchParams.get("host") || "").trim().toLowerCase();
 
   if (!isValidHost(rawHost)) {
-    return new NextResponse(new Uint8Array(FALLBACK_GLOBE_SVG), {
-      status: 200,
-      headers: {
-        "Content-Type": "image/svg+xml",
-        "Cache-Control": "public, max-age=86400",
-      },
-    });
+    return imageResponse(FALLBACK_GLOBE_SVG, "image/svg+xml", 86400);
   }
 
   const now = Date.now();
   const cached = faviconCache.get(rawHost);
   if (cached && cached.expiresAt > now) {
-    return new NextResponse(new Uint8Array(cached.buffer), {
-      status: 200,
-      headers: {
-        "Content-Type": cached.mime,
-        "Cache-Control": "public, max-age=86400",
-      },
-    });
+    return imageResponse(cached.buffer, cached.mime, 86400);
+  }
+
+  // Fetching another site costs us a request: cap it per visitor.
+  try {
+    await limit("favicon:fetch", getClientIp(req) ?? "anonymous");
+  } catch {
+    return imageResponse(FALLBACK_GLOBE_SVG, "image/svg+xml", 60);
   }
 
   try {
@@ -57,7 +72,6 @@ export async function GET(req: Request) {
         "image/x-icon",
         "image/vnd.microsoft.icon",
         "image/png",
-        "image/svg+xml",
         "image/webp",
         "image/gif",
         "image/jpeg",
@@ -79,13 +93,7 @@ export async function GET(req: Request) {
       expiresAt: now + FAVICON_CACHE_TTL_MS,
     });
 
-    return new NextResponse(new Uint8Array(res.buffer), {
-      status: 200,
-      headers: {
-        "Content-Type": res.mime,
-        "Cache-Control": "public, max-age=86400",
-      },
-    });
+    return imageResponse(res.buffer, res.mime, 86400);
   } catch {
     // Cache fallback briefly so repeated renders don't hammer unreachable hosts
     faviconCache.set(rawHost, {
@@ -94,12 +102,6 @@ export async function GET(req: Request) {
       expiresAt: now + 60 * 60 * 1000,
     });
 
-    return new NextResponse(new Uint8Array(FALLBACK_GLOBE_SVG), {
-      status: 200,
-      headers: {
-        "Content-Type": "image/svg+xml",
-        "Cache-Control": "public, max-age=3600",
-      },
-    });
+    return imageResponse(FALLBACK_GLOBE_SVG, "image/svg+xml", 3600);
   }
 }

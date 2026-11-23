@@ -38,7 +38,7 @@ export async function setAvatar(
   }
 
   if (attachment.ownerId !== actor.userId) {
-    throw Errors.forbidden("You do not own this attachment");
+    throw Errors.notFound("Attachment"); // same answer as a missing id (Step 10.1)
   }
 
   if (attachment.kind !== "AVATAR") {

@@ -4,7 +4,7 @@ import "./globals.css";
 import { HIGHLIGHT_CSS } from "@/lib/annotations/highlight-styles";
 import QueryProvider from "@/components/providers/query-provider";
 import { SiteConfigProvider } from "@/components/providers/site-config-provider";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { getActor } from "@/server/auth/session";
 import { getDisplayPreferences } from "@/server/services/user-preferences";
@@ -94,6 +94,8 @@ export default async function RootLayout({
   // page never flashes the wrong colours. A signed-in person's account choice
   // wins over this device's cookie.
   const cookieTheme = parseTheme((await cookies()).get(THEME_COOKIE)?.value);
+  // Step 10.1: the per-request CSP nonce from proxy.ts (inline scripts need it).
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   const actor = await getActor().catch(() => null);
   const display = actor
     ? await getDisplayPreferences(actor.userId).catch(() => null)
@@ -115,7 +117,7 @@ export default async function RootLayout({
     >
       <head>
         {/* Resolves "system" (and an old next-themes choice) before paint. */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <style dangerouslySetInnerHTML={{ __html: HIGHLIGHT_CSS }} />
       </head>
       <body className="bg-bg text-fg font-sans antialiased">
