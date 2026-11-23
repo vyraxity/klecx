@@ -59,6 +59,7 @@ export function productTokens(locale: string = "en"): Record<string, string> {
     tokens[`${p}maxFileMB}}`] = num(plan.limits.maxFileMB);
     tokens[`${p}searchesPerDay}}`] = num(plan.limits.searchesPerDay);
     tokens[`${p}voiceMinutesPerDay}}`] = num(Math.round(plan.limits.voiceSecondsPerDay / 60));
+    tokens[`${p}readAloudMinutesPerDay}}`] = num(Math.round(plan.limits.readAloudSecondsPerDay / 60));
   }
   return tokens;
 }

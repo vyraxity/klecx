@@ -1075,3 +1075,25 @@ model BillingCheckout {
   @@index([userId, createdAt])
   @@map("billing_checkouts")
 }
+
+/// Step 9.4: synthesized read-aloud audio, shared by everyone who plays the
+/// same text with the same voice (a hit costs nothing and calls no provider).
+/// `key` = sha256(text, provider, model, voice).
+model SpeechCache {
+  id         String   @id @default(uuid(7))
+  key        String   @unique
+  provider   String
+  modelId    String   @map("model_id")
+  voiceId    String   @map("voice_id")
+  chars      Int
+  seconds    Float
+  /// Storage public id (private asset, resource type "video" for audio).
+  storageId  String   @map("storage_id")
+  mime       String
+  bytes      Int
+  createdAt  DateTime @default(now()) @map("created_at")
+  lastUsedAt DateTime @default(now()) @map("last_used_at")
+
+  @@index([lastUsedAt])
+  @@map("speech_cache")
+}

@@ -386,7 +386,8 @@
       "notifications": "Notifications",
       "billing": "Plan & billing",
       "support": "Support",
-      "usage": "Usage"
+      "usage": "Usage",
+      "voice": "Voice"
     },
     "errors": {
       "pageTitle": "This page couldn't load",
@@ -534,6 +535,59 @@
       "copyDiagnostics": "Copy diagnostics",
       "diagnosticsCopied": "Diagnostics copied",
       "diagnosticsCopyError": "Couldn't copy. Your browser may not allow it."
+    },
+    "voice": {
+      "title": "Voice",
+      "description": "How Klecx reads answers and documents aloud.",
+      "loadError": "Couldn't load your voice settings.",
+      "retry": "Try again",
+      "saveError": "Couldn't save this setting. Try again.",
+      "previewError": "Couldn't play the sample. Try again.",
+      "providerTitle": "Voice type",
+      "providerHint": "Natural voices sound human and use credits; your device's voices are free.",
+      "providers": {
+        "natural": "Natural voices",
+        "naturalHint": "Lifelike voices. Uses credits the first time a text is read; replays are free.",
+        "browser": "Device voices",
+        "browserHint": "The voices built into your browser or device. Free, quality varies."
+      },
+      "naturalPlan": "Natural voices come with the Lite, Standard and Pro plans.",
+      "seePlans": "See plans",
+      "usedToday": "Natural voices today: {used} of {limit} min.",
+      "voiceTitle": "Voice",
+      "voiceHint": "Every natural voice reads any language. Press play to hear a sample.",
+      "voiceName": "Voice {number}",
+      "styles": {
+        "bright": "Bright",
+        "upbeat": "Upbeat",
+        "informative": "Informative",
+        "firm": "Firm",
+        "excitable": "Excitable",
+        "youthful": "Youthful",
+        "breezy": "Breezy",
+        "easyGoing": "Easy-going",
+        "breathy": "Breathy",
+        "clear": "Clear",
+        "smooth": "Smooth",
+        "gravelly": "Gravelly",
+        "soft": "Soft",
+        "even": "Even",
+        "mature": "Mature",
+        "forward": "Forward",
+        "friendly": "Friendly",
+        "casual": "Casual",
+        "gentle": "Gentle",
+        "lively": "Lively",
+        "knowledgeable": "Knowledgeable",
+        "warm": "Warm"
+      },
+      "preview": "Play a sample of {name}",
+      "previewShort": "Play sample",
+      "noBrowserVoices": "This browser has no voices to read aloud.",
+      "browserDefault": "Automatic (device default)",
+      "browserVoiceOption": "{name} ({lang})",
+      "speedTitle": "Speed",
+      "speedHint": "You can also change it while listening."
     }
   },
   "Email": {
@@ -956,7 +1010,6 @@
     "saveEdit": "Save as edit",
     "cancel": "Cancel",
     "editHelper": "Your edit is saved separately; the AI original is kept.",
-    "readAloud": "Read aloud",
     "share": "Share",
     "export": "Export",
     "moreOptions": "More options",
@@ -988,7 +1041,6 @@
     "modelStandard": "Standard",
     "modelEconomy": "Fast & Efficient",
     "modelPro": "Deep Reasoning",
-    "readAloudSoon": "Read aloud will be available in Phase 9",
     "shareNoPermission": "Only workspace owners and admins can create public links",
     "exportSoon": "Exporting will be available in Phase 5",
     "sources": "Sources",
@@ -2209,7 +2261,11 @@
       "email_change_failed": "Couldn't start the email change. Try again.",
       "DISPOSABLE_EMAIL": "This email service isn't accepted. Please use a permanent email address.",
       "invalid_range": "The end date must not be before the start date.",
-      "range_too_long": "Choose a range of at most 366 days."
+      "range_too_long": "Choose a range of at most 366 days.",
+      "daily_read_aloud_limit": "You've used today's natural-voice time for your plan.",
+      "speech_unavailable": "Natural voices aren't available right now. Try again later.",
+      "unknown_voice": "This voice isn't available.",
+      "aborted": "Cancelled."
     }
   },
   "Gates": {
@@ -2246,7 +2302,11 @@
       "description": "Fast voice and audio transcription."
     },
     "creditHintMessage": "≈ {credits} credits per message",
-    "creditHintImage": "≈ {credits} per image"
+    "creditHintImage": "≈ {credits} per image",
+    "speech-natural": {
+      "name": "Natural voice",
+      "description": "Read-aloud with lifelike voices."
+    }
   },
   "Voice": {
     "start": "Record voice prompt",
@@ -3022,7 +3082,8 @@
         "documents": "Workspace documents with AI review and quick fixes",
         "voice": "Voice input (2 min of recording per day)",
         "exports": "Markdown document export",
-        "sharing": "Read-only workspace & response sharing"
+        "sharing": "Read-only workspace & response sharing",
+        "readAloud": "Read aloud with your device's voices"
       }
     },
     "LITE": {
@@ -3038,7 +3099,8 @@
         "attachments": "10 attachments per workspace (15 MB max)",
         "documents": "Workspace documents with AI review and quick fixes",
         "voice": "Voice input (10 min of recording per day)",
-        "exports": "Markdown, PDF & Word exports"
+        "exports": "Markdown, PDF & Word exports",
+        "readAloud": "Read aloud with natural voices (30 min per day)"
       }
     },
     "STANDARD": {
@@ -3056,7 +3118,8 @@
         "documents": "Workspace documents with AI review and quick fixes",
         "voice": "Voice input (20 min of recording per day)",
         "collaborators": "1 collaborator across all your workspaces",
-        "exports": "Full export suite (MD, PDF, DOCX)"
+        "exports": "Full export suite (MD, PDF, DOCX)",
+        "readAloud": "Read aloud with natural voices (60 min per day)"
       }
     },
     "PRO": {
@@ -3073,7 +3136,8 @@
         "documents": "Workspace documents with AI review and quick fixes",
         "voice": "Voice input (40 min of recording per day)",
         "collaborators": "Up to 3 collaborators across all your workspaces",
-        "exports": "Full export suite (MD, PDF, DOCX)"
+        "exports": "Full export suite (MD, PDF, DOCX)",
+        "readAloud": "Read aloud with natural voices (120 min per day)"
       }
     }
   },
@@ -3565,5 +3629,28 @@
         "adjustment": "Adjustment"
       }
     }
+  },
+  "Speech": {
+    "readAloud": "Read aloud",
+    "reading": "Reading…",
+    "player": "Read-aloud player",
+    "showText": "Go to the text being read",
+    "previous": "Previous part",
+    "next": "Next part",
+    "pause": "Pause",
+    "resume": "Resume",
+    "stop": "Stop reading",
+    "speed": "Speed",
+    "speedValue": "{speed}×",
+    "part": "{index}/{total}",
+    "voiceSettings": "Voice settings",
+    "fallbackDailyLimit": "You've used today's natural-voice time. Reading on with your device's voice.",
+    "fallbackPlan": "Natural voices aren't in your plan. Reading with your device's voice.",
+    "fallbackUnavailable": "Natural voices aren't available right now. Reading on with your device's voice.",
+    "error": "Couldn't read this aloud. Try again.",
+    "unsupported": "This browser can't read text aloud.",
+    "truncated": "This text is long: only the first part is read aloud.",
+    "codeOmitted": "Code block omitted",
+    "previewSample": "Hello! This is how I sound when I read your answers and documents aloud."
   }
 }

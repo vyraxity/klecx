@@ -28,6 +28,10 @@ export const policies = {
   "username:check":    { n: 20, window: "1 m"  as Duration }, // key: userId or ip
   "transcribe":        { n: 20, window: "1 m"  as Duration }, // key: userId
   "billing:action":    { n: 10, window: "1 m"  as Duration }, // key: userId (checkout, portal, cancel)
+  // Step 9.4 read-aloud: 20 read-aloud requests per hour (guide), the segments they need, voice previews.
+  "speech:prepare":    { n: 20, window: "1 h"  as Duration }, // key: userId
+  "speech:segment":    { n: 200, window: "1 h" as Duration }, // key: userId (≤ 14 segments per request)
+  "speech:preview":    { n: 30, window: "1 h"  as Duration }, // key: userId
 } as const;
 
 export type RateLimitPolicy = keyof typeof policies;

@@ -1,6 +1,9 @@
 import "server-only";
 import type { DensityPreference, ThemePreference, UserPreference } from "@/server/db/generated/client";
 import { db } from "@/server/db/client";
+import { Errors } from "@/server/http/errors";
+import { getEntitlements } from "@/server/billing/entitlements";
+import { isNaturalVoice } from "@/lib/speech/voices";
 import type { UpdatePreferencesInput } from "@/lib/schemas/user-preferences";
 import type { Density, Theme } from "@/lib/theme";
 
@@ -57,6 +60,7 @@ export async function updateUserPreferences(
   userId: string,
   input: UpdatePreferencesInput
 ): Promise<UserPreferencesDto> {
+  await assertVoiceChoiceAllowed(userId, input);
   const data = {
     ...(input.uiLocale !== undefined && { uiLocale: input.uiLocale }),
     ...(input.aiLanguage !== undefined && { aiLanguage: input.aiLanguage }),
@@ -66,6 +70,9 @@ export async function updateUserPreferences(
     ...(input.reduceMotion !== undefined && { reduceMotion: input.reduceMotion }),
     ...(input.onboardingDismissed !== undefined && { onboardingDismissed: input.onboardingDismissed }),
     ...(input.density !== undefined && { density: DENSITY_TO_DB[input.density] }),
+    ...(input.voiceProvider !== undefined && { voiceProvider: input.voiceProvider }),
+    ...(input.voiceId !== undefined && { voiceId: input.voiceId }),
+    ...(input.voiceSpeed !== undefined && { voiceSpeed: input.voiceSpeed }),
   };
   const updated = await db.userPreference.upsert({
     where: { userId },
@@ -91,4 +98,24 @@ export async function getDisplayPreferences(
     reduceMotion: pref?.reduceMotion === true,
     density: pref?.density === "COMPACT" ? "compact" : "comfortable",
   };
+}
+
+/**
+ * Step 9.4: natural voices need a plan that includes them, and a natural
+ * voice id must be one of the list. Browser voice names are free text (they
+ * differ per device) and are never sent to a provider.
+ */
+async function assertVoiceChoiceAllowed(userId: string, input: UpdatePreferencesInput) {
+  if (input.voiceProvider === undefined && input.voiceId === undefined) return;
+  const current = await db.userPreference.findUnique({ where: { userId }, select: { voiceProvider: true } });
+  const provider = input.voiceProvider !== undefined ? input.voiceProvider : current?.voiceProvider ?? null;
+  if (input.voiceProvider === "natural") {
+    const entitlements = await getEntitlements(userId);
+    if (!entitlements.features.naturalVoices) {
+      throw Errors.forbidden("Natural voices aren't included in your plan", "plan_upgrade_required");
+    }
+  }
+  if (provider === "natural" && input.voiceId && !isNaturalVoice(input.voiceId)) {
+    throw Errors.unprocessable("Unknown voice", "unknown_voice");
+  }
 }

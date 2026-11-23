@@ -335,8 +335,8 @@ describe("Step 9.1 — settings navigation", () => {
     expect(activeSettingsPage("/workspaces")).toBeNull();
   });
 
-  it("lists only pages that exist (no voice/data until their steps)", () => {
-    expect(SETTINGS_PAGES).not.toContain("voice");
+  it("lists only pages that exist (no data page until its step)", () => {
+    expect(SETTINGS_PAGES).toContain("voice"); // Step 9.4
     expect(SETTINGS_PAGES).toContain("usage"); // Step 9.3
     expect(SETTINGS_PAGES).not.toContain("data");
     for (const page of SETTINGS_PAGES) {

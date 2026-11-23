@@ -415,6 +415,7 @@ export function DocumentCard({
               workspaceId={workspaceId}
               content={displayedContent}
               variant="document"
+              showReadAloud
               contentSource={baseRevision !== null ? "EDIT" : "ORIGINAL"}
               editRevision={baseRevision ?? undefined}
               quickFix={quickFix}

@@ -1,5 +1,7 @@
 "use client";
 
+import { ReadAloudButton } from "@/components/speech/read-aloud-button";
+import type { SpeechTarget } from "@/lib/schemas/speech";
 import * as React from "react";
 import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -33,6 +35,12 @@ export interface AnswerBodyProps {
   contentSource?: "ORIGINAL" | "EDIT";
   editRevision?: number;
   showCopyButton?: boolean;
+  /**
+   * Step 9.4: show "Read aloud" under the text. On by default for Ask answers
+   * and generated documents; a main response has it in its own toolbar, so a
+   * RESPONSE_VERSION shows it only when asked (uploaded documents).
+   */
+  showReadAloud?: boolean;
   /** "document" for the text of an uploaded document (see Markdown). */
   variant?: MarkdownVariant;
   /** The text review fixes are applied to (see AnnotationLayer). */
@@ -68,6 +76,7 @@ export function AnswerBody({
   contentSource = "ORIGINAL",
   editRevision,
   showCopyButton = false,
+  showReadAloud,
   variant,
   quickFix,
   onAnnotationsChange,
@@ -93,6 +102,20 @@ export function AnswerBody({
   };
 
   const text = <Markdown content={content} citations={sources} variant={variant} />;
+
+  const readAloudTarget: SpeechTarget | null = !targetId || isStreaming || !content.trim()
+    ? null
+    : targetType === "ANNOTATION_MESSAGE"
+      ? { type: "ANNOTATION_MESSAGE", id: targetId }
+      : targetType === "DOCUMENT_REVISION"
+        ? { type: "DOCUMENT_REVISION", id: documentId || targetId, ...(documentRevision !== undefined ? { revision: documentRevision } : {}) }
+        : {
+            type: "RESPONSE_VERSION",
+            id: targetId,
+            source: contentSource,
+            ...(contentSource === "EDIT" && editRevision !== undefined ? { editRevision } : {}),
+          };
+  const readAloudOn = (showReadAloud ?? targetType !== "RESPONSE_VERSION") && readAloudTarget !== null && !unsaved;
 
   return (
     <div className={cn("space-y-3", className)}>
@@ -154,8 +177,10 @@ export function AnswerBody({
 
       {children}
 
-      {showCopyButton && content && !isStreaming && (
-        <div className="flex items-center justify-end" data-annot-ignore="true">
+      {((showCopyButton && content && !isStreaming) || readAloudOn) && (
+        <div className="flex flex-wrap items-center justify-end gap-1" data-annot-ignore="true">
+          {readAloudOn && readAloudTarget && <ReadAloudButton target={readAloudTarget} />}
+          {showCopyButton && content && !isStreaming && (
           <Button
             type="button"
             variant="ghost"
@@ -170,6 +195,7 @@ export function AnswerBody({
             )}
             <span>{copied ? t("copied") : t("copy")}</span>
           </Button>
+          )}
         </div>
       )}
     </div>

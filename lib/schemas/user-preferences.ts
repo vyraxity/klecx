@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { UI_LOCALES, AI_LANGUAGES } from "@/lib/locale";
 import { DENSITIES, THEMES } from "@/lib/theme";
+import { MAX_VOICE_SPEED, MIN_VOICE_SPEED, VOICE_PROVIDERS } from "@/lib/speech/voices";
 
 /**
  * Step 9.2: what a person can change through `PATCH /api/v1/me/preferences`.
- * Voice settings (provider, voice, speed) are read-only until Step 9.4,
- * which checks them against the plan.
+ * Voice settings (Step 9.4) are checked against the plan on the server.
  */
 export const updatePreferencesSchema = z
   .object({
@@ -18,6 +18,10 @@ export const updatePreferencesSchema = z
     reduceMotion: z.literal(true).nullable().optional(),
     onboardingDismissed: z.boolean().optional(),
     density: z.enum(DENSITIES).optional(),
+    voiceProvider: z.enum(VOICE_PROVIDERS).nullable().optional(),
+    /** A natural voice id, or a browser voice name (device-specific). */
+    voiceId: z.string().trim().min(1).max(200).nullable().optional(),
+    voiceSpeed: z.number().min(MIN_VOICE_SPEED).max(MAX_VOICE_SPEED).optional(),
   })
   .strict();
 
