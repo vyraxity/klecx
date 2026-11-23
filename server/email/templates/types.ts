@@ -158,6 +158,19 @@ export interface BillingAlertData {
   userId: string | null;
 }
 
+/** Step 9.5: Settings → Your data. */
+export interface DataExportReadyData {
+  hours: number;
+}
+
+export interface AccountDeletionScheduledData {
+  /** ISO date when the account is erased. */
+  purgeAfter: string;
+  restoreUrl: string;
+}
+
+export type AccountRestoredData = Record<string, never>;
+
 export interface EmailTemplateMap {
   "verify-email": VerifyEmailData;
   "reset-password": ResetPasswordData;
@@ -180,6 +193,9 @@ export interface EmailTemplateMap {
   mentioned: MentionedData;
   "subscription-changed": SubscriptionChangedData;
   "billing-alert": BillingAlertData;
+  "data-export-ready": DataExportReadyData;
+  "account-deletion-scheduled": AccountDeletionScheduledData;
+  "account-restored": AccountRestoredData;
 }
 
 export type EmailTemplateName = keyof EmailTemplateMap;

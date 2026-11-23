@@ -10,6 +10,8 @@ export const publicRoutes = [
   '/help',
   '/support',
   '/status',
+  // Step 9.5: the restore link from the account-deletion email (signed out).
+  '/account/restore',
 ]
 
 export const authRoutes = [

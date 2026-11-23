@@ -38,6 +38,7 @@ describe("Step 9.1 — Settings UI", () => {
       "/settings/notifications",
       "/settings/usage",
       "/settings/billing",
+      "/settings/data",
       "/settings/support",
     ]);
     expect(screen.getByRole("link", { name: "Security" })).toHaveAttribute("aria-current", "page");

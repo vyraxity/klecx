@@ -184,6 +184,12 @@ describe("Step F0.2 — Site configuration: emails, company identity, links from
         eventId: "evt_1",
         userId: "user_1",
       },
+      "data-export-ready": { hours: 24 },
+      "account-deletion-scheduled": {
+        purgeAfter: "2026-12-23T10:00:00.000Z",
+        restoreUrl: "https://app.example.test/account/restore?token=r1",
+      },
+      "account-restored": {},
       welcome: {
         name: "Ada",
       },

@@ -35,6 +35,7 @@ import {
 import { renderMentioned } from "./templates/mentioned";
 import { renderWelcome } from "./templates/welcome";
 import { renderBillingAlert, renderSubscriptionChanged } from "./templates/billing";
+import { renderAccountDeletionScheduled, renderAccountRestored, renderDataExportReady } from "./templates/account-data";
 
 export type {
   EmailTemplateMap,
@@ -197,6 +198,12 @@ export async function renderEmail<T extends EmailTemplateName>(
       );
     case "billing-alert":
       return renderBillingAlert(data as EmailTemplateMap["billing-alert"], t, to);
+    case "data-export-ready":
+      return renderDataExportReady(data as EmailTemplateMap["data-export-ready"], t, to);
+    case "account-deletion-scheduled":
+      return renderAccountDeletionScheduled(data as EmailTemplateMap["account-deletion-scheduled"], t, to);
+    case "account-restored":
+      return renderAccountRestored(data as EmailTemplateMap["account-restored"], t, to);
     default: {
       const exhaustiveCheck: never = template;
       throw new Error(`Unknown email template: ${exhaustiveCheck}`);
@@ -255,6 +262,7 @@ export async function sendEmail<T extends EmailTemplateName>(
       (rawData.shareUrl as string) ||
       (rawData.upgradeUrl as string) ||
       (rawData.retryUrl as string) ||
+      (rawData.restoreUrl as string) ||
       null;
 
     console.info(

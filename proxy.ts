@@ -95,6 +95,7 @@ export async function proxy(req: NextRequest) {
   const hasExpiredReason =
     nextUrl.searchParams.get("reason") === "expired" ||
     nextUrl.searchParams.get("reason") === "revoked" ||
+    nextUrl.searchParams.get("reason") === "account_deleted" ||
     nextUrl.searchParams.has("expired") ||
     nextUrl.searchParams.has("revoked");
 
