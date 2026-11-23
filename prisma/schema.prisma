@@ -40,7 +40,8 @@ model User {
   role                    UserRole            @default(USER)
   createdAt               DateTime            @default(now())
   updatedAt               DateTime            @updatedAt
-  /// Soft delete: the account is marked, the row stays (see server/services/account-deletion.ts).
+  /// Step 9.5: set when the person deletes the account (sign-in blocked at once);
+  /// cleared if they restore it. After 30 days the row is anonymized, never removed.
   deletedAt               DateTime?           @map("deleted_at")
   /// Step 8.6: suspended by an admin (abuse, AUP violation). Can't sign in; sessions are revoked.
   suspendedAt             DateTime?           @map("suspended_at")
@@ -82,6 +83,8 @@ model User {
   annotationMentions      AnnotationMention[]
   workspaceNotes          WorkspaceNote[]     @relation("WorkspaceNoteCreator")
   documentRevisionsEdited DocumentRevision[]
+  dataExports             DataExport[]
+  accountDeletion         AccountDeletion?
 
   @@map("users")
 }
@@ -1096,4 +1099,54 @@ model SpeechCache {
 
   @@index([lastUsedAt])
   @@map("speech_cache")
+}
+
+/// Step 9.5: a copy of the person's data as a ZIP (Settings → Your data).
+/// Built in the background after the request; the file is private and can be
+/// downloaded by its owner for 24 h after it's ready.
+enum DataExportStatus {
+  PENDING
+  READY
+  FAILED
+}
+
+model DataExport {
+  id            String           @id @default(uuid(7))
+  userId        String           @map("user_id")
+  status        DataExportStatus @default(PENDING)
+  /// Storage public id of the ZIP (private, resource type "raw").
+  storageId     String?          @map("storage_id")
+  bytes         Int?
+  filesIncluded Int              @default(0) @map("files_included")
+  filesSkipped  Int              @default(0) @map("files_skipped")
+  errorCode     String?          @map("error_code")
+  createdAt     DateTime         @default(now()) @map("created_at")
+  finishedAt    DateTime?        @map("finished_at")
+  /// Download allowed until then (24 h after it's ready); the file is deleted after.
+  expiresAt     DateTime?        @map("expires_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([expiresAt])
+  @@map("data_exports")
+}
+
+/// Step 9.5: an account deletion. `User.deletedAt` blocks sign-in at once;
+/// the account can be restored with the emailed link until `purgeAfter`
+/// (30 days), then its content is erased and the user row anonymized
+/// (`purgeDeletedAccount()`); billing and credit records are kept.
+model AccountDeletion {
+  id               String    @id @default(uuid(7))
+  userId           String    @unique @map("user_id")
+  requestedAt      DateTime  @default(now()) @map("requested_at")
+  purgeAfter       DateTime  @map("purge_after")
+  /// sha256 of the restore link's token (the token itself is only in the email).
+  restoreTokenHash String    @unique @map("restore_token_hash")
+  purgedAt         DateTime? @map("purged_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([purgeAfter, purgedAt])
+  @@map("account_deletions")
 }

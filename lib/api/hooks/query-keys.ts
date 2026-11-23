@@ -81,6 +81,8 @@ export const queryKeys = {
     supportTickets: (userId: string) => userQueryKey(userId, "me", "support-tickets"),
     incomingTransfers: (userId: string) => userQueryKey(userId, "me", "ownership-transfers"),
     voices: (userId: string) => userQueryKey(userId, "me", "voices"),
+    exports: (userId: string) => userQueryKey(userId, "me", "exports"),
+    accountDeletion: (userId: string) => userQueryKey(userId, "me", "account-deletion"),
     usageSummary: (userId: string, period: "current" | "prev") =>
       userQueryKey(userId, "me", "usage", "summary", period),
     usageTimeseries: (userId: string, days: number) =>

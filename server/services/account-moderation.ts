@@ -39,7 +39,7 @@ async function loadTarget(actor: Actor, userId: string) {
 const cleanReason = (reason: string) => reason.trim().slice(0, 500);
 
 /** Revokes every session of `userId` (signs them out everywhere, including the session cache). */
-async function revokeAllSessions(userId: string): Promise<void> {
+export async function revokeAllSessions(userId: string): Promise<void> {
   try {
     const { auth } = await import("@/server/auth/auth");
     const ctx = await auth.$context;
@@ -120,4 +120,12 @@ export async function unfreezeCredits(actor: Actor, userId: string): Promise<{ o
 export async function isUserSuspended(userId: string): Promise<boolean> {
   const user = await db.user.findUnique({ where: { id: userId }, select: { suspendedAt: true } });
   return Boolean(user?.suspendedAt);
+}
+
+/** Why a sign-in must be refused: suspended (Step 8.6) or deleted (Step 9.5), else null. */
+export async function getSignInBlock(userId: string): Promise<"suspended" | "deleted" | null> {
+  const user = await db.user.findUnique({ where: { id: userId }, select: { suspendedAt: true, deletedAt: true } });
+  if (user?.suspendedAt) return "suspended";
+  if (user?.deletedAt) return "deleted";
+  return null;
 }

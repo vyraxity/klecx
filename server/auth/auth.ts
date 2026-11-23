@@ -10,7 +10,7 @@ import { sendEmail } from "@/server/email/send";
 import { authSecondaryStorage } from "@/server/http/rate-limit";
 import { createAccountWithFreeGrant } from "@/server/services/credits";
 import { isDisposableEmail } from "@/server/auth/disposable-email";
-import { isUserSuspended } from "@/server/services/account-moderation";
+import { getSignInBlock } from "@/server/services/account-moderation";
 import { generateUniqueDefaultUsername } from "@/server/services/username";
 import { parseDeviceMetadata, checkAndAlertNewSignIn } from "@/server/services/device";
 import { welcomeOnUserCreated, welcomeOnUserUpdated } from "@/server/services/welcome";
@@ -74,10 +74,18 @@ export const auth = betterAuth({
       create: {
         before: async (session, ctx) => {
           // Step 8.6: a suspended account can't sign in (any method).
-          if (await isUserSuspended(session.userId)) {
+          const blocked = await getSignInBlock(session.userId);
+          if (blocked === "suspended") {
             throw new APIError("FORBIDDEN", {
               message: "This account is suspended",
               code: "ACCOUNT_SUSPENDED",
+            });
+          }
+          // Step 9.5: a deleted account can't sign in; the emailed link restores it.
+          if (blocked === "deleted") {
+            throw new APIError("FORBIDDEN", {
+              message: "This account was deleted",
+              code: "ACCOUNT_DELETED",
             });
           }
           const country =
@@ -206,6 +214,12 @@ export const auth = betterAuth({
       },
       // Step 8.6: read by getActor (a suspended person counts as signed out).
       suspendedAt: {
+        type: "date",
+        required: false,
+        input: false,
+      },
+      // Step 9.5: read by getActor (a deleted account counts as signed out).
+      deletedAt: {
         type: "date",
         required: false,
         input: false,

@@ -255,9 +255,11 @@
       "SOCIAL_ACCOUNT_ALREADY_LINKED": "Ce compte de connexion est déjà lié à un autre utilisateur.",
       "CREDENTIAL_ACCOUNT_NOT_FOUND": "Ce compte n'utilise pas de mot de passe. Connectez-vous avec votre fournisseur.",
       "DISPOSABLE_EMAIL": "Ce service de messagerie n'est pas accepté. Inscrivez-vous avec une adresse e-mail permanente.",
-      "ACCOUNT_SUSPENDED": "Ce compte est suspendu. Si vous pensez qu'il s'agit d'une erreur, contactez notre équipe d'assistance."
+      "ACCOUNT_SUSPENDED": "Ce compte est suspendu. Si vous pensez qu'il s'agit d'une erreur, contactez notre équipe d'assistance.",
+      "ACCOUNT_DELETED": "Ce compte a été supprimé. Utilisez le lien de l'e-mail que nous vous avons envoyé pour le restaurer."
     },
-    "planIntent": "Vous avez choisi {plan} ({interval}). Après avoir confirmé votre e-mail, vous passerez au paiement."
+    "planIntent": "Vous avez choisi {plan} ({interval}). Après avoir confirmé votre e-mail, vous passerez au paiement.",
+    "accountDeleted": "Votre compte est supprimé. Consultez vos e-mails : vous y trouverez le lien pour le restaurer si vous changez d'avis."
   },
   "Chat": {
     "newChat": "Nouvel espace de travail",
@@ -385,6 +387,7 @@
       "appearance": "Apparence",
       "notifications": "Notifications",
       "billing": "Forfait et facturation",
+      "data": "Vos données",
       "support": "Assistance",
       "usage": "Utilisation",
       "voice": "Voix"
@@ -588,6 +591,54 @@
       "browserVoiceOption": "{name} ({lang})",
       "speedTitle": "Vitesse",
       "speedHint": "Vous pouvez aussi la changer pendant l'écoute."
+    },
+    "data": {
+      "title": "Vos données",
+      "description": "Téléchargez une copie de tout ce que contient votre compte, ou supprimez votre compte.",
+      "exportTitle": "Télécharger vos données",
+      "exportHint": "Un fichier ZIP avec votre profil, vos paramètres, vos espaces de travail (chaque réponse, version, modification, commentaire et document), vos fichiers, votre historique de crédits et vos demandes d'assistance. Nous vous envoyons un e-mail quand il est prêt ; le téléchargement fonctionne pendant 24 heures.",
+      "exportButton": "Demander une copie",
+      "exportRequested": "Nous préparons vos données. Vous recevrez un e-mail quand elles seront prêtes.",
+      "exportError": "Impossible de lancer l'export. Réessayez.",
+      "exportWait": "Vous pouvez demander une copie par jour. La prochaine à partir du {date}.",
+      "exportListLabel": "Copies récentes",
+      "exportRequestedAt": "Demandée le {date}",
+      "statusPending": "Préparation… cela peut prendre quelques minutes.",
+      "statusReady": "Prête à télécharger jusqu'au {date}.",
+      "statusExpired": "Expirée. Demandez une nouvelle copie pour la télécharger à nouveau.",
+      "statusFailed": "Une erreur s'est produite. Demandez une nouvelle copie.",
+      "filesSkipped": "{count, plural, one {# fichier est trop volumineux} other {# fichiers sont trop volumineux}} pour être inclus (plus de 100 Mo au total) et {count, plural, one {figure} other {figurent}} dans la liste du ZIP.",
+      "download": "Télécharger",
+      "loadError": "Impossible de charger cette section.",
+      "retry": "Réessayer",
+      "deleteTitle": "Supprimer votre compte",
+      "deleteHint": "Vous pouvez changer d'avis pendant {days} jours.",
+      "whatHappens": {
+        "signOut": "Vous êtes déconnecté sur tous vos appareils et ne pouvez plus vous connecter.",
+        "restore": "Pendant {days} jours, le lien que nous vous envoyons par e-mail restaure votre compte tel qu'il était.",
+        "erase": "Ensuite, vos espaces de travail, projets, fichiers, notes et paramètres sont effacés définitivement.",
+        "kept": "Nous conservons vos données de facturation et de crédits, comme la loi l'exige. Les commentaires et réponses que vous avez ajoutés dans les espaces de travail d'autres personnes y restent, affichés comme « Utilisateur supprimé ».",
+        "subscription": "Votre abonnement est résilié : vous ne serez plus prélevé et le forfait prend fin le {date}. Les remboursements suivent notre politique de remboursement.",
+        "subscriptionNoDate": "Votre abonnement est résilié : vous ne serez plus prélevé. Les remboursements suivent notre politique de remboursement.",
+        "exportFirst": "Vous voulez d'abord une copie ? Téléchargez vos données ci-dessus avant de supprimer votre compte."
+      },
+      "blockersTitle": "D'abord les espaces et projets partagés",
+      "blockersHint": "D'autres personnes les utilisent. Transférez chacun à quelqu'un d'autre (qui doit accepter) ou supprimez-le, puis revenez ici.",
+      "blockerWorkspace": "{count, plural, one {# membre} other {# membres}} · transférer ou supprimer",
+      "blockerProject": "{count, plural, one {# membre} other {# membres}} · transférer ou supprimer",
+      "blockerTransfer": "En attente de l'acceptation de {name} (jusqu'au {date}) · ou supprimez-le",
+      "deleteButton": "Supprimer mon compte…",
+      "confirmTitle": "Supprimer votre compte ?",
+      "confirmBody": "Vous serez déconnecté immédiatement. Pendant {days} jours, vous pouvez restaurer votre compte avec le lien que nous vous envoyons par e-mail ; ensuite, il est effacé définitivement.",
+      "confirmEmailLabel": "Saisissez votre adresse e-mail ({email}) pour confirmer",
+      "passwordLabel": "Votre mot de passe",
+      "passwordNeeded": "Pour votre sécurité, saisissez votre mot de passe (vous vous êtes connecté il y a plus de 15 minutes).",
+      "wrongPassword": "Ce mot de passe n'est pas correct.",
+      "signInAgain": "Pour votre sécurité, déconnectez-vous puis reconnectez-vous, et supprimez votre compte dans les 15 minutes.",
+      "stillBlocked": "Des espaces de travail ou projets partagés doivent encore être transférés ou supprimés.",
+      "deleteError": "Impossible de supprimer votre compte. Réessayez.",
+      "cancel": "Annuler",
+      "confirmButton": "Supprimer mon compte"
     }
   },
   "Email": {
@@ -826,6 +877,30 @@
       "body": "Confirmez {newEmail} comme nouvelle adresse e-mail de votre compte Klecx. Une fois confirmée, vous vous connecterez avec cette adresse.",
       "button": "Confirmer l'adresse e-mail",
       "disclaimer": "Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail : rien ne change."
+    },
+    "dataExportReady": {
+      "subject": "Vos données Klecx sont prêtes",
+      "heading": "Vos données sont prêtes",
+      "greeting": "Bonjour,",
+      "body": "La copie de vos données Klecx que vous avez demandée est prête. Téléchargez-la depuis Paramètres → Vos données dans les {hours} heures.",
+      "button": "Télécharger vos données",
+      "disclaimer": "Vous devez être connecté pour la télécharger. Si vous n'avez pas demandé de copie, changez votre mot de passe et contactez l'assistance."
+    },
+    "accountDeletionScheduled": {
+      "subject": "Votre compte Klecx est supprimé",
+      "heading": "Votre compte est supprimé",
+      "greeting": "Bonjour,",
+      "body": "Votre compte Klecx a été supprimé et vous avez été déconnecté partout. Si vous changez d'avis, restaurez-le avec le bouton ci-dessous avant le {date, date, long}. Ensuite, vos données sont effacées définitivement.",
+      "button": "Restaurer mon compte",
+      "disclaimer": "Si vous n'avez pas supprimé votre compte, restaurez-le maintenant et changez votre mot de passe. Le lien fonctionne jusqu'au {date, date, long}."
+    },
+    "accountRestored": {
+      "subject": "Votre compte Klecx est restauré",
+      "heading": "Bon retour",
+      "greeting": "Bonjour,",
+      "body": "Votre compte Klecx est restauré. Vous pouvez vous reconnecter ; vos espaces de travail et vos paramètres sont tels que vous les avez laissés.",
+      "button": "Se connecter",
+      "disclaimer": "Si vous n'avez pas restauré votre compte, contactez l'assistance."
     }
   },
   "AppShell": {
@@ -1522,7 +1597,7 @@
     }
   },
   "Legal": {
-    "updatedAt": "2026-11-22",
+    "updatedAt": "2026-11-23",
     "lastUpdated": "Dernière mise à jour : {date}",
     "contents": "Sommaire",
     "languageClause": "Ce document est proposé en plusieurs langues par commodité. En cas de contradiction entre les versions, la version anglaise prévaut.",
@@ -1654,7 +1729,7 @@
           "id": "termination",
           "heading": "15. Suspension et résiliation",
           "paragraphs": [
-            "Vous pouvez cesser d'utiliser Klecx à tout moment. La suppression du compte n'est pas encore disponible dans les Paramètres ; pour fermer votre compte, écrivez à {supportEmail}.",
+            "Vous pouvez cesser d'utiliser Klecx à tout moment et supprimer votre compte dans Paramètres → Vos données. Un forfait payant est alors résilié à la fin de la période payée (les remboursements suivent notre politique de remboursement), et vous disposez de 30 jours pour restaurer votre compte avant qu'il ne soit effacé.",
             "Nous pouvons suspendre ou fermer votre compte si vous enfreignez gravement ou de façon répétée ces Conditions ou la Politique d'utilisation acceptable, si la loi l'exige, ou pour protéger les autres utilisateurs ou le Service. Lorsque c'est raisonnable, nous vous en indiquerons la raison et vous donnerons la possibilité de répondre."
           ]
         },
@@ -1765,12 +1840,13 @@
           "id": "retention",
           "heading": "7. Durée de conservation",
           "bullets": [
-            "Données du compte et votre contenu : tant que votre compte existe.",
+            "Données du compte et votre contenu : tant que votre compte existe. Quand vous supprimez votre compte, vous ne pouvez plus vous connecter ; pendant 30 jours, le lien que nous vous envoyons par e-mail le restaure, puis vos espaces de travail, fichiers, notes et paramètres sont effacés et l'enregistrement de votre compte est anonymisé. Les commentaires et réponses que vous avez ajoutés dans les espaces de travail d'autres personnes y restent, affichés comme « Utilisateur supprimé ».",
             "Espaces de travail supprimés : masqués immédiatement et supprimés définitivement lors d'un nettoyage programmé.",
             "Sessions : jusqu'à votre déconnexion, leur révocation, ou 30 jours après leur dernière utilisation.",
             "Captures d'écran d'assistance : supprimées 90 jours après la demande.",
             "Demandes d'assistance : le temps nécessaire pour vous aider et garder une trace de la demande.",
-            "Historique des crédits et de la facturation : aussi longtemps que l'exigent les règles comptables et fiscales.",
+            "Historique des crédits et de la facturation : aussi longtemps que l'exigent les règles comptables et fiscales. Y compris après la suppression de votre compte.",
+            "Copies de vos données (Paramètres → Vos données) : téléchargeables pendant 24 heures, puis supprimées.",
             "Sauvegardes : écrasées selon la rotation habituelle de notre hébergeur."
           ]
         },
@@ -1779,7 +1855,7 @@
           "heading": "8. Vos droits",
           "paragraphs": [
             "Vous pouvez nous demander une copie de vos données personnelles, les rectifier, les supprimer, les recevoir dans un format portable, ou vous opposer à une utilisation ou la limiter. Lorsque nous nous appuyons sur votre consentement, vous pouvez le retirer à tout moment.",
-            "L'export et la suppression du compte ne sont pas encore disponibles dans les Paramètres. Pour exercer l'un de ces droits, écrivez à {privacyEmail} depuis l'adresse e-mail de votre compte ; nous répondrons dans le délai prévu par la loi. Vous pouvez corriger vous-même votre nom et vos réglages dans les Paramètres.",
+            "Dans Paramètres → Vos données, vous pouvez télécharger une copie de vos données (un fichier ZIP, une fois par jour) et supprimer votre compte. Vous pouvez aussi écrire à {privacyEmail} depuis l'adresse e-mail de votre compte pour exercer l'un de ces droits ; nous répondrons dans le délai prévu par la loi. Vous pouvez corriger vous-même votre nom et vos réglages dans les Paramètres.",
             "Vous pouvez déposer une plainte auprès de la Commission nigériane de protection des données (NDPC) ou, dans l'UE ou au Royaume-Uni, auprès de votre autorité de protection des données. Nous apprécierions d'avoir d'abord l'occasion de répondre à votre préoccupation."
           ]
         },
@@ -2265,7 +2341,13 @@
       "daily_read_aloud_limit": "Vous avez utilisé le temps de voix naturelles du jour de votre forfait.",
       "speech_unavailable": "Les voix naturelles ne sont pas disponibles pour le moment. Réessayez plus tard.",
       "unknown_voice": "Cette voix n'est pas disponible.",
-      "aborted": "Annulé."
+      "aborted": "Annulé.",
+      "export_limit": "Vous pouvez demander une copie de vos données par jour.",
+      "export_expired": "Ce téléchargement a expiré. Demandez une nouvelle copie.",
+      "deletion_blocked": "Transférez ou supprimez d'abord les espaces de travail et projets que vous partagez.",
+      "confirmation_mismatch": "L'adresse e-mail ne correspond pas à votre compte.",
+      "restore_link_invalid": "Ce lien a expiré ou a déjà été utilisé.",
+      "purge_not_due": "Le délai de grâce du compte n'est pas encore terminé."
     }
   },
   "Gates": {
@@ -3652,5 +3734,18 @@
     "truncated": "Ce texte est long : seule la première partie est lue.",
     "codeOmitted": "Bloc de code omis",
     "previewSample": "Bonjour ! Voici ma voix quand je lis vos réponses et vos documents à voix haute."
+  },
+  "AccountRestore": {
+    "title": "Restaurer votre compte",
+    "body": "Votre compte doit être effacé. Restaurez-le pour tout garder tel quel.",
+    "button": "Restaurer mon compte",
+    "done": "Votre compte est restauré. Vous pouvez vous reconnecter. Si vous aviez un forfait payant, vous pouvez le conserver dans Paramètres → Forfait et facturation jusqu'à la fin de la période.",
+    "signIn": "Se connecter",
+    "invalid": "Ce lien a expiré ou a déjà été utilisé. Si votre compte a déjà été effacé, il ne peut pas être restauré.",
+    "error": "Une erreur s'est produite. Réessayez."
+  },
+  "DataExport": {
+    "readme": "Vos données Klecx\n\naccount.json : votre profil, vos paramètres, vos méthodes de connexion, vos sessions, votre forfait et vos consentements de facturation.\ncredits.csv : votre historique de crédits.\nprojects.json : les projets dont vous êtes propriétaire ou membre.\nworkspaces/ : un dossier par espace de travail vous appartenant : workspace.json (membres, notes Klecx, liens de partage, transferts de propriété), conversation.md (chaque question, version de réponse et modification enregistrée), annotations.json (commentaires et fils de questions à toute profondeur), documents/ (chaque révision) et files/ (vos fichiers d'origine).\ncontributions.json : ce que vous avez écrit dans les espaces de travail d'autres personnes.\nmentions.json, notifications.json, ownership-transfers.json, support/ : le reste.\nfiles-not-included.txt : les fichiers qui n'ont pas pu être inclus (seulement s'il y en a).",
+    "skippedIntro": "Ces fichiers n'ont pas été inclus, car l'export contient au maximum {mb} Mo de fichiers. Vous pouvez toujours les télécharger dans Klecx :"
   }
 }

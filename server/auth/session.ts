@@ -28,6 +28,7 @@ export async function getActor(
   const u = session.user as {
     role?: string;
     suspendedAt?: Date | string | null;
+    deletedAt?: Date | string | null;
     username?: string | null;
     displayUsername?: string | null;
     usernameClaimedAt?: Date | string | null;
@@ -35,6 +36,8 @@ export async function getActor(
   };
   // Step 8.6: sessions are revoked on suspension; this covers any copy that survived.
   if (u.suspendedAt) return null;
+  // Step 9.5: sessions are revoked on deletion; this covers any copy that survived.
+  if (u.deletedAt) return null;
   return {
     userId: session.user.id,
     role: ((u.role ?? "USER") as Actor["role"]),

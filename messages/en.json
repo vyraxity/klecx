@@ -255,9 +255,11 @@
       "SOCIAL_ACCOUNT_ALREADY_LINKED": "This sign-in account is already linked to another user.",
       "CREDENTIAL_ACCOUNT_NOT_FOUND": "This account doesn't use a password. Sign in with your provider instead.",
       "DISPOSABLE_EMAIL": "This email service isn't accepted. Please sign up with a permanent email address.",
-      "ACCOUNT_SUSPENDED": "This account is suspended. If you think this is a mistake, contact our support team."
+      "ACCOUNT_SUSPENDED": "This account is suspended. If you think this is a mistake, contact our support team.",
+      "ACCOUNT_DELETED": "This account was deleted. Use the link in the email we sent you to restore it."
     },
-    "planIntent": "You chose {plan} ({interval}). After you confirm your email, you'll continue to payment."
+    "planIntent": "You chose {plan} ({interval}). After you confirm your email, you'll continue to payment.",
+    "accountDeleted": "Your account is deleted. Check your email for the link to restore it if you change your mind."
   },
   "Chat": {
     "newChat": "New Workspace",
@@ -385,6 +387,7 @@
       "appearance": "Appearance",
       "notifications": "Notifications",
       "billing": "Plan & billing",
+      "data": "Your data",
       "support": "Support",
       "usage": "Usage",
       "voice": "Voice"
@@ -588,6 +591,54 @@
       "browserVoiceOption": "{name} ({lang})",
       "speedTitle": "Speed",
       "speedHint": "You can also change it while listening."
+    },
+    "data": {
+      "title": "Your data",
+      "description": "Download a copy of everything in your account, or delete your account.",
+      "exportTitle": "Download your data",
+      "exportHint": "A ZIP file with your profile, settings, workspaces (every answer, version, edit, comment and document), your files, credit history and support requests. We email you when it's ready; the download works for 24 hours.",
+      "exportButton": "Request a copy",
+      "exportRequested": "We're preparing your data. We'll email you when it's ready.",
+      "exportError": "Couldn't start the export. Try again.",
+      "exportWait": "You can request one copy per day. Next one from {date}.",
+      "exportListLabel": "Recent copies",
+      "exportRequestedAt": "Requested {date}",
+      "statusPending": "Preparing… this can take a few minutes.",
+      "statusReady": "Ready to download until {date}.",
+      "statusExpired": "Expired. Request a new copy to download it again.",
+      "statusFailed": "Something went wrong. Request a new copy.",
+      "filesSkipped": "{count, plural, one {# file is} other {# files are}} too large to include (over 100 MB in total) and listed in the ZIP.",
+      "download": "Download",
+      "loadError": "Couldn't load this section.",
+      "retry": "Try again",
+      "deleteTitle": "Delete your account",
+      "deleteHint": "You can change your mind for {days} days.",
+      "whatHappens": {
+        "signOut": "You're signed out on every device and can't sign in again.",
+        "restore": "For {days} days, the link we email you restores your account as it was.",
+        "erase": "After that, your workspaces, projects, files, notes and settings are erased for good.",
+        "kept": "We keep your billing and credit records, as the law requires. Comments and answers you added to other people's workspaces stay there, shown as \"Deleted user\".",
+        "subscription": "Your subscription is cancelled: you won't be charged again, and the plan ends on {date}. Refunds follow our refund policy.",
+        "subscriptionNoDate": "Your subscription is cancelled: you won't be charged again. Refunds follow our refund policy.",
+        "exportFirst": "Want a copy first? Download your data above before deleting."
+      },
+      "blockersTitle": "Shared workspaces and projects first",
+      "blockersHint": "Other people use these. Transfer each one to someone else (they must accept) or delete it, then come back.",
+      "blockerWorkspace": "{count, plural, one {# member} other {# members}} · transfer or delete",
+      "blockerProject": "{count, plural, one {# member} other {# members}} · transfer or delete",
+      "blockerTransfer": "Waiting for {name} to accept (until {date}) · or delete it instead",
+      "deleteButton": "Delete my account…",
+      "confirmTitle": "Delete your account?",
+      "confirmBody": "You'll be signed out at once. You can restore your account with the link we email you for {days} days; after that it's erased for good.",
+      "confirmEmailLabel": "Type your email address ({email}) to confirm",
+      "passwordLabel": "Your password",
+      "passwordNeeded": "For your security, enter your password (you signed in more than 15 minutes ago).",
+      "wrongPassword": "That password isn't right.",
+      "signInAgain": "For your security, sign out and sign in again, then delete your account within 15 minutes.",
+      "stillBlocked": "Some shared workspaces or projects still need to be transferred or deleted.",
+      "deleteError": "Couldn't delete your account. Try again.",
+      "cancel": "Cancel",
+      "confirmButton": "Delete my account"
     }
   },
   "Email": {
@@ -826,6 +877,30 @@
       "body": "Confirm {newEmail} as the new email address of your Klecx account. Once confirmed, you'll sign in with this address.",
       "button": "Confirm email address",
       "disclaimer": "If you didn't ask for this, ignore this email: nothing changes."
+    },
+    "dataExportReady": {
+      "subject": "Your Klecx data is ready",
+      "heading": "Your data is ready",
+      "greeting": "Hi,",
+      "body": "The copy of your Klecx data you asked for is ready. Download it from Settings → Your data within {hours} hours.",
+      "button": "Download your data",
+      "disclaimer": "You need to be signed in to download it. If you didn't ask for a copy, change your password and contact support."
+    },
+    "accountDeletionScheduled": {
+      "subject": "Your Klecx account is deleted",
+      "heading": "Your account is deleted",
+      "greeting": "Hi,",
+      "body": "Your Klecx account was deleted and you were signed out everywhere. If you change your mind, restore it with the button below before {date, date, long}. After that, your data is erased for good.",
+      "button": "Restore my account",
+      "disclaimer": "If you didn't delete your account, restore it now and change your password. The link works until {date, date, long}."
+    },
+    "accountRestored": {
+      "subject": "Your Klecx account is restored",
+      "heading": "Welcome back",
+      "greeting": "Hi,",
+      "body": "Your Klecx account is restored. You can sign in again; your workspaces and settings are as you left them.",
+      "button": "Sign in",
+      "disclaimer": "If you didn't restore your account, contact support."
     }
   },
   "AppShell": {
@@ -1522,7 +1597,7 @@
     }
   },
   "Legal": {
-    "updatedAt": "2026-11-22",
+    "updatedAt": "2026-11-23",
     "lastUpdated": "Last updated {date}",
     "contents": "Contents",
     "languageClause": "This document is available in several languages for convenience. If there is any conflict between language versions, the English version prevails.",
@@ -1654,7 +1729,7 @@
           "id": "termination",
           "heading": "15. Suspension and termination",
           "paragraphs": [
-            "You can stop using Klecx at any time. Account deletion isn't available in Settings yet; to close your account, contact {supportEmail}.",
+            "You can stop using Klecx at any time, and delete your account in Settings → Your data. A paid plan is then cancelled at the end of the period you paid for (refunds follow our refund policy), and you have 30 days to restore your account before it's erased.",
             "We may suspend or close your account if you seriously or repeatedly break these Terms or the Acceptable Use Policy, if required by law, or to protect other users or the Service. Where reasonable, we will tell you why and give you a chance to respond."
           ]
         },
@@ -1765,12 +1840,13 @@
           "id": "retention",
           "heading": "7. How long we keep it",
           "bullets": [
-            "Account data and your content: as long as your account exists.",
+            "Account data and your content: as long as your account exists. When you delete your account, you can no longer sign in; for 30 days the link we email you restores it, then your workspaces, files, notes and settings are erased and your account record is anonymized. Comments and answers you added to other people's workspaces stay there, shown as \"Deleted user\".",
             "Deleted workspaces: hidden immediately and permanently removed in a scheduled clean-up.",
             "Sessions: until you sign out, revoke the session, or 30 days after it was last used.",
             "Support screenshots: deleted 90 days after the request.",
             "Support requests: for as long as we need them to help you and keep a record of the request.",
-            "Credit and billing records: as long as accounting and tax law requires.",
+            "Credit and billing records: as long as accounting and tax law requires. This also applies after you delete your account.",
+            "Copies of your data (Settings → Your data): available to download for 24 hours, then deleted.",
             "Backups: overwritten on our hosting provider's regular rotation."
           ]
         },
@@ -1779,7 +1855,7 @@
           "heading": "8. Your rights",
           "paragraphs": [
             "You can ask us to give you a copy of your personal data, correct it, delete it, send it to you in a portable format, or stop or limit a use of it. Where we rely on your consent, you can withdraw it at any time.",
-            "Self-service export and account deletion aren't available in Settings yet. To use any of these rights, write to {privacyEmail} from the email address of your account; we will answer within the time the law requires. You can correct your name and settings yourself in Settings.",
+            "In Settings → Your data you can download a copy of your data (a ZIP file, once a day) and delete your account. You can also write to {privacyEmail} from the email address of your account to use any of these rights; we will answer within the time the law requires. You can correct your name and settings yourself in Settings.",
             "You can complain to the Nigeria Data Protection Commission (NDPC) or, in the EU or UK, to your local data protection authority. We'd appreciate the chance to address your concern first."
           ]
         },
@@ -2265,7 +2341,13 @@
       "daily_read_aloud_limit": "You've used today's natural-voice time for your plan.",
       "speech_unavailable": "Natural voices aren't available right now. Try again later.",
       "unknown_voice": "This voice isn't available.",
-      "aborted": "Cancelled."
+      "aborted": "Cancelled.",
+      "export_limit": "You can request one copy of your data per day.",
+      "export_expired": "This download has expired. Request a new copy.",
+      "deletion_blocked": "Transfer or delete the workspaces and projects you share first.",
+      "confirmation_mismatch": "The email address doesn't match your account.",
+      "restore_link_invalid": "This link has expired or was already used.",
+      "purge_not_due": "The account's grace period hasn't ended yet."
     }
   },
   "Gates": {
@@ -3652,5 +3734,18 @@
     "truncated": "This text is long: only the first part is read aloud.",
     "codeOmitted": "Code block omitted",
     "previewSample": "Hello! This is how I sound when I read your answers and documents aloud."
+  },
+  "AccountRestore": {
+    "title": "Restore your account",
+    "body": "Your account is scheduled to be erased. Restore it to keep everything as it was.",
+    "button": "Restore my account",
+    "done": "Your account is restored. You can sign in again. If you had a paid plan, you can keep it in Settings → Plan & billing until the end of the period.",
+    "signIn": "Sign in",
+    "invalid": "This link has expired or was already used. If your account was already erased, it can't be restored.",
+    "error": "Something went wrong. Try again."
+  },
+  "DataExport": {
+    "readme": "Your Klecx data\n\naccount.json — your profile, settings, sign-in methods, sessions, plan and billing consents.\ncredits.csv — your credit history.\nprojects.json — projects you own or are a member of.\nworkspaces/ — one folder per workspace you own: workspace.json (members, Klecx notes, share links, ownership transfers), conversation.md (every prompt, answer version and saved edit), annotations.json (comments and Ask threads at every depth), documents/ (every revision) and files/ (your original files).\ncontributions.json — what you wrote in other people's workspaces.\nmentions.json, notifications.json, ownership-transfers.json, support/ — the rest.\nfiles-not-included.txt — files that didn't fit (only when there are any).",
+    "skippedIntro": "These files weren't included because the export holds at most {mb} MB of files. You can still download them in Klecx:"
   }
 }

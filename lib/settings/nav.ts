@@ -1,7 +1,7 @@
 /**
  * Step 9.1: the Settings pages, in nav order (Usage since Step 9.3, Voice
- * since 9.4). Your data (9.5) is added by its own step, so the nav never shows a page
- * that doesn't work yet.
+ * since 9.4, Your data since 9.5). A page is added by the step that builds
+ * it, so the nav never shows a page that doesn't work yet.
  */
 export const SETTINGS_PAGES = [
   "profile",
@@ -13,6 +13,7 @@ export const SETTINGS_PAGES = [
   "notifications",
   "usage",
   "billing",
+  "data",
   "support",
 ] as const;
 

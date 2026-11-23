@@ -173,6 +173,24 @@ export async function cancelSubscription(userId: string, requestId: string): Pro
 }
 
 /**
+ * Step 9.5: account deletion stops future charges — a renewing subscription is
+ * cancelled at the end of the paid period (owner, 2026-11-23). Does nothing
+ * when there's no renewing subscription. Provider errors propagate, so the
+ * deletion stops before anything else changes.
+ */
+export async function cancelSubscriptionForAccountDeletion(
+  userId: string,
+  requestId: string
+): Promise<{ cancelled: boolean; periodEnd: Date | null }> {
+  const sub = await loadSubscription(userId);
+  if (!sub?.providerSubscriptionId || !CANCELLABLE.has(sub.status) || sub.cancelAtPeriodEnd) {
+    return { cancelled: false, periodEnd: sub?.currentPeriodEnd ?? null };
+  }
+  await cancelSubscription(userId, requestId);
+  return { cancelled: true, periodEnd: sub.currentPeriodEnd ?? null };
+}
+
+/**
  * Undoes a scheduled cancellation while the paid period still runs (Step 8.5).
  * 409 `nothing_to_resume` when no cancellation is scheduled.
  */

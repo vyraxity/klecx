@@ -340,6 +340,7 @@ export async function notify(
       select: {
         id: true,
         email: true,
+        deletedAt: true,
         preference: {
           select: {
             uiLocale: true,
@@ -350,7 +351,8 @@ export async function notify(
     getUserNotificationPreferences(userId),
   ]);
 
-  if (!user) {
+  // Step 9.5: a deleted account gets no notifications or emails.
+  if (!user || user.deletedAt) {
     return { skipped: true, reason: "user_not_found" as const, notification: null };
   }
 

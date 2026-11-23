@@ -32,6 +32,10 @@ export const policies = {
   "speech:prepare":    { n: 20, window: "1 h"  as Duration }, // key: userId
   "speech:segment":    { n: 200, window: "1 h" as Duration }, // key: userId (≤ 14 segments per request)
   "speech:preview":    { n: 30, window: "1 h"  as Duration }, // key: userId
+  // Step 9.5 Your data: one export per day is enforced from the database; these stop bursts.
+  "data:export":       { n: 5,  window: "1 h"  as Duration }, // key: userId
+  "account:delete":    { n: 5,  window: "1 h"  as Duration }, // key: userId
+  "account:restore":   { n: 10, window: "1 h"  as Duration }, // key: ip
 } as const;
 
 export type RateLimitPolicy = keyof typeof policies;

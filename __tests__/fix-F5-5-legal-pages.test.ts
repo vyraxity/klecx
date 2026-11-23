@@ -104,7 +104,10 @@ describe("F5.5 — legal pages", () => {
       const text = strings(legal(l)).join(" ");
       expect(text).not.toMatch(/Delaware/);
       expect(text).not.toMatch(/keyword filter|filtrado de palabras|filtrage par mots/i);
-      expect(text).not.toMatch(/24 (hours|horas|heures)/);
+      // The old "we investigate reports within 24 hours" promise (the AUP now says 3 business days).
+      // Other 24-hour statements, such as the data export's download window (Step 9.5), are fine.
+      const aup = strings((legal(l) as Record<string, unknown>).acceptableUse).join(" ");
+      expect(aup).not.toMatch(/24 (hours|horas|heures)/);
       expect(text).not.toMatch(/top-?up|credit packs?|paquetes de créditos|packs de crédits/i);
       expect(text).not.toMatch(/CCPA/);
     }

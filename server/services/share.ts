@@ -440,14 +440,21 @@ export async function resolvePublicShareByToken(
             select: {
               name: true,
               username: true,
+              deletedAt: true,
             },
           },
         },
       },
+      createdBy: { select: { deletedAt: true } },
     },
   });
 
   if (!share || !share.workspace || share.workspace.deletedAt) {
+    throw Errors.notFound("ShareLink");
+  }
+  // Step 9.5: links stop working as soon as their owner or creator deletes
+  // the account (and work again if the account is restored in time).
+  if (share.workspace.owner.deletedAt || share.createdBy.deletedAt) {
     throw Errors.notFound("ShareLink");
   }
 

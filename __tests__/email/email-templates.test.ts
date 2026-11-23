@@ -115,6 +115,12 @@ describe("Step 1.7 & F0.2 — Transactional Email Module", () => {
       eventId: "evt_1",
       userId: "user_1",
     },
+    "data-export-ready": { hours: 24 },
+    "account-deletion-scheduled": {
+      purgeAfter: "2026-12-23T10:00:00.000Z",
+      restoreUrl: "https://klecx.vyraxity.com/account/restore?token=r1",
+    },
+    "account-restored": {},
     welcome: {
       name: "Alice",
     },

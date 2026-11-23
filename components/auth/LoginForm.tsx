@@ -54,6 +54,10 @@ const LoginForm = (): React.JSX.Element => {
         success: false,
       });
     }
+    // Step 9.5: just deleted the account from Settings → Your data.
+    if (reason === "account_deleted") {
+      setResponse({ message: t("accountDeleted"), success: true });
+    }
   }, [reason, t]);
 
   const form = useForm<LoginInput>({
@@ -77,8 +81,8 @@ const LoginForm = (): React.JSX.Element => {
         });
 
         if (error) {
-          // Step 8.6: a suspended account (403 ACCOUNT_SUSPENDED) isn't an unverified one.
-          if (error.code === "ACCOUNT_SUSPENDED") {
+          // Step 8.6/9.5: a suspended or deleted account (403) isn't an unverified one.
+          if (error.code === "ACCOUNT_SUSPENDED" || error.code === "ACCOUNT_DELETED") {
             setResponse({
               message: getAuthErrorMessage(error, tRoot, t("errors.INVALID_EMAIL_OR_PASSWORD")),
               success: false,

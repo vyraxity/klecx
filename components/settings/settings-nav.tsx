@@ -8,6 +8,7 @@ import {
   BarChart3,
   Bell,
   CreditCard,
+  Database,
   Languages,
   Laptop,
   LifeBuoy,
@@ -36,6 +37,7 @@ const ICONS: Record<SettingsPage, LucideIcon> = {
   notifications: Bell,
   usage: BarChart3,
   billing: CreditCard,
+  data: Database,
   support: LifeBuoy,
 };
 

@@ -255,9 +255,11 @@
       "SOCIAL_ACCOUNT_ALREADY_LINKED": "Esta cuenta de inicio de sesión ya está vinculada a otro usuario.",
       "CREDENTIAL_ACCOUNT_NOT_FOUND": "Esta cuenta no usa contraseña. Inicia sesión con tu proveedor.",
       "DISPOSABLE_EMAIL": "Este servicio de correo no se acepta. Regístrate con una dirección de correo permanente.",
-      "ACCOUNT_SUSPENDED": "Esta cuenta está suspendida. Si crees que es un error, contacta con nuestro equipo de soporte."
+      "ACCOUNT_SUSPENDED": "Esta cuenta está suspendida. Si crees que es un error, contacta con nuestro equipo de soporte.",
+      "ACCOUNT_DELETED": "Esta cuenta se eliminó. Usa el enlace del correo que te enviamos para restaurarla."
     },
-    "planIntent": "Elegiste {plan} ({interval}). Después de confirmar tu correo, continuarás al pago."
+    "planIntent": "Elegiste {plan} ({interval}). Después de confirmar tu correo, continuarás al pago.",
+    "accountDeleted": "Tu cuenta está eliminada. Revisa tu correo: ahí está el enlace para restaurarla si cambias de opinión."
   },
   "Chat": {
     "newChat": "Nuevo espacio de trabajo",
@@ -385,6 +387,7 @@
       "appearance": "Apariencia",
       "notifications": "Notificaciones",
       "billing": "Plan y facturación",
+      "data": "Tus datos",
       "support": "Soporte",
       "usage": "Uso",
       "voice": "Voz"
@@ -588,6 +591,54 @@
       "browserVoiceOption": "{name} ({lang})",
       "speedTitle": "Velocidad",
       "speedHint": "También puedes cambiarla mientras escuchas."
+    },
+    "data": {
+      "title": "Tus datos",
+      "description": "Descarga una copia de todo lo que hay en tu cuenta o elimina tu cuenta.",
+      "exportTitle": "Descargar tus datos",
+      "exportHint": "Un archivo ZIP con tu perfil, tu configuración, tus espacios de trabajo (cada respuesta, versión, edición, comentario y documento), tus archivos, tu historial de créditos y tus solicitudes de soporte. Te enviamos un correo cuando esté listo; la descarga funciona durante 24 horas.",
+      "exportButton": "Solicitar una copia",
+      "exportRequested": "Estamos preparando tus datos. Te avisaremos por correo cuando estén listos.",
+      "exportError": "No se pudo iniciar la exportación. Inténtalo de nuevo.",
+      "exportWait": "Puedes solicitar una copia al día. La próxima, a partir del {date}.",
+      "exportListLabel": "Copias recientes",
+      "exportRequestedAt": "Solicitada el {date}",
+      "statusPending": "Preparando… puede tardar unos minutos.",
+      "statusReady": "Lista para descargar hasta el {date}.",
+      "statusExpired": "Caducada. Solicita una copia nueva para descargarla otra vez.",
+      "statusFailed": "Algo salió mal. Solicita una copia nueva.",
+      "filesSkipped": "{count, plural, one {# archivo es demasiado grande} other {# archivos son demasiado grandes}} para incluirse (más de 100 MB en total) y {count, plural, one {aparece} other {aparecen}} en la lista del ZIP.",
+      "download": "Descargar",
+      "loadError": "No se pudo cargar esta sección.",
+      "retry": "Reintentar",
+      "deleteTitle": "Eliminar tu cuenta",
+      "deleteHint": "Puedes cambiar de opinión durante {days} días.",
+      "whatHappens": {
+        "signOut": "Se cierra tu sesión en todos los dispositivos y ya no puedes iniciar sesión.",
+        "restore": "Durante {days} días, el enlace que te enviamos por correo restaura tu cuenta tal como estaba.",
+        "erase": "Después, tus espacios de trabajo, proyectos, archivos, notas y configuración se borran definitivamente.",
+        "kept": "Conservamos tus registros de facturación y de créditos, como exige la ley. Los comentarios y respuestas que añadiste en espacios de trabajo de otras personas se quedan allí, como \"Usuario eliminado\".",
+        "subscription": "Tu suscripción se cancela: no se te volverá a cobrar y el plan termina el {date}. Los reembolsos siguen nuestra política de reembolsos.",
+        "subscriptionNoDate": "Tu suscripción se cancela: no se te volverá a cobrar. Los reembolsos siguen nuestra política de reembolsos.",
+        "exportFirst": "¿Quieres una copia antes? Descarga tus datos arriba antes de eliminar la cuenta."
+      },
+      "blockersTitle": "Primero, los espacios y proyectos compartidos",
+      "blockersHint": "Otras personas los usan. Transfiere cada uno a otra persona (debe aceptarlo) o elimínalo, y vuelve aquí.",
+      "blockerWorkspace": "{count, plural, one {# miembro} other {# miembros}} · transferir o eliminar",
+      "blockerProject": "{count, plural, one {# miembro} other {# miembros}} · transferir o eliminar",
+      "blockerTransfer": "Esperando a que {name} acepte (hasta el {date}) · o elimínalo",
+      "deleteButton": "Eliminar mi cuenta…",
+      "confirmTitle": "¿Eliminar tu cuenta?",
+      "confirmBody": "Se cerrará tu sesión de inmediato. Durante {days} días puedes restaurar tu cuenta con el enlace que te enviamos por correo; después se borra definitivamente.",
+      "confirmEmailLabel": "Escribe tu correo electrónico ({email}) para confirmar",
+      "passwordLabel": "Tu contraseña",
+      "passwordNeeded": "Por tu seguridad, escribe tu contraseña (iniciaste sesión hace más de 15 minutos).",
+      "wrongPassword": "Esa contraseña no es correcta.",
+      "signInAgain": "Por tu seguridad, cierra sesión y vuelve a iniciarla; después elimina tu cuenta en los 15 minutos siguientes.",
+      "stillBlocked": "Aún hay espacios de trabajo o proyectos compartidos que transferir o eliminar.",
+      "deleteError": "No se pudo eliminar tu cuenta. Inténtalo de nuevo.",
+      "cancel": "Cancelar",
+      "confirmButton": "Eliminar mi cuenta"
     }
   },
   "Email": {
@@ -826,6 +877,30 @@
       "body": "Confirma {newEmail} como la nueva dirección de correo de tu cuenta de Klecx. Una vez confirmada, iniciarás sesión con esta dirección.",
       "button": "Confirmar dirección de correo",
       "disclaimer": "Si no lo pediste, ignora este correo: nada cambia."
+    },
+    "dataExportReady": {
+      "subject": "Tus datos de Klecx están listos",
+      "heading": "Tus datos están listos",
+      "greeting": "Hola:",
+      "body": "La copia de tus datos de Klecx que solicitaste está lista. Descárgala desde Configuración → Tus datos en las próximas {hours} horas.",
+      "button": "Descargar tus datos",
+      "disclaimer": "Debes haber iniciado sesión para descargarla. Si no solicitaste una copia, cambia tu contraseña y contacta con soporte."
+    },
+    "accountDeletionScheduled": {
+      "subject": "Tu cuenta de Klecx está eliminada",
+      "heading": "Tu cuenta está eliminada",
+      "greeting": "Hola:",
+      "body": "Tu cuenta de Klecx se eliminó y se cerró tu sesión en todas partes. Si cambias de opinión, restáurala con el botón de abajo antes del {date, date, long}. Después, tus datos se borran definitivamente.",
+      "button": "Restaurar mi cuenta",
+      "disclaimer": "Si no eliminaste tu cuenta, restáurala ahora y cambia tu contraseña. El enlace funciona hasta el {date, date, long}."
+    },
+    "accountRestored": {
+      "subject": "Tu cuenta de Klecx está restaurada",
+      "heading": "Bienvenido de nuevo",
+      "greeting": "Hola:",
+      "body": "Tu cuenta de Klecx está restaurada. Ya puedes iniciar sesión; tus espacios de trabajo y tu configuración están como los dejaste.",
+      "button": "Iniciar sesión",
+      "disclaimer": "Si no restauraste tu cuenta, contacta con soporte."
     }
   },
   "AppShell": {
@@ -1522,7 +1597,7 @@
     }
   },
   "Legal": {
-    "updatedAt": "2026-11-22",
+    "updatedAt": "2026-11-23",
     "lastUpdated": "Última actualización: {date}",
     "contents": "Contenido",
     "languageClause": "Este documento está disponible en varios idiomas por comodidad. Si hay alguna contradicción entre las versiones, prevalece la versión en inglés.",
@@ -1654,7 +1729,7 @@
           "id": "termination",
           "heading": "15. Suspensión y cierre",
           "paragraphs": [
-            "Puedes dejar de usar Klecx en cualquier momento. La eliminación de la cuenta aún no está disponible en la Configuración; para cerrar tu cuenta, escribe a {supportEmail}.",
+            "Puedes dejar de usar Klecx en cualquier momento y eliminar tu cuenta en Configuración → Tus datos. Un plan de pago se cancela entonces al final del período que pagaste (los reembolsos siguen nuestra política de reembolsos), y tienes 30 días para restaurar tu cuenta antes de que se borre.",
             "Podemos suspender o cerrar tu cuenta si incumples de forma grave o reiterada estos Términos o la Política de uso aceptable, si la ley lo exige, o para proteger a otros usuarios o al Servicio. Cuando sea razonable, te explicaremos el motivo y te daremos la oportunidad de responder."
           ]
         },
@@ -1765,12 +1840,13 @@
           "id": "retention",
           "heading": "7. Cuánto tiempo los conservamos",
           "bullets": [
-            "Datos de la cuenta y tu contenido: mientras exista tu cuenta.",
+            "Datos de la cuenta y tu contenido: mientras exista tu cuenta. Cuando eliminas tu cuenta, ya no puedes iniciar sesión; durante 30 días el enlace que te enviamos por correo la restaura y, después, tus espacios de trabajo, archivos, notas y ajustes se borran y el registro de tu cuenta se anonimiza. Los comentarios y respuestas que añadiste en espacios de trabajo de otras personas se quedan allí, como \"Usuario eliminado\".",
             "Espacios de trabajo eliminados: se ocultan al instante y se eliminan definitivamente en una limpieza programada.",
             "Sesiones: hasta que cierres la sesión, la revoques o pasen 30 días desde su último uso.",
             "Capturas de pantalla de soporte: se eliminan 90 días después de la solicitud.",
             "Solicitudes de soporte: el tiempo necesario para ayudarte y conservar un registro de la solicitud.",
-            "Registros de créditos y facturación: el tiempo que exijan las leyes contables y fiscales.",
+            "Registros de créditos y facturación: el tiempo que exijan las leyes contables y fiscales. También después de que elimines tu cuenta.",
+            "Copias de tus datos (Configuración → Tus datos): se pueden descargar durante 24 horas y después se eliminan.",
             "Copias de seguridad: se sobrescriben según la rotación habitual de nuestro proveedor de alojamiento."
           ]
         },
@@ -1779,7 +1855,7 @@
           "heading": "8. Tus derechos",
           "paragraphs": [
             "Puedes pedirnos una copia de tus datos personales, corregirlos, eliminarlos, recibirlos en un formato portable, o dejar de usarlos o limitar un uso concreto. Cuando nos basamos en tu consentimiento, puedes retirarlo en cualquier momento.",
-            "La exportación y la eliminación de la cuenta aún no están disponibles en la Configuración. Para ejercer cualquiera de estos derechos, escribe a {privacyEmail} desde la dirección de correo de tu cuenta; responderemos en el plazo que exija la ley. Puedes corregir tú mismo tu nombre y tus ajustes en la Configuración.",
+            "En Configuración → Tus datos puedes descargar una copia de tus datos (un archivo ZIP, una vez al día) y eliminar tu cuenta. También puedes escribir a {privacyEmail} desde la dirección de correo de tu cuenta para ejercer cualquiera de estos derechos; responderemos en el plazo que exija la ley. Puedes corregir tú mismo tu nombre y tus ajustes en la Configuración.",
             "Puedes presentar una reclamación ante la Comisión de Protección de Datos de Nigeria (NDPC) o, en la UE o el Reino Unido, ante tu autoridad de protección de datos. Te agradeceríamos que nos dieras antes la oportunidad de resolver tu inquietud."
           ]
         },
@@ -2265,7 +2341,13 @@
       "daily_read_aloud_limit": "Ya usaste el tiempo de voces naturales de hoy de tu plan.",
       "speech_unavailable": "Las voces naturales no están disponibles ahora. Inténtalo más tarde.",
       "unknown_voice": "Esta voz no está disponible.",
-      "aborted": "Cancelado."
+      "aborted": "Cancelado.",
+      "export_limit": "Puedes solicitar una copia de tus datos al día.",
+      "export_expired": "Esta descarga ha caducado. Solicita una copia nueva.",
+      "deletion_blocked": "Primero transfiere o elimina los espacios de trabajo y proyectos que compartes.",
+      "confirmation_mismatch": "El correo electrónico no coincide con tu cuenta.",
+      "restore_link_invalid": "Este enlace ha caducado o ya se usó.",
+      "purge_not_due": "El período de gracia de la cuenta aún no ha terminado."
     }
   },
   "Gates": {
@@ -3652,5 +3734,18 @@
     "truncated": "Este texto es largo: solo se lee la primera parte.",
     "codeOmitted": "Bloque de código omitido",
     "previewSample": "¡Hola! Así sueno cuando leo en voz alta tus respuestas y documentos."
+  },
+  "AccountRestore": {
+    "title": "Restaurar tu cuenta",
+    "body": "Tu cuenta está programada para borrarse. Restáurala para conservarlo todo como estaba.",
+    "button": "Restaurar mi cuenta",
+    "done": "Tu cuenta está restaurada. Ya puedes iniciar sesión. Si tenías un plan de pago, puedes mantenerlo en Configuración → Plan y facturación hasta el final del período.",
+    "signIn": "Iniciar sesión",
+    "invalid": "Este enlace ha caducado o ya se usó. Si tu cuenta ya se borró, no se puede restaurar.",
+    "error": "Algo salió mal. Inténtalo de nuevo."
+  },
+  "DataExport": {
+    "readme": "Tus datos de Klecx\n\naccount.json: tu perfil, configuración, métodos de inicio de sesión, sesiones, plan y consentimientos de facturación.\ncredits.csv: tu historial de créditos.\nprojects.json: los proyectos de los que eres propietario o miembro.\nworkspaces/: una carpeta por cada espacio de trabajo tuyo: workspace.json (miembros, notas de Klecx, enlaces compartidos, transferencias de propiedad), conversation.md (cada pregunta, versión de respuesta y edición guardada), annotations.json (comentarios y conversaciones de preguntas a cualquier profundidad), documents/ (cada revisión) y files/ (tus archivos originales).\ncontributions.json: lo que escribiste en espacios de trabajo de otras personas.\nmentions.json, notifications.json, ownership-transfers.json, support/: el resto.\nfiles-not-included.txt: archivos que no cupieron (solo si los hay).",
+    "skippedIntro": "Estos archivos no se incluyeron porque la exportación admite como máximo {mb} MB de archivos. Aún puedes descargarlos en Klecx:"
   }
 }

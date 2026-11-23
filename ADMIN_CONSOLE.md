@@ -100,3 +100,13 @@ How to use this file:
 - **Found:** Step 9.4.
 - **Why:** a wrongly pronounced or broken clip should be regenerated, and storage use watched; also to see how much natural-voice audio a person generated (support, refund checks).
 - **Today:** `speech_cache` rows (key, voice, model, seconds, `storage_id`, `last_used_at`) and the private MP3 files under `<CLOUDINARY_UPLOAD_FOLDER>/speech/` in storage; SPEECH generations (with `usage.seconds`) per person. Needed: list/search cache entries, delete one (file + row: the next play regenerates it), and a person's read-aloud history (already in their usage page via `kind = SPEECH`).
+
+### 18. Account deletions (restore on someone's behalf, erase now)
+- **Found:** Step 9.5.
+- **Why:** someone who deleted their account by mistake and lost the restore email asks support to bring it back; a verified erasure request (privacy law) may need the data erased before the 30 days are over; an erase that failed (a storage error) needs to be retried and watched.
+- **Today:** `account_deletions` rows (`requested_at`, `purge_after`, `purged_at`) and `users.deleted_at`; `restoreAccount(token)` only works with the emailed token; `purgeDueAccounts()` erases accounts past their 30 days (to be scheduled daily in Step 10.3); `POST /api/v1/admin/users/:id/purge-deleted { force? }` (admins only, audit-logged) erases one deleted account now (`force` before the 30 days are over). `ACCOUNT_DELETION_REQUESTED`, `ACCOUNT_DELETION_CANCELLED`, `ACCOUNT_PURGED` in `audit_logs`. Needed: find deleted accounts and their erase dates, restore one for a verified person (same effect as the link: clear `deleted_at`, the notes deleted with it and the `account_deleted` membership suspensions), erase now, and see failed erases.
+
+### 19. Data exports
+- **Found:** Step 9.5.
+- **Why:** an export that failed or never arrived ("I didn't get the email"), or a person asking for a second copy the same day.
+- **Today:** `data_exports` rows (status, size, files included/left out, `error_code`, `expires_at`); one per person per 24 hours (`requestDataExport()`), built by `buildDataExport(id)` (`server/services/data-export.ts`). Needed: see a person's exports and their status, re-run a failed one, and allow an extra export.
