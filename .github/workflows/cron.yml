@@ -1,0 +1,127 @@
+# Step 10.3 — the scheduler for the background jobs (owner, 2026-11-22: GitHub
+# Actions while Klecx is on Vercel Hobby, whose cron jobs run at most daily).
+# Each run calls every job of one group on each configured environment:
+#   POST <base>/api/cron/<job>   with   Authorization: Bearer <secret>
+# The jobs are idempotent and locked, so a late or repeated run is harmless.
+# Job lists must match lib/jobs/schedules.ts (a test checks it).
+#
+# Settings → Secrets and variables → Actions (see docs/background-jobs.md):
+#   variables: CRON_BASE_URL (production, e.g. https://klecx.com),
+#              CRON_PREVIEW_BASE_URL (optional, e.g. https://dev.klecx.com)
+#   secrets:   CRON_SECRET, CRON_PREVIEW_SECRET (each = that environment's CRON_SECRET),
+#              VERCEL_AUTOMATION_BYPASS_SECRET (optional, while deployment protection is on),
+#              SYNTHETIC_EMAIL, SYNTHETIC_PASSWORD (optional, the hourly sign-in check)
+# Scheduled workflows run from the default branch (dev). Moving to Vercel Cron
+# (Pro) later = add `crons` to vercel.json and delete this file.
+name: cron
+
+on:
+  schedule:
+    - cron: "*/5 * * * *" # frequent
+    - cron: "7 * * * *" # hourly
+    - cron: "23 3 * * *" # daily, 03:23 UTC
+  workflow_dispatch:
+    inputs:
+      group:
+        description: Which group of jobs to run now
+        type: choice
+        options: [frequent, hourly, daily]
+        default: frequent
+
+permissions: {}
+
+concurrency:
+  group: cron-${{ github.event.schedule || inputs.group }}
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      FREQUENT_JOBS: reap-generations reap-ask-messages send-emails
+      HOURLY_JOBS: orphan-attachments expire-ownership-transfers run-alerts
+      DAILY_JOBS: expire-invites-shares purge-deleted delete-accounts enforce-member-limits refresh-credit-periods purge-support-screenshots purge-speech-cache reconcile-billing prune-job-runs
+    steps:
+      - name: Pick the group
+        id: group
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+          INPUT_GROUP: ${{ inputs.group }}
+        run: |
+          case "$SCHEDULE" in
+            "*/5 * * * *") group=frequent ;;
+            "7 * * * *") group=hourly ;;
+            "23 3 * * *") group=daily ;;
+            *) group="${INPUT_GROUP:-frequent}" ;;
+          esac
+          echo "group=$group" >> "$GITHUB_OUTPUT"
+
+      - name: Run the jobs
+        env:
+          GROUP: ${{ steps.group.outputs.group }}
+          PROD_URL: ${{ vars.CRON_BASE_URL }}
+          PROD_SECRET: ${{ secrets.CRON_SECRET }}
+          PREVIEW_URL: ${{ vars.CRON_PREVIEW_BASE_URL }}
+          PREVIEW_SECRET: ${{ secrets.CRON_PREVIEW_SECRET }}
+          BYPASS: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          set -u
+          case "$GROUP" in
+            frequent) jobs="$FREQUENT_JOBS" ;;
+            hourly) jobs="$HOURLY_JOBS" ;;
+            daily) jobs="$DAILY_JOBS" ;;
+          esac
+          fail=0
+          ran=0
+          run_target() {
+            local name=$1 base=${2%/} secret=$3
+            if [ -z "$base" ] || [ -z "$secret" ]; then echo "$name: not configured, skipped"; return; fi
+            ran=1
+            for job in $jobs; do
+              out=$(mktemp)
+              code=$(curl -sS -o "$out" -w '%{http_code}' -X POST --max-time 330 \
+                -H "Authorization: Bearer $secret" \
+                ${BYPASS:+-H "x-vercel-protection-bypass: $BYPASS"} \
+                "$base/api/cron/$job") || code=000
+              # Status only: the counts stay in the app's logs (this repository's logs may be public).
+              status=$(jq -r '.data.status // .error.code // "unreadable"' "$out" 2>/dev/null || echo unreadable)
+              echo "$name $job: HTTP $code $status"
+              [ "$code" = "200" ] || fail=1
+              rm -f "$out"
+            done
+          }
+          run_target production "$PROD_URL" "$PROD_SECRET"
+          run_target preview "$PREVIEW_URL" "$PREVIEW_SECRET"
+          [ "$ran" = 1 ] || echo "No environment configured: set CRON_BASE_URL and CRON_SECRET."
+          exit $fail
+
+      - name: Synthetic sign-in
+        if: steps.group.outputs.group == 'hourly'
+        env:
+          BASE: ${{ vars.CRON_BASE_URL }}
+          EMAIL: ${{ secrets.SYNTHETIC_EMAIL }}
+          PASSWORD: ${{ secrets.SYNTHETIC_PASSWORD }}
+          BYPASS: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          set -u
+          if [ -z "$BASE" ] || [ -z "$EMAIL" ] || [ -z "$PASSWORD" ]; then echo "Not configured, skipped"; exit 0; fi
+          base=${BASE%/}
+          jar=$(mktemp)
+          body=$(jq -n --arg e "$EMAIL" --arg p "$PASSWORD" '{email: $e, password: $p}')
+          code=$(curl -sS -c "$jar" -o /dev/null -w '%{http_code}' -X POST --max-time 30 \
+            -H "content-type: application/json" -H "Origin: $base" \
+            ${BYPASS:+-H "x-vercel-protection-bypass: $BYPASS"} \
+            --data "$body" "$base/api/auth/sign-in/email") || code=000
+          echo "sign-in: HTTP $code"
+          [ "$code" = "200" ] || exit 1
+          code=$(curl -sS -b "$jar" -o /dev/null -w '%{http_code}' --max-time 30 \
+            ${BYPASS:+-H "x-vercel-protection-bypass: $BYPASS"} \
+            "$base/api/v1/me") || code=000
+          echo "GET /api/v1/me: HTTP $code"
+          curl -sS -b "$jar" -o /dev/null -X POST --max-time 30 \
+            -H "content-type: application/json" -H "Origin: $base" \
+            ${BYPASS:+-H "x-vercel-protection-bypass: $BYPASS"} \
+            --data '{}' "$base/api/auth/sign-out" || true
+          rm -f "$jar"
+          [ "$code" = "200" ]

@@ -3,7 +3,7 @@ import sharp, { type OutputInfo } from "sharp";
 import { fileTypeFromBuffer } from "file-type";
 import { db } from "@/server/db/client";
 import { Errors } from "@/server/http/errors";
-import { getStorageProvider } from "@/server/storage/provider";
+import { getStorageProvider, storagePath } from "@/server/storage/provider";
 import {
   MAX_SUPPORT_SCREENSHOTS,
   MAX_SUPPORT_SCREENSHOT_BYTES,
@@ -162,7 +162,9 @@ export async function prepareSupportScreenshots(
 }
 
 /**
- * Uploads cleaned screenshots to the private folder `support/<ticketId>/` and
+ * Uploads cleaned screenshots to the private folder
+ * `<CLOUDINARY_UPLOAD_FOLDER>/support/<ticketId>/` (rule 13; screenshots stored
+ * before 2026-11-24 sit under `support/<ticketId>/` and keep that path) and
  * records them. On a storage failure, removes what was uploaded and rethrows.
  */
 export async function storeSupportScreenshots(
@@ -188,8 +190,7 @@ export async function storeSupportScreenshots(
   try {
     for (const shot of screenshots) {
       const result = await storage.uploadBuffer(shot.buffer, {
-        publicId: crypto.randomUUID(),
-        folder: `support/${ticketId}`,
+        publicId: storagePath("support", ticketId, crypto.randomUUID()),
         resourceType: "image",
         format: shot.format,
         mime: shot.mime,

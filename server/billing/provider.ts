@@ -100,6 +100,11 @@ export interface BillingProvider {
     subscriptionId: string,
     target: { plan: PaidPlanKey; interval: BillingInterval }
   ): Promise<void>;
+  /**
+   * Step 10.3 (`reconcile-billing`): the subscription as the provider has it
+   * now, read with the same parser as the webhooks; null when it doesn't exist.
+   */
+  getSubscription(subscriptionId: string): Promise<BillingEventData["subscription"]>;
   /** Throws `WebhookSignatureError` when the signature is missing or wrong. */
   verifyWebhook(rawBody: string, signature: string | null): NormalizedEvent;
   /** Product id → the plan and interval it sells; null for a product we don't know. */

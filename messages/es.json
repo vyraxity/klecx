@@ -1008,7 +1008,11 @@
         "stuckGenerations": "{count, plural, one {# solicitud de IA lleva} other {# solicitudes de IA llevan}} más de 15 minutos en curso.",
         "dbConnections": "Conexiones a la base de datos: {used} de {max} en uso.",
         "searchCapNear": "Búsquedas web de hoy: {requests} del límite diario del proveedor de {cap} ({pct} %). Al llegar al límite, las búsquedas se detienen para todos hasta la medianoche UTC.",
-        "searchCapReached": "Las búsquedas web de hoy alcanzaron el límite diario del proveedor ({requests} de {cap}): las búsquedas están desactivadas para todos hasta la medianoche UTC; las respuestas continúan sin ellas."
+        "searchCapReached": "Las búsquedas web de hoy alcanzaron el límite diario del proveedor ({requests} de {cap}): las búsquedas están desactivadas para todos hasta la medianoche UTC; las respuestas continúan sin ellas.",
+        "jobFailed": "La tarea en segundo plano {job} falló en su última ejecución ({error}). Los detalles están en los registros.",
+        "jobStuck": "La tarea en segundo plano {job} empezó hace más de 15 minutos y no terminó.",
+        "jobOverdue": "La tarea en segundo plano {job} no se ejecuta correctamente desde hace {hours} horas: revisa el programador (el flujo de trabajo cron) y CRON_SECRET.",
+        "billingDrift": "Comprobación de facturación: {count, plural, one {# suscripción difiere} other {# suscripciones difieren}} del proveedor de pagos. Los ids de suscripción están en los registros (reconcile-billing)."
       }
     }
   },
@@ -1706,7 +1710,7 @@
     }
   },
   "Legal": {
-    "updatedAt": "2026-11-23",
+    "updatedAt": "2026-11-24",
     "lastUpdated": "Última actualización: {date}",
     "contents": "Contenido",
     "languageClause": "Este documento está disponible en varios idiomas por comodidad. Si hay alguna contradicción entre las versiones, prevalece la versión en inglés.",
@@ -1950,7 +1954,7 @@
           "heading": "7. Cuánto tiempo los conservamos",
           "bullets": [
             "Datos de la cuenta y tu contenido: mientras exista tu cuenta. Cuando eliminas tu cuenta, ya no puedes iniciar sesión; durante 30 días el enlace que te enviamos por correo la restaura y, después, tus espacios de trabajo, archivos, notas y ajustes se borran y el registro de tu cuenta se anonimiza. Los comentarios y respuestas que añadiste en espacios de trabajo de otras personas se quedan allí, como \"Usuario eliminado\".",
-            "Espacios de trabajo eliminados: se ocultan al instante y se eliminan definitivamente en una limpieza programada.",
+            "Espacios de trabajo y proyectos eliminados: se ocultan al instante y nuestra limpieza diaria los elimina definitivamente, con sus archivos, 30 días después.",
             "Sesiones: hasta que cierres la sesión, la revoques o pasen 30 días desde su último uso.",
             "Capturas de pantalla de soporte: se eliminan 90 días después de la solicitud.",
             "Solicitudes de soporte: el tiempo necesario para ayudarte y conservar un registro de la solicitud.",
@@ -2790,6 +2794,7 @@
       "OWNERSHIP_TRANSFER_REQUESTED": "Solicitud de transferencia de propiedad",
       "OWNERSHIP_TRANSFER_ACCEPTED": "Transferencia de propiedad aceptada",
       "OWNERSHIP_TRANSFER_DECLINED": "Transferencia de propiedad rechazada",
+      "OWNERSHIP_TRANSFER_EXPIRED": "Transferencia de propiedad caducada",
       "MEMBER_LIMIT_EXCEEDED": "Límite de colaboradores superado",
       "MEMBER_SUSPENDED": "Acceso cambiado a solo lectura",
       "MEMBER_RESTORED": "Acceso restaurado",
@@ -2810,6 +2815,7 @@
       "OWNERSHIP_TRANSFER_REQUESTED": "Cuando alguien te pide que te hagas cargo de un espacio de trabajo o proyecto.",
       "OWNERSHIP_TRANSFER_ACCEPTED": "Cuando la persona que elegiste acepta la propiedad.",
       "OWNERSHIP_TRANSFER_DECLINED": "Cuando la persona que elegiste rechaza la propiedad.",
+      "OWNERSHIP_TRANSFER_EXPIRED": "Cuando una transferencia que pediste caduca sin respuesta.",
       "MEMBER_LIMIT_EXCEEDED": "Cuando el plan de un propietario ya no cubre a todos los colaboradores.",
       "MEMBER_SUSPENDED": "Cuando tu acceso pasa a solo lectura por un límite del plan.",
       "MEMBER_RESTORED": "Cuando recuperas tu acceso completo.",
@@ -2913,6 +2919,10 @@
       "OWNERSHIP_TRANSFER_DECLINED": {
         "title": "Transferencia de propiedad rechazada",
         "description": "{name} rechazó hacerse cargo de {resourceName}."
+      },
+      "OWNERSHIP_TRANSFER_EXPIRED": {
+        "title": "Transferencia de propiedad caducada",
+        "description": "{name} no respondió a tiempo, así que {resourceName} sigue siendo tuyo. Puedes volver a pedirlo."
       },
       "MEMBER_LIMIT_EXCEEDED": {
         "title": "Límite de colaboradores superado",
