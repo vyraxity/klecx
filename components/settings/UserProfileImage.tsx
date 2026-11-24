@@ -120,6 +120,7 @@ export function UserProfileImage({
         formData.append("public_id", uploadPayload.publicId);
         formData.append("type", uploadPayload.type);
         if (uploadPayload.folder) formData.append("folder", uploadPayload.folder);
+        if (uploadPayload.assetFolder) formData.append("asset_folder", uploadPayload.assetFolder);
 
         const uploadRes = await fetch(uploadPayload.uploadUrl, {
           method: "POST",
