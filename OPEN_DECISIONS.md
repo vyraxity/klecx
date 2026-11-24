@@ -327,11 +327,24 @@ Known gap: the credit hold before an answer covers the base cost only (decided 2
 
 ## 17. The web-search surcharge is below the provider's search price
 
-- **Found:** 2026-11-24, Step 10.2 (cost metrics).
-- **Where:** `GROUNDING_SURCHARGE_CREDITS` (3 credits = $0.006, `lib/ai/model-catalog.ts`) vs `PROVIDER_SEARCH_USD` ($0.014 per executed search, `server/monitoring/costs.ts`; check the provider's current pricing page — some search usage may be free up to a monthly allowance).
+- **Found:** 2026-11-24, Step 10.2 (cost metrics). **Prices confirmed by the owner the same day** (Gemini API pricing page, Standard tab, for `gemini-3.1-flash-lite` and `gemini-3.8-flash`).
+- **Where:** `GROUNDING_SURCHARGE_CREDITS` (3 credits = $0.006, `lib/ai/model-catalog.ts`) vs `PROVIDER_SEARCH_USD` ($0.014, `server/monitoring/costs.ts`).
 
-**Today.** Each executed web search costs Klecx about $0.014 at the provider and earns $0.006 in credits, so searches lose about $0.008 each (on top of the tokens, which are charged normally). The daily search caps (10 / 50 / 100 / 200 by plan) bound the loss per person; the metrics show the totals (`searches.surchargeUsd` vs `searches.providerUsd`).
+**Today.** Grounding with Google Search: 5,000 search requests a month free (shared by all Gemini 3+ models on the account), then $14 per 1,000, **billed per search query** (one Klecx search can run several). So searches cost nothing until ~5,000 a month; after that each costs at least $0.014 and earns $0.006. The daily search caps per plan (10 / 50 / 100 / 200) bound the loss per person.
 
-**Options.** (a) Raise the surcharge to 7–8 credits (covers the price; the pricing page, FAQ and help mention "+3 credits" and must change). (b) Keep 3 credits as a deliberate subsidy and watch the metrics. (c) Lower the daily caps.
+**Options.** (a) Raise the surcharge to 7–8 credits (covers one query; the pricing page, FAQ and help say "+3 credits" and must change in en/es/fr). (b) Keep 3 credits as a deliberate subsidy while under the free 5,000 a month, and watch the metrics. (c) Lower the daily caps.
 
-**If nothing is decided:** (b).
+**If nothing is decided:** (b). Asked again at the start of the "search date and AI prices" fix PR (CLAUDE.md).
+
+---
+
+## 18. The provider's daily cap on searches (1,500 a day for all of Klecx)
+
+- **Found:** 2026-11-24 (owner, from the pricing page).
+- **Where:** every Klecx web search is one grounded request to the economy model (`runWebSearch()` in `server/ai/tools/web-search.ts`, called by `server/services/web-search.ts`).
+
+**Today.** The provider allows 1,500 grounded requests a day for the whole account. Past that, searches fail until the next day; Klecx then answers without searching and doesn't charge (the search "didn't run"), but everyone loses search for the rest of the day. With the plan caps (10 / 50 / 100 / 200 a day per person), ~8 Pro users at their cap, or ~150 Free users, could use it all.
+
+**Options (can be combined).** (a) **Protect it:** count Klecx's grounded requests per UTC day; near the cap, stop searches for Free first and keep the rest for paid plans; reuse a recent result for the same query for a short time (e.g. 15 minutes) so repeated questions don't spend new requests; alert at 80 % (in the fix PR). (b) **A second search source** behind one interface (`runWebSearch` → a `SearchProvider`): a web-search API (e.g. Brave Search, Tavily, Exa or similar — compare price per 1,000, limits, terms for AI use and data retention) whose results Klecx passes to the model itself; the fallback when Google's cap is reached, or the main source if cheaper. Adds a processor to the Privacy Policy. (c) **Ask Google** whether the grounding cap rises with the paid usage tier or on request (or what Vertex AI's grounding quota is). Never split traffic across several projects or keys to get around a limit.
+
+**If nothing is decided:** (a) in the fix PR; (b) before searches regularly pass ~1,000 a day.
