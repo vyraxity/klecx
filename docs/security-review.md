@@ -12,7 +12,7 @@ Status: **Pass** (control in place and tested), **N/A** (doesn't apply to Klecx)
 | G2 | **External review**: someone other than the author tries to break sharing, invitations and the billing webhook (guide "Done when"). Suggested scope and rules: the "Reporting security issues" section of the Acceptable Use Policy; test on `dev.klecx.com` with test accounts only. | Owner, before launch |
 | G3 | **Key rotation and separation**: new Gemini, Creem, Cloudinary, Resend, Upstash and `BETTER_AUTH_SECRET` values for production, different from preview and local; Gemini key restricted to the Generative Language API with quota alerts on. | Owner, Step 10.6 |
 | G4 | **Old secrets in git history** (CLAUDE.md, from Step 8.3): rotate/confirm unused, then add the fingerprints to `.gitleaksignore`. | Owner, before applying to Creem |
-| G5 | **Structured logging and alerts** (`console.error` → pino, error rates, cost alerts). | Step 10.2 |
+| ~~G5~~ | ~~Structured logging and alerts~~ — **closed in Step 10.2**: JSON logs with redaction, Sentry (once configured), business metrics and alerts (`docs/observability.md`). The hourly alert run comes with Step 10.3. | Done |
 | G6 | **Antivirus scanning of uploads** isn't done. Risk is low today: files are only parsed as text (10 s timeout, page and size caps), never executed or served inline from our origin, and downloads are `attachment` with a sandbox CSP. Revisit if Klecx ever serves uploaded files to other people inline. Recorded in `OPEN_DECISIONS.md` §15. | Owner decides |
 
 ## OWASP API Security Top 10 (2023)
@@ -40,7 +40,7 @@ Status: **Pass** (control in place and tested), **N/A** (doesn't apply to Klecx)
 | V4 Access control | Pass | Deny by default (`requireWorkspace` / `requireProject`, 404 for strangers); top-down inheritance (`fix-F1-1`); suspended members read-only (suite); CSRF: SameSite cookies + origin check in `route()`; Better Auth checks `trustedOrigins` for its own routes. |
 | V5 Validation, sanitization, encoding | Pass | zod on every body and query; **new:** control characters stripped from all JSON strings and queries; Markdown rendered without raw HTML except sanitized document HTML; emails HTML-escape every value (`__tests__/email/step-10-1-email-escaping.test.ts`); filenames sanitized, storage paths never built from user input (random ids under `CLOUDINARY_UPLOAD_FOLDER`). |
 | V6 Stored cryptography | Pass | Passwords hashed by Better Auth; share/invitation tokens stored as hashes; no custom crypto. |
-| V7 Errors and logging | Pass, G5 | No stack traces to users; request ids; no prompts, responses, file contents or secrets in logs (rule 11); CSP reports keep only directive, origin and path. |
+| V7 Errors and logging | Pass | No stack traces to users; request ids; no prompts, responses, file contents or secrets in logs (rule 11); CSP reports keep only directive, origin and path. |
 | V8 Data protection | Pass | `Cache-Control: private, no-store` on share pages and downloads; exports private with 5-minute signed links; account erasure after 30 days (Step 9.5). |
 | V9 Communications | Pass | HTTPS only (HSTS preload); outbound calls https. |
 | V10 Malicious code | Pass | `npm audit` (`check:audit`) and Gitleaks in CI, Dependabot for npm, Actions and the pinned Docker images. |

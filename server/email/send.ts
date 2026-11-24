@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import { Resend } from "resend";
 // next-intl re-exports this from use-intl/core; imported directly so it works
 // outside React and is unaffected by tests that mock "next-intl".
@@ -18,6 +19,7 @@ import { renderInvitation } from "./templates/invitation";
 import { renderNewSignIn } from "./templates/new-sign-in";
 import { renderPasswordChanged } from "./templates/password-changed";
 import { renderTwoFactorChanged } from "./templates/two-factor-changed";
+import { renderMonitoringAlert } from "./templates/monitoring-alert";
 import { renderChangeEmailConfirm, renderChangeEmailVerify } from "./templates/change-email";
 import { renderShareCreated } from "./templates/share-created";
 import { renderCreditsLow } from "./templates/credits-low";
@@ -119,6 +121,8 @@ export async function renderEmail<T extends EmailTemplateName>(
       return renderInvitation(data as EmailTemplateMap["invitation"], t, to);
     case "new-sign-in":
       return renderNewSignIn(data as EmailTemplateMap["new-sign-in"], t, to, locale);
+    case "monitoring-alert":
+      return renderMonitoringAlert(data as EmailTemplateMap["monitoring-alert"], t, to);
     case "two-factor-changed":
       return renderTwoFactorChanged(data as EmailTemplateMap["two-factor-changed"], t, to);
     case "password-changed":
@@ -290,9 +294,7 @@ export async function sendEmail<T extends EmailTemplateName>(
     });
 
     if (error) {
-      console.error(
-        `[Email] Delivery failure template=${template} to=${maskEmail(to)} error=${error.message}`
-      );
+      log.error({ template, to: maskEmail(to), err: error.message.slice(0, 300) }, "[Email] delivery failure");
 
       if (env.NODE_ENV === "development") {
         const rawData = data as unknown as Record<string, unknown>;
@@ -310,9 +312,7 @@ export async function sendEmail<T extends EmailTemplateName>(
     }
 
     if (env.NODE_ENV === "production") {
-      console.info(
-        `[Email] Sent template=${template} to=${maskEmail(to)} id=${resData?.id}`
-      );
+      log.info({ template, to: maskEmail(to), id: resData?.id }, "[Email] sent");
     } else {
       console.info(
         `[Email] Sent template=${template} to=${to} id=${resData?.id}`
@@ -323,9 +323,7 @@ export async function sendEmail<T extends EmailTemplateName>(
   } catch (err) {
     const errorMessage =
       err instanceof Error ? err.message : "Unexpected email error";
-    console.error(
-      `[Email] Unexpected error template=${template} to=${maskEmail(to)} error=${errorMessage}`
-    );
+    log.error({ template, to: maskEmail(to), err: errInfo(err) }, "[Email] unexpected error");
 
     if (env.NODE_ENV === "development") {
       // In dev fallback, write the clickable link

@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import { db } from "@/server/db/client";
 import { Errors } from "@/server/http/errors";
 import type { Prisma } from "../db/generated/client";
@@ -74,7 +75,7 @@ export async function reserve(
     const { ensureCurrentGrant } = await import("@/server/billing/grants");
     await ensureCurrentGrant(accountId);
   } catch (e) {
-    console.error({ credits: "ensure_current_grant", accountId, err: e instanceof Error ? e.message : "unknown" });
+    log.error({ credits: "ensure_current_grant", accountId, err: errInfo(e) });
   }
 
   // Step 8.1: a disputed subscription (chargeback) freezes the account's credits.

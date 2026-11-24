@@ -1,4 +1,5 @@
 import "server-only";
+import { recordLimitHit } from "@/server/monitoring/limit-hits";
 import { createHash, randomUUID } from "node:crypto";
 import type { Prisma } from "@/server/db/generated/client";
 import { db } from "@/server/db/client";
@@ -281,7 +282,11 @@ export async function synthesizeReadAloudSegment(
   // Not cached: check the day's seconds, reserve on the listener's own account.
   const limitSeconds = entitlements.limits.readAloudSecondsPerDay;
   const estimate = estimateAudioSeconds(text.length);
-  if ((await countReadAloudSecondsToday(actor.userId)) + estimate > limitSeconds) throw dailyLimitError();
+  if ((await countReadAloudSecondsToday(actor.userId)) + estimate > limitSeconds) {
+    // A plan without natural voices has limit 0: that's not a limit "hit".
+    if (limitSeconds > 0) void recordLimitHit(actor.userId, "READ_ALOUD_CAP");
+    throw dailyLimitError();
+  }
 
   let account = await getAccountByUserId(actor.userId);
   if (!account) account = await createAccountWithFreeGrant(actor.userId);

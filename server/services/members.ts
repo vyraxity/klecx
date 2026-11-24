@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import { db } from "@/server/db/client";
 import type { Actor } from "@/server/auth/session";
 import { Errors } from "@/server/http/errors";
@@ -65,7 +66,7 @@ async function notifyMemberChange(
       ...extra,
     });
   } catch (err) {
-    console.error(`[Members] Failed to send ${type} notification:`, err);
+    log.error({ err: errInfo(err) }, `[Members] Failed to send ${type} notification`);
   }
 }
 
@@ -458,11 +459,11 @@ async function ownerOnlyExtras(
   // an empty, read-only dialog with no way to invite anyone.
   const [grace, outgoingTransfer] = await Promise.all([
     getOwnerGraceInfo(ownerId).catch((err: unknown) => {
-      console.error("[Members] grace lookup failed:", (err as Error)?.name);
+      log.error({ err: errInfo(err) }, "[Members] grace lookup failed");
       return null;
     }),
     getPendingOutgoingTransfer(actor.userId, scope).catch((err: unknown) => {
-      console.error("[Members] transfer lookup failed:", (err as Error)?.name);
+      log.error({ err: errInfo(err) }, "[Members] transfer lookup failed");
       return null;
     }),
   ]);

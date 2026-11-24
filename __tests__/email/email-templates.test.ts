@@ -44,6 +44,7 @@ describe("Step 1.7 & F0.2 — Transactional Email Module", () => {
       time: "2026-10-28 09:45 UTC",
     },
     "two-factor-changed": { kind: "enabled", time: "2026-11-23 10:00 UTC" },
+    "monitoring-alert": { alerts: [{ kind: "providerErrors", severity: "critical", values: { failed: 4, total: 12, rate: 33 } }], time: "Tue, 24 Nov 2026 09:00:00 GMT" },
     "change-email-confirm": {
       url: "https://klecx.vyraxity.com/api/auth/verify-email?token=change-1",
       newEmail: "new@example.com",

@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import { db } from "@/server/db/client";
 import { Errors } from "@/server/http/errors";
 import { getSiteConfig } from "@/server/config/site";
@@ -35,7 +36,7 @@ async function billingRefundCheck(actor: Actor | null, topic: string) {
       previousRefunds: result.previousRefunds,
     };
   } catch (err) {
-    console.error("[SupportService] Refund eligibility failed:", err instanceof Error ? err.message : "unknown");
+    log.error({ err: errInfo(err) }, "[SupportService] Refund eligibility failed");
     return undefined;
   }
 }
@@ -79,7 +80,7 @@ export async function createSupportTicket(
   } catch (err) {
     // Don't keep a ticket whose screenshots are missing: the person can retry.
     await db.supportTicket.delete({ where: { id: ticket.id } }).catch(() => {});
-    console.error("[SupportService] Failed to store support screenshots:", err instanceof Error ? err.message : "unknown");
+    log.error({ err: errInfo(err) }, "[SupportService] Failed to store support screenshots");
     throw Errors.unprocessable("Screenshots could not be stored", "upload_failed");
   }
 
@@ -94,7 +95,7 @@ export async function createSupportTicket(
       screenshotCount: attachments.length,
     }, { locale: options.locale });
   } catch (err) {
-    console.error("[SupportService] Failed to send user acknowledgement email:", err);
+    log.error({ err: errInfo(err) }, "[SupportService] Failed to send user acknowledgement email");
   }
 
   try {
@@ -114,7 +115,7 @@ export async function createSupportTicket(
       refundEligibility: await billingRefundCheck(actor, cleanTopic),
     });
   } catch (err) {
-    console.error("[SupportService] Failed to send support team notification email:", err);
+    log.error({ err: errInfo(err) }, "[SupportService] Failed to send support team notification email");
   }
 
   return {

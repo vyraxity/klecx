@@ -1,4 +1,6 @@
 import "server-only";
+import { firstTokenMarker } from "@/server/services/generation-timing";
+import { log, errInfo } from "@/server/log";
 import crypto from "node:crypto";
 import { db } from "@/server/db/client";
 import { Errors } from "@/server/http/errors";
@@ -321,8 +323,10 @@ export async function runQuestionBatch(
           }
         );
 
+        const markFirstToken = firstTokenMarker(generationId);
         for await (const chunk of aiStream) {
           if (chunk.type === "text_delta" && chunk.text) {
+            markFirstToken();
             accumulatedText += chunk.text;
           } else if (chunk.type === "usage") {
             reportedInputTokens = chunk.inputTokens;
@@ -352,7 +356,7 @@ export async function runQuestionBatch(
             );
           }
         } catch (parseErr) {
-          console.warn("[QuestionBatch] JSON parse warning:", parseErr);
+          log.warn({ err: errInfo(parseErr) }, "[QuestionBatch] JSON parse warning");
         }
 
         const answersMap = new Map<string, string>();
@@ -460,7 +464,7 @@ export async function runQuestionBatch(
             },
             { dedupeKey: `questions_answered:${generationId}` }
           ).catch((notifyErr) => {
-            console.error("[QuestionBatch] Failed to notify:", notifyErr);
+            log.error({ err: errInfo(notifyErr) }, "[QuestionBatch] Failed to notify");
           });
         }
 
@@ -478,7 +482,7 @@ export async function runQuestionBatch(
         );
         controller.close();
       } catch (err: unknown) {
-        console.error("[QuestionBatch Stream Error]:", err);
+        log.error({ err: errInfo(err) }, "[QuestionBatch Stream Error]");
         try {
           await release(billedAccountId, generationId, releaseKey);
           await db.generation.update({
@@ -501,7 +505,7 @@ export async function runQuestionBatch(
             },
           });
         } catch (cleanupErr) {
-          console.error("[QuestionBatch Cleanup Error]:", cleanupErr);
+          log.error({ err: errInfo(cleanupErr) }, "[QuestionBatch Cleanup Error]");
         }
 
         controller.enqueue(

@@ -986,6 +986,28 @@
         "heading": "Two-factor sign-in removed",
         "body": "At your request, Klecx support removed two-factor sign-in from your account on {time}. You can turn it back on in your security settings."
       }
+    },
+    "monitoringAlert": {
+      "subject": "{critical, plural, =0 {Klecx: {count, plural, one {# alert} other {# alerts}}} other {Klecx: {count, plural, one {# alert} other {# alerts}} ({critical} critical)}}",
+      "heading": "Monitoring alert",
+      "greeting": "Hi,",
+      "body": "These checks fired at {time}. Details are in the admin console (alerts and metrics).",
+      "disclaimer": "Internal alert sent to the alerts inbox. The same alert isn't sent again for 1 hour (critical) or 6 hours (warning).",
+      "severity": {
+        "critical": "Critical",
+        "warning": "Warning"
+      },
+      "kinds": {
+        "providerErrors": "AI provider errors: {failed} of {total} AI requests failed in the last hour ({rate} %).",
+        "providerAuth": "The AI provider refused our API key {count, plural, one {# time} other {# times}} in the last hour: check the key and the provider account.",
+        "providerQuota": "The AI provider's quota or rate limit stopped {count, plural, one {# request} other {# requests}} in the last hour.",
+        "webhookFailures": "Billing webhooks: {failed} failed in the last 24 hours, {stuck} received but not processed.",
+        "accountCost": "Account {userId} ({plan}) cost {usd} USD at the AI provider in the last 24 hours (threshold {limit} USD).",
+        "costVsRevenue": "AI cost in the last 24 hours was {costUsd} USD, {pct} % of the average daily revenue ({revenueUsd} USD).",
+        "limitAbuse": "User {userId} reached the {limit} limit on {days} different days this week.",
+        "stuckGenerations": "{count, plural, one {# AI request has} other {# AI requests have}} been running for more than 15 minutes.",
+        "dbConnections": "Database connections: {used} of {max} in use."
+      }
     }
   },
   "AppShell": {
@@ -1999,6 +2021,10 @@
         {
           "name": "Resend",
           "purpose": "Delivery of emails."
+        },
+        {
+          "name": "Sentry",
+          "purpose": "Error monitoring: technical reports when something breaks (the page or request that failed, browser type and your account id; no names, email addresses or content)."
         },
         {
           "name": "Creem",

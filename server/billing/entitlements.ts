@@ -1,4 +1,5 @@
 import "server-only";
+import { log } from "@/server/log";
 import * as React from "react";
 import { env } from "@/server/env";
 import { db } from "@/server/db/client";
@@ -110,9 +111,7 @@ function fallbackPlan(nodeEnv: string, rawDevDefaultPlan: string | undefined): P
     if (nodeEnv === "production") {
       if (!warnedDevDefaultPlanInProduction) {
         warnedDevDefaultPlanInProduction = true;
-        console.warn(
-          `[Entitlements] DEV_DEFAULT_PLAN="${rawDevDefaultPlan}" is set in production and will be ignored. Defaulting to FREE.`
-        );
+        log.warn({ devDefaultPlan: rawDevDefaultPlan }, "[Entitlements] DEV_DEFAULT_PLAN is set in production and ignored; using FREE");
       }
       return "FREE";
     }

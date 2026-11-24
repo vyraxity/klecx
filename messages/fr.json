@@ -986,6 +986,28 @@
         "heading": "Connexion en deux étapes retirée",
         "body": "À votre demande, le support Klecx a retiré la connexion en deux étapes de votre compte le {time}. Vous pouvez la réactiver dans vos paramètres de sécurité."
       }
+    },
+    "monitoringAlert": {
+      "subject": "{critical, plural, =0 {Klecx : {count, plural, one {# alerte} other {# alertes}}} other {Klecx : {count, plural, one {# alerte} other {# alertes}} ({critical} critiques)}}",
+      "heading": "Alerte de surveillance",
+      "greeting": "Bonjour,",
+      "body": "Ces vérifications se sont déclenchées le {time}. Les détails se trouvent dans la console d'administration (alertes et métriques).",
+      "disclaimer": "Alerte interne envoyée à la boîte des alertes. La même alerte n'est pas renvoyée pendant 1 heure (critique) ou 6 heures (avertissement).",
+      "severity": {
+        "critical": "Critique",
+        "warning": "Avertissement"
+      },
+      "kinds": {
+        "providerErrors": "Erreurs du fournisseur d'IA : {failed} requêtes d'IA sur {total} ont échoué au cours de la dernière heure ({rate} %).",
+        "providerAuth": "Le fournisseur d'IA a refusé notre clé d'API {count, plural, one {# fois} other {# fois}} au cours de la dernière heure : vérifiez la clé et le compte du fournisseur.",
+        "providerQuota": "Le quota ou la limite de débit du fournisseur d'IA a bloqué {count, plural, one {# requête} other {# requêtes}} au cours de la dernière heure.",
+        "webhookFailures": "Webhooks de facturation : {failed} en échec au cours des dernières 24 heures, {stuck} reçus mais non traités.",
+        "accountCost": "Le compte {userId} ({plan}) a coûté {usd} USD chez le fournisseur d'IA au cours des dernières 24 heures (seuil {limit} USD).",
+        "costVsRevenue": "Le coût d'IA des dernières 24 heures était de {costUsd} USD, soit {pct} % du revenu quotidien moyen ({revenueUsd} USD).",
+        "limitAbuse": "L'utilisateur {userId} a atteint la limite {limit} sur {days} jours différents cette semaine.",
+        "stuckGenerations": "{count, plural, one {# requête d'IA est} other {# requêtes d'IA sont}} en cours depuis plus de 15 minutes.",
+        "dbConnections": "Connexions à la base de données : {used} sur {max} utilisées."
+      }
     }
   },
   "AppShell": {
@@ -1999,6 +2021,10 @@
         {
           "name": "Resend",
           "purpose": "Envoi des e-mails."
+        },
+        {
+          "name": "Sentry",
+          "purpose": "Surveillance des erreurs : rapports techniques lorsqu'un problème survient (la page ou la requête en échec, le type de navigateur et l'identifiant de votre compte ; ni nom, ni adresse e-mail, ni contenu)."
         },
         {
           "name": "Creem",

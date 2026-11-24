@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import { UAParser } from "ua-parser-js";
 import { db } from "@/server/db/client";
 import { notify } from "@/server/services/notify";
@@ -149,6 +150,6 @@ export async function checkAndAlertNewSignIn(newSession: {
     }
   } catch (err) {
     // Non-blocking: log but don't fail session creation
-    console.error("[Session] Error checking new sign-in alert:", err);
+    log.error({ err: errInfo(err) }, "[Session] Error checking new sign-in alert");
   }
 }

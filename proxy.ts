@@ -115,6 +115,8 @@ async function handle(req: NextRequest, csp: Csp | null): Promise<NextResponse> 
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/webhooks") ||
     pathname.startsWith("/api/cron") ||
+    // Step 10.2: browser error reports relayed to Sentry (no session needed).
+    pathname === "/sentry-tunnel" ||
     pathname.startsWith("/s/")
   ) {
     return attachSecurityHeaders(nextWith(csp), pathname);

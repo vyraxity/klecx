@@ -1,4 +1,6 @@
 import "server-only";
+import { firstTokenMarker } from "@/server/services/generation-timing";
+import { log, errInfo } from "@/server/log";
 import crypto from "node:crypto";
 import { db } from "@/server/db/client";
 import { Errors } from "@/server/http/errors";
@@ -605,8 +607,12 @@ export async function startDocumentReview(
               },
               { userPlan: ownerEntitlements.plan, providerInstance }
             );
+            const markFirstToken = firstTokenMarker(generationId);
             for await (const event of aiStream) {
-              if (event.type === "text_delta") raw += event.text;
+              if (event.type === "text_delta") {
+                markFirstToken();
+                raw += event.text;
+              }
               else if (event.type === "usage") {
                 usedInput = event.inputTokens;
                 usedOutput = event.outputTokens;
@@ -771,10 +777,7 @@ export async function startDocumentReview(
         send("done", { generationId, total: created });
       } catch (err: unknown) {
         // No document text or model output here: only what went wrong.
-        console.error("[DocumentReview] failed", {
-          generationId,
-          error: err instanceof Error ? err.name : "unknown",
-        });
+        log.error({ generationId, err: errInfo(err) }, "[DocumentReview] failed");
         try {
           await release(billedAccountId, generationId, releaseKey);
           await db.generation.update({

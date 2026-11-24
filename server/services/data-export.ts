@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 
 import { strToU8, zipSync, type Zippable } from "fflate";
 import { createTranslator } from "use-intl/core";
@@ -591,7 +592,7 @@ export async function buildDataExport(exportId: string, opts: { locale?: string 
     });
     await sendEmail("data-export-ready", row.user.email, { hours: EXPORT_DOWNLOAD_HOURS }, { locale }).catch(() => undefined);
   } catch (err) {
-    console.error("[data-export] build failed", { exportId, error: err instanceof Error ? err.name : "unknown" });
+    log.error({ err: errInfo(err), exportId }, "[data-export] build failed");
     await db.dataExport.update({
       where: { id: exportId },
       data: { status: "FAILED", errorCode: "build_failed", finishedAt: new Date() },

@@ -1,4 +1,6 @@
 import "server-only";
+import { firstTokenMarker } from "@/server/services/generation-timing";
+import { log, errInfo } from "@/server/log";
 import crypto from "node:crypto";
 import { db } from "@/server/db/client";
 import { Errors } from "@/server/http/errors";
@@ -1365,8 +1367,10 @@ export async function streamAnnotationAnswer(
             thoughtTokens: number;
           } | null = null;
 
+          const markFirstToken = firstTokenMarker(generationId);
           for await (const chunk of aiStream) {
             if (chunk.type === "text_delta" && chunk.text) {
+              markFirstToken();
               fullAssistantText += chunk.text;
               turnText += chunk.text;
               send("delta", { text: chunk.text });
@@ -1522,10 +1526,7 @@ export async function streamAnnotationAnswer(
         close();
       } catch (err: unknown) {
         if (process.env.NODE_ENV !== "test") {
-          console.error(
-            "[Annotation Answer Stream Error]:",
-            err instanceof Error ? err.name : "unknown"
-          );
+          log.error({ err: errInfo(err) }, "[Annotation Answer Stream Error]");
         }
         const errorCode =
           err instanceof AiError ? err.category : "reply_stream_failed";

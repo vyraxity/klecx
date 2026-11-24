@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import * as Sentry from "@sentry/nextjs";
 import { useTranslations } from "next-intl";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ export default function SettingsError({
   const t = useTranslations("Settings.errors");
 
   React.useEffect(() => {
-    console.error("[Settings Error]", { digest: error.digest });
+    Sentry.captureException(error, { tags: { digest: error.digest ?? "none", boundary: "Settings Error" } });
   }, [error]);
 
   return (

@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import { db } from "@/server/db/client";
 import { PLANS, type PlanKey } from "@/server/billing/plans";
 import { resolveSubscriptionPlan, type SubscriptionPlanState } from "@/server/billing/entitlements";
@@ -263,14 +264,14 @@ export async function ensureCurrentGrant(accountId: string, now: Date = new Date
     try {
       await applyMemberLimitForPlanChange(state.userId, applied.previousPlan, "FREE");
     } catch (e) {
-      console.error({ grants: "member_limit", err: e instanceof Error ? e.message : "unknown" });
+      log.error({ grants: "member_limit", err: errInfo(e) });
     }
   }
   if (grace && !grace.enforcedAt && grace.graceEndsAt <= now) {
     try {
       await enforceEndedGrace(state.userId, now);
     } catch (e) {
-      console.error({ grants: "enforce_member_limit", err: e instanceof Error ? e.message : "unknown" });
+      log.error({ grants: "enforce_member_limit", err: errInfo(e) });
     }
   }
 

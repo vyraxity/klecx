@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import * as Sentry from "@sentry/nextjs";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { AlertCircle, RefreshCw, Layers, LifeBuoy } from "lucide-react";
@@ -17,10 +18,8 @@ export default function AppErrorPage({
   const t = useTranslations("Errors");
 
   React.useEffect(() => {
-    console.error("[Workspace Error]", {
-      digest: error.digest,
-      message: error.message,
-    });
+    // Step 10.2: to Sentry (when configured) with the digest that links it to server logs.
+    Sentry.captureException(error, { tags: { digest: error.digest ?? "none", boundary: "Workspace Error" } });
   }, [error]);
 
   const reportUrl = error.digest

@@ -148,7 +148,8 @@ describe("Step 10.1 — CSP reports", () => {
   });
 
   test("the endpoint answers 204, logs no body and ignores oversized reports", async () => {
-    const warn = jest.spyOn(console, "warn").mockImplementation(() => undefined);
+    const { log } = await import("@/server/log");
+    const warn = jest.spyOn(log, "warn").mockImplementation(() => undefined);
     try {
       const body = JSON.stringify({ "csp-report": { "document-uri": "https://klecx.com/a?x=1", "effective-directive": "img-src", "blocked-uri": "https://x.example/p.png?q=secret" } });
       const res = await cspReportPOST(new NextRequest(`${APP}/api/csp-report`, { method: "POST", body, headers: { "content-type": "application/csp-report" } }));
@@ -391,6 +392,7 @@ describe("Step 10.1 — static rules", () => {
       "app/api/v1/favicon/route.ts", // public images, rate-limited per IP
       "app/api/v1/s/[token]/route.ts", // public share links, own rate limit
       "app/.well-known/security.txt/route.ts",
+      "app/sentry-tunnel/route.ts", // Step 10.2: Sentry's relay (accepts only our DSN, forwards no cookies)
     ]);
     const handlers = [...walk("app")].filter((f) => f.endsWith("route.ts"));
     for (const f of handlers) {

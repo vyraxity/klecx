@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import { db } from "@/server/db/client";
 import { getSiteConfig } from "@/server/config/site";
 import { sendEmail } from "@/server/email/send";
@@ -40,7 +41,7 @@ export async function handleBillingWebhook(
 ): Promise<WebhookResult> {
   const provider = getBillingProvider();
   if (!provider) {
-    console.error({ requestId, billing: "webhook", err: "billing provider not configured" });
+    log.error({ requestId, billing: "webhook", err: "billing provider not configured" });
     return { status: 503, body: "billing unavailable" };
   }
 
@@ -49,17 +50,17 @@ export async function handleBillingWebhook(
     event = provider.verifyWebhook(rawBody, signature);
   } catch (e) {
     if (e instanceof WebhookSignatureError) {
-      console.warn({ requestId, billing: "webhook", err: "invalid signature" });
+      log.warn({ requestId, billing: "webhook", err: "invalid signature" });
       return { status: 401, body: "invalid signature" };
     }
     if (e instanceof BillingProviderError) {
-      console.error({ requestId, billing: "webhook", err: e.message });
+      log.error({ requestId, billing: "webhook", err: errInfo(e) });
       return { status: 503, body: "billing unavailable" };
     }
     throw e;
   }
 
-  const log = { requestId, billing: "webhook", provider: event.provider, eventId: event.id, type: event.type };
+  const fields = { requestId, billing: "webhook", provider: event.provider, eventId: event.id, type: event.type };
 
   try {
     await db.billingEvent.createMany({
@@ -101,15 +102,15 @@ export async function handleBillingWebhook(
     );
 
     if (!outcome) {
-      console.info({ ...log, outcome: "duplicate" });
+      log.info({ ...fields, outcome: "duplicate" });
       return { status: 200, body: "ok" };
     }
-    console.info({ ...log, outcome: outcome.status, note: outcome.note });
-    await runEffects(outcome, event, provider, log);
+    log.info({ ...fields, outcome: outcome.status, note: outcome.note });
+    await runEffects(outcome, event, provider, fields);
     return { status: 200, body: "ok" };
   } catch (e) {
     const message = e instanceof Error ? `${e.name}: ${e.message}` : "unknown error";
-    console.error({ ...log, err: message });
+    log.error({ ...fields, err: message });
     await db.billingEvent
       .updateMany({
         where: { provider: event.provider, providerEventId: event.id, status: { notIn: [...DONE] } },
@@ -125,13 +126,13 @@ async function runEffects(
   outcome: EventOutcome,
   event: NormalizedEvent,
   provider: BillingProvider,
-  log: Record<string, unknown>
+  fields: Record<string, unknown>
 ): Promise<void> {
   for (const effect of outcome.effects) {
     try {
       await runEffect(effect, event, provider);
     } catch (e) {
-      console.error({ ...log, effect: effect.kind, err: e instanceof Error ? e.message : "unknown error" });
+      log.error({ ...fields, effect: effect.kind, err: errInfo(e) });
     }
   }
 }

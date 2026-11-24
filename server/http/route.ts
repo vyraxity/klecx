@@ -5,6 +5,8 @@ import { ApiError, Errors } from "./errors";
 import { limit, type RateLimitPolicy } from "./rate-limit";
 import { getActor, type Actor } from "@/server/auth/session";
 import { env } from "@/server/env";
+import { log, errInfo } from "@/server/log";
+import { captureServerError } from "@/server/monitoring/sentry";
 import {
   MAX_JSON_BODY_BYTES,
   isAllowedRequestOrigin,
@@ -39,6 +41,23 @@ export function clearResponseAuthCookies(res: NextResponse) {
   }
 }
 
+/** Requests slower than this are logged as warnings (streams log when they start answering). */
+const SLOW_REQUEST_MS = 10_000;
+
+const UUIDISH = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** `/api/v1/workspaces/0196…/members/u_12` → `/api/v1/workspaces/:id/members/:id`. */
+export function routePattern(pathname: string): string {
+  return pathname
+    .split("/")
+    .map((seg, i, all) => {
+      if (!seg || i < 3) return seg;
+      if (UUIDISH.test(seg) || /\d/.test(seg) || (seg.length > 20 && /^[\w-]+$/.test(seg))) return ":id";
+      return all[i - 1] === "linked-accounts" || all[i - 1] === "s" ? ":id" : seg;
+    })
+    .join("/");
+}
+
 function payloadTooLarge() {
   return new ApiError(413, "payload_too_large", "Request body is too large", {
     maxBytes: MAX_JSON_BODY_BYTES,
@@ -65,6 +84,18 @@ export function route<
     context?: { params?: Promise<P> | P }
   ): Promise<Response> => {
     const requestId = req.headers.get("x-request-id") ?? crypto.randomUUID();
+    const started = Date.now();
+    // Step 10.2: the path pattern, not the URL (ids and query strings stay out of the logs).
+    const path = routePattern(req.nextUrl.pathname);
+    let userId: string | undefined;
+    const done = (res: Response) => {
+      const ms = Date.now() - started;
+      const line = { requestId, method: req.method, path, status: res.status, ms, ...(userId ? { userId } : {}) };
+      if (res.status >= 500) log.error(line, "request failed");
+      else if (ms > SLOW_REQUEST_MS) log.warn(line, "slow request");
+      else log.info(line, "request");
+      return res;
+    };
     try {
       // Step 10.1: a cookie-authenticated change must come from our own origin.
       if (!isAllowedRequestOrigin(req, env.APP_URL)) {
@@ -72,6 +103,7 @@ export function route<
       }
 
       const actor = await getActor(req, { disableCookieCache: opts.disableCookieCache }); // session cookie OR Bearer token
+      userId = actor?.userId;
       if ((opts.auth ?? "required") === "required" && !actor) {
         throw Errors.unauthorized();
       }
@@ -140,12 +172,11 @@ export function route<
 
       if (out instanceof Response) {
         out.headers.set("x-request-id", requestId);
-        return out;
+        return done(out);
       }
 
-      return NextResponse.json(
-        { data: out },
-        { headers: { "x-request-id": requestId } }
+      return done(
+        NextResponse.json({ data: out }, { headers: { "x-request-id": requestId } })
       );
     } catch (e) {
       const err =
@@ -154,7 +185,8 @@ export function route<
           : new ApiError(500, "internal_error", "Something went wrong");
 
       if (!(e instanceof ApiError)) {
-        console.error({ requestId, err: String(e) }); // replaced by pino in 10.2
+        log.error({ requestId, path, err: errInfo(e) }, "unhandled error");
+        captureServerError(e, { requestId, userId, route: path });
       }
 
       const headers: Record<string, string> = { "x-request-id": requestId };
@@ -186,7 +218,7 @@ export function route<
         clearResponseAuthCookies(res);
       }
 
-      return res;
+      return done(res);
     }
   };
 }

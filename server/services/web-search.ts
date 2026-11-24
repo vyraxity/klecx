@@ -1,4 +1,5 @@
 import "server-only";
+import { recordLimitHit } from "@/server/monitoring/limit-hits";
 import { db } from "@/server/db/client";
 import type { Entitlements } from "@/server/billing/entitlements";
 import type { AiProvider } from "@/server/ai/types";
@@ -77,6 +78,7 @@ export async function resolveWebSearchAccess(
 
   const usedToday = await countSearchesToday(actorId, billedAccountId);
   const reachedDailyCap = usedToday >= ownerEntitlements.limits.searchesPerDay;
+  if (reachedDailyCap) void recordLimitHit(actorId, "SEARCH_CAP");
   return { allowed: !reachedDailyCap, reachedDailyCap, locale };
 }
 

@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import { randomUUID } from "node:crypto";
 import { db } from "@/server/db/client";
 import { env } from "@/server/env";
@@ -33,7 +34,7 @@ const CANCELLABLE = new Set(["ACTIVE", "TRIALING", "PAST_DUE", "PAUSED"]);
 function requireProvider(requestId: string, operation: string): BillingProvider {
   const provider = getBillingProvider();
   if (!provider) {
-    console.error({ requestId, billing: operation, err: "billing provider not configured" });
+    log.error({ requestId, billing: operation, err: "billing provider not configured" });
     throw billingUnavailable();
   }
   return provider;
@@ -45,10 +46,10 @@ async function providerCall<T>(requestId: string, operation: string, fn: () => P
     return await fn();
   } catch (e) {
     if (e instanceof BillingProviderError) {
-      console.error({
+      log.error({
         requestId,
         billing: operation,
-        err: e.message,
+        err: errInfo(e),
         status: e.details.status,
         traceId: e.details.traceId,
         cause: e.details.cause,
@@ -263,7 +264,7 @@ export async function changePlan(
   try {
     await applyMemberLimitForPlanChange(userId, current.plan, input.plan);
   } catch (e) {
-    console.error({ requestId, billing: "change_plan_member_limit", err: e instanceof Error ? e.message : "unknown" });
+    log.error({ requestId, billing: "change_plan_member_limit", err: errInfo(e) });
   }
   await notifySafely(userId, { kind: "plan_changed", plan: input.plan }, `billing:plan_changed:${sub.providerSubscriptionId}:${input.plan}:${input.interval}`);
   return { ok: true };
@@ -273,7 +274,7 @@ async function notifySafely(userId: string, payload: Record<string, unknown>, de
   try {
     await notify(userId, "SUBSCRIPTION_CHANGED", payload, { dedupeKey });
   } catch (e) {
-    console.error({ billing: "notify", err: e instanceof Error ? e.message : "unknown" });
+    log.error({ billing: "notify", err: errInfo(e) });
   }
 }
 

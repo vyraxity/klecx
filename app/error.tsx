@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import * as Sentry from "@sentry/nextjs";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { AlertTriangle, RefreshCw, LifeBuoy, Home } from "lucide-react";
@@ -18,10 +19,8 @@ export default function ErrorPage({
 
   React.useEffect(() => {
     // Log sanitized error with digest without leaking stack to user UI
-    console.error("[App Error]", {
-      digest: error.digest,
-      message: error.message,
-    });
+    // Step 10.2: to Sentry (when configured) with the digest that links it to server logs.
+    Sentry.captureException(error, { tags: { digest: error.digest ?? "none", boundary: "App Error" } });
   }, [error]);
 
   const reportUrl = error.digest

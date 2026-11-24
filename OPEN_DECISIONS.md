@@ -322,3 +322,16 @@ Known gap: the credit hold before an answer covers the base cost only (decided 2
 **Options.** (a) Keep it (the usual behaviour; recommended for launch). (b) Also ask for the Klecx code after a Google/GitHub sign-in when two-factor is on: a custom hook on the OAuth callback that replaces the new session with a challenge, like the plugin does for passwords (more code, and the callback is a redirect, so it needs its own flow).
 
 **If nothing is decided:** (a).
+
+---
+
+## 17. The web-search surcharge is below the provider's search price
+
+- **Found:** 2026-11-24, Step 10.2 (cost metrics).
+- **Where:** `GROUNDING_SURCHARGE_CREDITS` (3 credits = $0.006, `lib/ai/model-catalog.ts`) vs `PROVIDER_SEARCH_USD` ($0.014 per executed search, `server/monitoring/costs.ts`; check the provider's current pricing page — some search usage may be free up to a monthly allowance).
+
+**Today.** Each executed web search costs Klecx about $0.014 at the provider and earns $0.006 in credits, so searches lose about $0.008 each (on top of the tokens, which are charged normally). The daily search caps (10 / 50 / 100 / 200 by plan) bound the loss per person; the metrics show the totals (`searches.surchargeUsd` vs `searches.providerUsd`).
+
+**Options.** (a) Raise the surcharge to 7–8 credits (covers the price; the pricing page, FAQ and help mention "+3 credits" and must change). (b) Keep 3 credits as a deliberate subsidy and watch the metrics. (c) Lower the daily caps.
+
+**If nothing is decided:** (b).

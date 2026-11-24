@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 
 /**
  * Sessions live in secondary storage (Redis), and each one carries a copy of
@@ -21,9 +22,6 @@ export async function refreshUserSessionCache(userId: string): Promise<void> {
       await ctx.internalAdapter.refreshUserSessions(user);
     }
   } catch (err) {
-    console.error(
-      "[auth] Failed to refresh cached sessions after a user update",
-      err instanceof Error ? err.name : "unknown_error"
-    );
+    log.error({ err: errInfo(err) }, "[auth] Failed to refresh cached sessions after a user update");
   }
 }

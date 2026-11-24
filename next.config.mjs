@@ -1,4 +1,5 @@
 import createNextIntlPlugin from "next-intl/plugin";
+import { createRequire } from "node:module";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
@@ -117,4 +118,31 @@ const nextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+/**
+ * Step 10.2: Sentry only wraps the build when it's configured
+ * (NEXT_PUBLIC_SENTRY_DSN). Source maps are uploaded when SENTRY_AUTH_TOKEN,
+ * SENTRY_ORG and SENTRY_PROJECT are set in the build environment, then deleted
+ * so they're never served. The browser reaches Sentry through /sentry-tunnel
+ * (app/sentry-tunnel/route.ts), set in instrumentation-client.ts.
+ */
+const sentryEnabled = Boolean(process.env.NEXT_PUBLIC_SENTRY_DSN);
+
+// Loaded only when configured (and as CommonJS, which every loader of this file supports).
+const withSentryConfig = sentryEnabled
+  ? createRequire(import.meta.url)("@sentry/nextjs").withSentryConfig
+  : null;
+
+export default withSentryConfig
+  ? withSentryConfig(withNextIntl(nextConfig), {
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      silent: !process.env.CI,
+      widenClientFileUpload: true,
+      sourcemaps: {
+        disable: !process.env.SENTRY_AUTH_TOKEN,
+        deleteSourcemapsAfterUpload: true,
+      },
+      telemetry: false,
+    })
+  : withNextIntl(nextConfig);

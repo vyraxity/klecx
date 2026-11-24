@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 
 import { db } from "@/server/db/client";
 import { Errors } from "@/server/http/errors";
@@ -348,10 +349,7 @@ export async function sendMentionNotifications(
         email: true,
       });
     } catch (err) {
-      console.error(
-        "[mentions] notification failed:",
-        err instanceof Error ? err.name : "unknown"
-      );
+      log.error({ err: errInfo(err) }, "[mentions] notification failed");
     }
   }
 }
