@@ -46,7 +46,7 @@ describe("Step 10.1 — Content-Security-Policy", () => {
     expect(csp).toContain("object-src 'none'");
     expect(csp).toContain("base-uri 'none'");
     expect(csp).toContain("form-action 'self'");
-    expect(csp).toContain("frame-src https://checkout.creem.io");
+    expect(csp).toContain("frame-src https://checkout.creem.io https://api.cloudinary.com");
     expect(csp).toContain("media-src 'self' blob: https://res.cloudinary.com");
     expect(csp).toContain("report-uri /api/csp-report");
     expect(csp).toContain("report-to csp");
