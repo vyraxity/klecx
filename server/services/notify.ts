@@ -40,6 +40,7 @@ export const DEFAULT_NOTIFICATION_PREFS: NotificationPreferencesMap = {
   OWNERSHIP_TRANSFER_REQUESTED: { inApp: true, email: true },
   OWNERSHIP_TRANSFER_ACCEPTED:  { inApp: true, email: true },
   OWNERSHIP_TRANSFER_DECLINED:  { inApp: true, email: false },
+  OWNERSHIP_TRANSFER_EXPIRED:   { inApp: true, email: false },
   MEMBER_LIMIT_EXCEEDED:        { inApp: true, email: true },
   MEMBER_SUSPENDED:             { inApp: true, email: true },
   MEMBER_RESTORED:              { inApp: true, email: true },
@@ -65,6 +66,7 @@ export function resolveNotificationPreferences(
     OWNERSHIP_TRANSFER_REQUESTED: { ...DEFAULT_NOTIFICATION_PREFS.OWNERSHIP_TRANSFER_REQUESTED },
     OWNERSHIP_TRANSFER_ACCEPTED:  { ...DEFAULT_NOTIFICATION_PREFS.OWNERSHIP_TRANSFER_ACCEPTED },
     OWNERSHIP_TRANSFER_DECLINED:  { ...DEFAULT_NOTIFICATION_PREFS.OWNERSHIP_TRANSFER_DECLINED },
+    OWNERSHIP_TRANSFER_EXPIRED:   { ...DEFAULT_NOTIFICATION_PREFS.OWNERSHIP_TRANSFER_EXPIRED },
     MEMBER_LIMIT_EXCEEDED:        { ...DEFAULT_NOTIFICATION_PREFS.MEMBER_LIMIT_EXCEEDED },
     MEMBER_SUSPENDED:             { ...DEFAULT_NOTIFICATION_PREFS.MEMBER_SUSPENDED },
     MEMBER_RESTORED:              { ...DEFAULT_NOTIFICATION_PREFS.MEMBER_RESTORED },
@@ -322,6 +324,95 @@ async function deliverEmailWithRetry(
   return false;
 }
 
+/** Step 10.3: at most this many delivery attempts per notification email. */
+export const MAX_EMAIL_ATTEMPTS = 5;
+/** Wait before attempt n+1 after n failed attempts (n = 1..4). */
+const EMAIL_RETRY_DELAYS_MS = [5 * 60_000, 30 * 60_000, 2 * 60 * 60_000, 12 * 60 * 60_000];
+
+export function nextEmailAttemptAt(attemptsMade: number, now: Date): Date | null {
+  if (attemptsMade >= MAX_EMAIL_ATTEMPTS) return null;
+  const delay = EMAIL_RETRY_DELAYS_MS[Math.min(attemptsMade, EMAIL_RETRY_DELAYS_MS.length) - 1] ?? EMAIL_RETRY_DELAYS_MS[0]!;
+  return new Date(now.getTime() + delay);
+}
+
+/**
+ * Whether a failed email can be sent again from the stored row. The
+ * share-created email carries the live share link, which is never stored
+ * (only its hash), so it can't be rebuilt; every other email is built from
+ * the notification's payload.
+ */
+export function isEmailRetryable(type: string): boolean {
+  return type !== "SHARE_CREATED";
+}
+
+/**
+ * Step 10.3 (`send-emails` job): sends one notification's email again. The
+ * row is claimed first (`emailStatus` → PENDING with the next attempt time
+ * pushed forward), so two overlapping runs never send it twice. Gives up
+ * after `MAX_EMAIL_ATTEMPTS`, when the person was deleted, or when they have
+ * since turned that email off. Returns the new email status.
+ */
+export async function retryNotificationEmail(
+  notificationId: string,
+  now: Date = new Date()
+): Promise<EmailStatus | "skipped"> {
+  const n = await db.notification.findUnique({
+    where: { id: notificationId },
+    select: { id: true, userId: true, type: true, payload: true, emailStatus: true, emailAttempts: true, emailNextAttemptAt: true },
+  });
+  if (!n || n.emailNextAttemptAt === null || n.emailNextAttemptAt > now) return "skipped";
+  if (n.emailStatus !== "FAILED" && n.emailStatus !== "PENDING") return "skipped";
+
+  // Claim: only the run that moves the next attempt time sends.
+  const claimed = await db.notification.updateMany({
+    where: { id: n.id, emailNextAttemptAt: n.emailNextAttemptAt, emailAttempts: n.emailAttempts },
+    data: { emailStatus: "PENDING", emailNextAttemptAt: new Date(now.getTime() + 15 * 60_000) },
+  });
+  if (claimed.count === 0) return "skipped";
+
+  const giveUp = async () => {
+    await db.notification.update({
+      where: { id: n.id },
+      data: { emailStatus: "FAILED", emailNextAttemptAt: null },
+    });
+    return "FAILED" as const;
+  };
+
+  const type = n.type as NotificationType;
+  if (!NOTIFICATION_TYPES.includes(type) || !isEmailRetryable(type) || n.emailAttempts >= MAX_EMAIL_ATTEMPTS) {
+    return giveUp();
+  }
+  const [user, prefs] = await Promise.all([
+    db.user.findUnique({
+      where: { id: n.userId },
+      select: { email: true, deletedAt: true, preference: { select: { uiLocale: true } } },
+    }),
+    getUserNotificationPreferences(n.userId),
+  ]);
+  const payload = (n.payload && typeof n.payload === "object" ? n.payload : {}) as Record<string, unknown>;
+  const mapping = resolveDefaultEmailMapping(type, payload);
+  if (!user || user.deletedAt || !mapping || !prefs[type]?.email) return giveUp();
+
+  let delivered = false;
+  try {
+    delivered = (await sendEmail(mapping.template, user.email, mapping.data as never, {
+      locale: user.preference?.uiLocale ?? undefined,
+    })).success;
+  } catch {
+    delivered = false;
+  }
+  const attempts = n.emailAttempts + 1;
+  await db.notification.update({
+    where: { id: n.id },
+    data: {
+      emailStatus: delivered ? "SENT" : "FAILED",
+      emailAttempts: attempts,
+      emailNextAttemptAt: delivered ? null : nextEmailAttemptAt(attempts, now),
+    },
+  });
+  return delivered ? "SENT" : "FAILED";
+}
+
 /**
  * Step 7.7: Central notification dispatcher.
  * - Writes a `Notification` row (ignoring unique-violation on `[userId, dedupeKey]`).
@@ -392,6 +483,9 @@ export async function notify(
         dedupeKey,
         status: initialStatus,
         emailStatus: initialEmailStatus,
+        // Safety net (Step 10.3): if this function dies before the inline send
+        // below records its result, the `send-emails` job picks the row up.
+        emailNextAttemptAt: emailEnabled ? new Date(Date.now() + 10 * 60_000) : null,
         ...(inAppEnabled ? {} : { dismissedAt: new Date() }),
       },
     });
@@ -423,7 +517,13 @@ export async function notify(
     const finalEmailStatus: EmailStatus = delivered ? "SENT" : "FAILED";
     created = await db.notification.update({
       where: { id: created.id },
-      data: { emailStatus: finalEmailStatus },
+      data: {
+        emailStatus: finalEmailStatus,
+        emailAttempts: 1,
+        // Step 10.3: the `send-emails` job tries again later (only emails it can rebuild).
+        emailNextAttemptAt:
+          delivered || !isEmailRetryable(type) ? null : nextEmailAttemptAt(1, new Date()),
+      },
     });
   }
 

@@ -11,6 +11,7 @@ import {
   webSearchNotice,
 } from "@/server/services/web-search";
 import "server-only";
+import { reapStuckGenerations } from "@/server/jobs/reap";
 import { firstTokenMarker } from "@/server/services/generation-timing";
 import { log, errInfo } from "@/server/log";
 import crypto from "node:crypto";
@@ -1545,40 +1546,11 @@ export async function createAndStreamGeneration(
 }
 
 /**
- * Recovers orphaned generations running for longer than 10 minutes.
+ * Recovers orphaned generations running for longer than 10 minutes. Kept for
+ * callers; the work is the Step 10.3 `reap-generations` job.
  */
 export async function recoverOrphanedGenerations(): Promise<number> {
-  const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
-
-  const orphaned = await db.generation.findMany({
-    where: {
-      status: "RUNNING",
-      startedAt: { lt: tenMinutesAgo },
-    },
-  });
-
-  for (const gen of orphaned) {
-    const releaseKey = `rel_orphan_${gen.id}`;
-    await release(gen.billedAccountId, gen.id, releaseKey).catch(() => {});
-
-    await db.generation.update({
-      where: { id: gen.id },
-      data: {
-        status: "FAILED",
-        errorCode: "timeout_orphaned",
-        finishedAt: new Date(),
-      },
-    });
-
-    if (gen.versionId) {
-      await db.responseVersion.update({
-        where: { id: gen.versionId },
-        data: { status: "FAILED" },
-      }).catch(() => {});
-    }
-  }
-
-  return orphaned.length;
+  return Number((await reapStuckGenerations()).reaped);
 }
 
 /**

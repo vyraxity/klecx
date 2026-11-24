@@ -946,6 +946,10 @@ model Notification {
   dedupeKey   String?     @map("dedupe_key")
   status      NotifStatus @default(UNREAD)
   emailStatus EmailStatus @default(NONE) @map("email_status")
+  /// Step 10.3: delivery attempts so far (the inline send counts as one) and
+  /// when the `send-emails` job may try again (null: nothing left to try).
+  emailAttempts      Int       @default(0) @map("email_attempts")
+  emailNextAttemptAt DateTime? @map("email_next_attempt_at")
   createdAt   DateTime    @default(now()) @map("created_at")
   readAt      DateTime?   @map("read_at")
   dismissedAt DateTime?   @map("dismissed_at")
@@ -954,6 +958,7 @@ model Notification {
 
   @@unique([userId, dedupeKey])
   @@index([userId, status, createdAt(sort: Desc)])
+  @@index([emailStatus, emailNextAttemptAt])
   @@map("notifications")
 }
 
@@ -1208,4 +1213,34 @@ model MonitoringAlert {
 
   @@index([lastSeenAt])
   @@map("monitoring_alerts")
+}
+
+/// Step 10.3: one lease per background job, so overlapping runs (a slow run,
+/// a scheduler retry) do nothing. Taken with one atomic upsert; it expires by
+/// itself (`lockedUntil`) if the function running the job is killed.
+model JobLock {
+  job         String   @id
+  lockedUntil DateTime @map("locked_until")
+  holder      String
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("job_locks")
+}
+
+/// Step 10.3: one row per background job run (history for the alerts:
+/// failed, unfinished or overdue jobs). `status`: RUNNING | SUCCEEDED |
+/// FAILED | SKIPPED (another run held the lock). Kept 30 days.
+model JobRun {
+  id         String    @id @default(uuid(7))
+  job        String
+  status     String
+  startedAt  DateTime  @default(now()) @map("started_at")
+  finishedAt DateTime? @map("finished_at")
+  /// Counts only (what the job did), never ids of people or content.
+  result     Json?
+  errorCode  String?   @map("error_code")
+
+  @@index([job, startedAt(sort: Desc)])
+  @@index([startedAt])
+  @@map("job_runs")
 }

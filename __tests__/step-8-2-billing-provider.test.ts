@@ -283,6 +283,9 @@ describe("Step 8.2 — billing endpoints", () => {
       return null;
     },
     async resumeSubscription() {},
+    async getSubscription() {
+      return null;
+    },
     async changeSubscriptionPlan() {},
   };
 

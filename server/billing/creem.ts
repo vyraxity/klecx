@@ -146,11 +146,11 @@ export function readCreemEventData(type: string, object: unknown): BillingEventD
 export function createCreemProvider(config: CreemConfig, fetchImpl: FetchLike = fetch): BillingProvider {
   const base = config.apiBase.replace(/\/+$/, "");
 
-  async function call<T>(operation: string, path: string, body?: unknown): Promise<T> {
+  async function call<T>(operation: string, path: string, body?: unknown, method: "GET" | "POST" = "POST"): Promise<T> {
     let res: Response;
     try {
       res = await fetchImpl(`${base}${path}`, {
-        method: "POST",
+        method,
         headers: {
           "x-api-key": config.apiKey,
           ...(body === undefined ? {} : { "content-type": "application/json" }),
@@ -224,6 +224,21 @@ export function createCreemProvider(config: CreemConfig, fetchImpl: FetchLike = 
         product_id: creemProductId(config.products, target.plan, target.interval),
         update_behavior: "proration-charge-immediately",
       });
+    },
+
+    async getSubscription(subscriptionId) {
+      try {
+        const out = await call<unknown>(
+          "get_subscription",
+          `/v1/subscriptions?subscription_id=${encodeURIComponent(subscriptionId)}`,
+          undefined,
+          "GET"
+        );
+        return readSubscription(out);
+      } catch (e) {
+        if (e instanceof BillingProviderError && e.details.status === 404) return null;
+        throw e;
+      }
     },
 
     verifyWebhook(rawBody, signature) {

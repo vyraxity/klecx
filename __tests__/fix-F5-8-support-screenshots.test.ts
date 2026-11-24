@@ -8,7 +8,7 @@ import crypto from "node:crypto";
 import sharp from "sharp";
 import { NextRequest } from "next/server";
 import { db } from "@/server/db/client";
-import { setStorageProvider } from "@/server/storage/provider";
+import { setStorageProvider, storagePath } from "@/server/storage/provider";
 import { MockStorageProvider } from "@/server/storage/mock";
 import { POST } from "@/app/api/v1/support/route";
 import {
@@ -165,7 +165,7 @@ describe("F5.8 — support screenshots", () => {
     expect(rows).toHaveLength(2);
     expect(rows.map((r) => r.mime).sort()).toEqual(["image/jpeg", "image/png"]);
     for (const row of rows) {
-      expect(row.providerId.startsWith(`support/${ticketId}/`)).toBe(true);
+      expect(row.providerId.startsWith(storagePath("support", ticketId) + "/")).toBe(true);
       // Private upload (authenticated), never public.
       const stored = (storage as unknown as { storage: Map<string, { isPublic: boolean }> }).storage.get(row.providerId);
       expect(stored?.isPublic).toBe(false);

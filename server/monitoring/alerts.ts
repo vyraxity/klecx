@@ -7,6 +7,7 @@ import { DAILY_SEARCH_REQUEST_CAP, generationCostUsd } from "@/server/monitoring
 import { countSearchRequests, startOfUtcDay } from "@/server/monitoring/search-usage";
 import { readCreemEventData } from "@/server/billing/creem";
 import type { Prisma } from "@/server/db/generated/client";
+import { JOB_NAMES, jobIntervalMinutes } from "@/lib/jobs/schedules";
 
 /**
  * Step 10.2 — alerts. `runAlertChecks()` looks at the last hour/day of data,
@@ -14,8 +15,8 @@ import type { Prisma } from "@/server/db/generated/client";
  * ones to `ALERTS_EMAIL` (default: the billing inbox). The same alert isn't
  * emailed again before its quiet period ends (1 h critical, 6 h warning).
  *
- * Run by an admin (`POST /api/v1/admin/alerts/run`) and, from Step 10.3, every
- * hour by the job runner. Error spikes in the code itself are Sentry's job
+ * Run every hour by the `run-alerts` job (Step 10.3) and by an admin
+ * (`POST /api/v1/admin/alerts/run`). Error spikes in the code itself are Sentry's job
  * (alert rules in its dashboard).
  */
 
@@ -30,7 +31,11 @@ export type AlertKind =
   | "stuckGenerations"
   | "dbConnections"
   | "searchCapNear"
-  | "searchCapReached";
+  | "searchCapReached"
+  | "jobFailed"
+  | "jobStuck"
+  | "jobOverdue"
+  | "billingDrift";
 
 export interface Alert {
   key: string;
@@ -60,6 +65,10 @@ export const ALERT_THRESHOLDS = {
   webhookStuckMinutes: 15,
   /** Share of the provider's daily cap on grounded searches (1,500, account-wide) that warns. */
   searchCapShare: 0.8,
+  /** A background job run still RUNNING after this long (its function was killed). */
+  jobStuckMinutes: 15,
+  /** A job whose last successful run is older than this many of its intervals (plus 30 min) is overdue. */
+  jobOverdueIntervals: 3,
 };
 
 const QUIET_MS = { critical: 60 * 60_000, warning: 6 * 60 * 60_000 };
@@ -179,7 +188,8 @@ export async function evaluateAlerts(now: Date = new Date()): Promise<Alert[]> {
     }
   }
 
-  // 6. Generations stuck in RUNNING (a crashed function; the 10.3 job cleans them up).
+  // 6. Generations stuck in RUNNING (a crashed function; `reap-generations` cleans them up after 10 min,
+  //    so this means the job isn't running).
   const stuck = await db.generation.count({
     where: { status: "RUNNING", startedAt: { lt: new Date(now.getTime() - ALERT_THRESHOLDS.stuckMinutes * 60_000) } },
   });
@@ -203,6 +213,46 @@ export async function evaluateAlerts(now: Date = new Date()): Promise<Alert[]> {
       values: { requests: searchesToday.requests, cap: DAILY_SEARCH_REQUEST_CAP, pct: pct(searchesToday.requests / DAILY_SEARCH_REQUEST_CAP) },
     });
   }
+
+  // 9. Background jobs (Step 10.3): the last run failed, a run never
+  //    finished, or a job that has run before hasn't succeeded for 3 intervals
+  //    (the scheduler stopped: e.g. GitHub turns off scheduled workflows after
+  //    60 days without commits in a public repository).
+  for (const job of JOB_NAMES) {
+    const last = await db.jobRun.findFirst({
+      where: { job },
+      orderBy: { startedAt: "desc" },
+      select: { status: true, startedAt: true, errorCode: true },
+    });
+    if (!last) continue;
+    if (last.status === "FAILED" && last.startedAt >= dayAgo) {
+      alerts.push({ key: `job_failed:${job}`, kind: "jobFailed", severity: "warning", values: { job, error: last.errorCode ?? "error" } });
+    }
+    const stuckRun = await db.jobRun.findFirst({
+      where: { job, status: "RUNNING", startedAt: { lt: new Date(now.getTime() - ALERT_THRESHOLDS.jobStuckMinutes * 60_000), gte: dayAgo } },
+      select: { id: true },
+    });
+    if (stuckRun) alerts.push({ key: `job_stuck:${job}`, kind: "jobStuck", severity: "warning", values: { job } });
+    const lastOk = await db.jobRun.findFirst({
+      where: { job, status: "SUCCEEDED" },
+      orderBy: { startedAt: "desc" },
+      select: { startedAt: true },
+    });
+    const overdueMs = (jobIntervalMinutes(job) * ALERT_THRESHOLDS.jobOverdueIntervals + 30) * 60_000;
+    if (lastOk && now.getTime() - lastOk.startedAt.getTime() > overdueMs) {
+      const hours = Math.floor((now.getTime() - lastOk.startedAt.getTime()) / (60 * 60_000));
+      alerts.push({ key: `job_overdue:${job}`, kind: "jobOverdue", severity: "critical", values: { job, hours } });
+    }
+  }
+
+  // 10. Subscriptions that differ from the billing provider (the daily reconcile found them).
+  const reconcile = await db.jobRun.findFirst({
+    where: { job: "reconcile-billing", finishedAt: { not: null }, startedAt: { gte: new Date(now.getTime() - 2 * 24 * 60 * 60_000) } },
+    orderBy: { startedAt: "desc" },
+    select: { result: true },
+  });
+  const drift = Number((reconcile?.result as { drift?: unknown } | null)?.drift ?? 0);
+  if (drift > 0) alerts.push({ key: "billing_drift", kind: "billingDrift", severity: "warning", values: { count: drift } });
 
   // 8. Database connections near the limit (skipped where the host hides these views).
   try {

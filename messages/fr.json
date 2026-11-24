@@ -1008,7 +1008,11 @@
         "stuckGenerations": "{count, plural, one {# requête d'IA est} other {# requêtes d'IA sont}} en cours depuis plus de 15 minutes.",
         "dbConnections": "Connexions à la base de données : {used} sur {max} utilisées.",
         "searchCapNear": "Recherches web aujourd'hui : {requests} sur la limite quotidienne du fournisseur de {cap} ({pct} %). Une fois la limite atteinte, les recherches s'arrêtent pour tout le monde jusqu'à minuit UTC.",
-        "searchCapReached": "Les recherches web d'aujourd'hui ont atteint la limite quotidienne du fournisseur ({requests} sur {cap}) : les recherches sont désactivées pour tout le monde jusqu'à minuit UTC ; les réponses continuent sans elles."
+        "searchCapReached": "Les recherches web d'aujourd'hui ont atteint la limite quotidienne du fournisseur ({requests} sur {cap}) : les recherches sont désactivées pour tout le monde jusqu'à minuit UTC ; les réponses continuent sans elles.",
+        "jobFailed": "La tâche de fond {job} a échoué lors de sa dernière exécution ({error}). Les détails sont dans les journaux.",
+        "jobStuck": "La tâche de fond {job} a démarré il y a plus de 15 minutes et ne s'est jamais terminée.",
+        "jobOverdue": "La tâche de fond {job} ne s'est pas exécutée correctement depuis {hours} heures : vérifiez le planificateur (le workflow cron) et CRON_SECRET.",
+        "billingDrift": "Contrôle de facturation : {count, plural, one {# abonnement diffère} other {# abonnements diffèrent}} du prestataire de paiement. Les identifiants d'abonnement sont dans les journaux (reconcile-billing)."
       }
     }
   },
@@ -1706,7 +1710,7 @@
     }
   },
   "Legal": {
-    "updatedAt": "2026-11-23",
+    "updatedAt": "2026-11-24",
     "lastUpdated": "Dernière mise à jour : {date}",
     "contents": "Sommaire",
     "languageClause": "Ce document est proposé en plusieurs langues par commodité. En cas de contradiction entre les versions, la version anglaise prévaut.",
@@ -1950,7 +1954,7 @@
           "heading": "7. Durée de conservation",
           "bullets": [
             "Données du compte et votre contenu : tant que votre compte existe. Quand vous supprimez votre compte, vous ne pouvez plus vous connecter ; pendant 30 jours, le lien que nous vous envoyons par e-mail le restaure, puis vos espaces de travail, fichiers, notes et paramètres sont effacés et l'enregistrement de votre compte est anonymisé. Les commentaires et réponses que vous avez ajoutés dans les espaces de travail d'autres personnes y restent, affichés comme « Utilisateur supprimé ».",
-            "Espaces de travail supprimés : masqués immédiatement et supprimés définitivement lors d'un nettoyage programmé.",
+            "Espaces de travail et projets supprimés : masqués immédiatement, puis supprimés définitivement avec leurs fichiers par notre nettoyage quotidien 30 jours plus tard.",
             "Sessions : jusqu'à votre déconnexion, leur révocation, ou 30 jours après leur dernière utilisation.",
             "Captures d'écran d'assistance : supprimées 90 jours après la demande.",
             "Demandes d'assistance : le temps nécessaire pour vous aider et garder une trace de la demande.",
@@ -2790,6 +2794,7 @@
       "OWNERSHIP_TRANSFER_REQUESTED": "Demande de transfert de propriété",
       "OWNERSHIP_TRANSFER_ACCEPTED": "Transfert de propriété accepté",
       "OWNERSHIP_TRANSFER_DECLINED": "Transfert de propriété refusé",
+      "OWNERSHIP_TRANSFER_EXPIRED": "Transfert de propriété expiré",
       "MEMBER_LIMIT_EXCEEDED": "Limite de collaborateurs dépassée",
       "MEMBER_SUSPENDED": "Accès passé en lecture seule",
       "MEMBER_RESTORED": "Accès rétabli",
@@ -2810,6 +2815,7 @@
       "OWNERSHIP_TRANSFER_REQUESTED": "Quand quelqu'un vous demande de reprendre un espace de travail ou un projet.",
       "OWNERSHIP_TRANSFER_ACCEPTED": "Quand la personne choisie accepte la propriété.",
       "OWNERSHIP_TRANSFER_DECLINED": "Quand la personne choisie refuse la propriété.",
+      "OWNERSHIP_TRANSFER_EXPIRED": "Quand un transfert que vous avez demandé expire sans réponse.",
       "MEMBER_LIMIT_EXCEEDED": "Quand l'offre d'un propriétaire ne couvre plus tous les collaborateurs.",
       "MEMBER_SUSPENDED": "Quand votre accès passe en lecture seule à cause d'une limite de l'offre.",
       "MEMBER_RESTORED": "Quand vous retrouvez votre accès complet.",
@@ -2913,6 +2919,10 @@
       "OWNERSHIP_TRANSFER_DECLINED": {
         "title": "Transfert de propriété refusé",
         "description": "{name} a refusé de reprendre {resourceName}."
+      },
+      "OWNERSHIP_TRANSFER_EXPIRED": {
+        "title": "Transfert de propriété expiré",
+        "description": "{name} n'a pas répondu à temps : {resourceName} reste à vous. Vous pouvez refaire la demande."
       },
       "MEMBER_LIMIT_EXCEEDED": {
         "title": "Limite de collaborateurs dépassée",

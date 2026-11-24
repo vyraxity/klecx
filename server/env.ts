@@ -27,6 +27,8 @@ export const envSchema = z
     BILLING_EMAIL: emptyToUndefined(z.string().min(3).optional()),
     // Step 10.2: monitoring alerts (provider errors, costs, webhooks…). Defaults to BILLING_EMAIL.
     ALERTS_EMAIL: emptyToUndefined(z.string().min(3).optional()),
+    // Step 10.3: the bearer secret the scheduler sends to /api/cron/<job>. Unset: every job call is refused.
+    CRON_SECRET: emptyToUndefined(z.string().min(32).optional()),
     // Step 10.1: security reports (security.txt). Defaults to SUPPORT_EMAIL.
     SECURITY_EMAIL: emptyToUndefined(z.string().min(3).optional()),
     COMPANY_LEGAL_NAME: emptyToUndefined(z.string().min(1).optional()),

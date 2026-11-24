@@ -43,7 +43,7 @@ Use a free external monitor, e.g. **Better Stack Uptime** (10 monitors and a sta
    - `https://klecx.com/api/ready` — expects 200 (503 means the database or Redis is down).
    - The same two on `https://dev.klecx.com` while testing.
 2. If the service gives you a public status page, put its address in `STATUS_PAGE_URL` (Vercel, Production): Klecx's `/status` page links to it.
-3. A **synthetic sign-in** (a test account signing in on a schedule) comes with the Step 10.3 scheduler.
+3. A **synthetic sign-in** runs every hour from the Step 10.3 scheduler (`.github/workflows/cron.yml`): a test account signs in and calls `/api/v1/me`; a failure fails the workflow run and GitHub emails you. Setup in `docs/background-jobs.md`.
 
 ## Business metrics
 
@@ -60,7 +60,7 @@ Use a free external monitor, e.g. **Better Stack Uptime** (10 monitors and a sta
 
 ## Alerts
 
-`runAlertChecks()` (`server/monitoring/alerts.ts`) — run by an admin with `POST /api/v1/admin/alerts/run`, and **every hour by the Step 10.3 job runner** (until then, only when run by hand). Thresholds are in `ALERT_THRESHOLDS`.
+`runAlertChecks()` (`server/monitoring/alerts.ts`) — run **every hour by the `run-alerts` job** (Step 10.3, `docs/background-jobs.md`) and by an admin with `POST /api/v1/admin/alerts/run`. Thresholds are in `ALERT_THRESHOLDS`.
 
 | Alert | Fires when | Severity |
 | --- | --- | --- |
@@ -71,11 +71,15 @@ Use a free external monitor, e.g. **Better Stack Uptime** (10 monitors and a sta
 | `account_cost:<user>` | one account cost > $2 (Free/Lite), $5 (Standard), $10 (Pro) at the provider in 24 h | warning |
 | `cost_vs_revenue` | (billing on) the day's provider cost > 60 % of the 30-day average daily revenue | warning |
 | `limit_abuse:<user>:<limit>` | someone hit the same plan limit on ≥ 3 days in the last 7 (abuse, or a plan too small) | warning |
-| `stuck_generations` | an AI request still running after 15 min (crash; cleaned up by the 10.3 job) | warning |
+| `stuck_generations` | an AI request still running after 15 min (`reap-generations` cleans them up after 10 min, so this means the job isn't running) | warning |
+| `job_failed:<job>` | a background job's last run (within 24 h) failed, or some of its items failed | warning |
+| `job_stuck:<job>` | a background job run started > 15 min ago and never finished (its function was killed) | warning |
+| `job_overdue:<job>` | a job that has run before hasn't succeeded for 3 of its intervals + 30 min (the scheduler stopped, or `CRON_SECRET` changed) | critical |
+| `billing_drift` | the daily `reconcile-billing` found subscriptions that differ from Creem (missed webhooks; ids in the logs) | warning |
 | `search_cap_near` / `search_cap_reached` | Klecx's grounded searches today reach 80 % / 100 % of the provider's 1,500-a-day cap (account-wide; at 100 % searches stop until midnight UTC) | warning / critical |
 | `db_connections` | ≥ 80 % of the database's connections in use (where the host shows it) | critical |
 
-Each alert is emailed to `ALERTS_EMAIL` (default `BILLING_EMAIL`) once, then not again for 1 hour (critical) or 6 hours (warning) while it keeps firing; `monitoring_alerts` keeps the history. Code errors and error spikes are Sentry's alerts (above). Job failures arrive with Step 10.3.
+Each alert is emailed to `ALERTS_EMAIL` (default `BILLING_EMAIL`) once, then not again for 1 hour (critical) or 6 hours (warning) while it keeps firing; `monitoring_alerts` keeps the history. Code errors and error spikes are Sentry's alerts (above). If the scheduler itself stops, these alerts stop too (they run from it): the uptime monitors and GitHub's email about a failed workflow run cover that.
 
 **Drill:** on `dev.klecx.com`, call `POST /api/v1/admin/alerts/run` as an admin; the response lists what fires, and an email arrives for anything new. The test `__tests__/step-10-2-observability.test.ts` runs the same drill on seeded data.
 

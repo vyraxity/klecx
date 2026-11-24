@@ -1008,7 +1008,11 @@
         "stuckGenerations": "{count, plural, one {# AI request has} other {# AI requests have}} been running for more than 15 minutes.",
         "dbConnections": "Database connections: {used} of {max} in use.",
         "searchCapNear": "Web searches today: {requests} of the provider's daily cap of {cap} ({pct} %). At the cap, searches stop for everyone until midnight UTC.",
-        "searchCapReached": "Web searches today reached the provider's daily cap ({requests} of {cap}): searches are off for everyone until midnight UTC; answers continue without them."
+        "searchCapReached": "Web searches today reached the provider's daily cap ({requests} of {cap}): searches are off for everyone until midnight UTC; answers continue without them.",
+        "jobFailed": "Background job {job} failed on its last run ({error}). Details are in the logs.",
+        "jobStuck": "Background job {job} started more than 15 minutes ago and never finished.",
+        "jobOverdue": "Background job {job} hasn't run successfully for {hours} hours: check the scheduler (the cron workflow) and CRON_SECRET.",
+        "billingDrift": "Billing check: {count, plural, one {# subscription differs} other {# subscriptions differ}} from the billing provider. The subscription ids are in the logs (reconcile-billing)."
       }
     }
   },
@@ -1706,7 +1710,7 @@
     }
   },
   "Legal": {
-    "updatedAt": "2026-11-23",
+    "updatedAt": "2026-11-24",
     "lastUpdated": "Last updated {date}",
     "contents": "Contents",
     "languageClause": "This document is available in several languages for convenience. If there is any conflict between language versions, the English version prevails.",
@@ -1950,7 +1954,7 @@
           "heading": "7. How long we keep it",
           "bullets": [
             "Account data and your content: as long as your account exists. When you delete your account, you can no longer sign in; for 30 days the link we email you restores it, then your workspaces, files, notes and settings are erased and your account record is anonymized. Comments and answers you added to other people's workspaces stay there, shown as \"Deleted user\".",
-            "Deleted workspaces: hidden immediately and permanently removed in a scheduled clean-up.",
+            "Deleted workspaces and projects: hidden immediately, then permanently deleted with their files by our daily clean-up 30 days later.",
             "Sessions: until you sign out, revoke the session, or 30 days after it was last used.",
             "Support screenshots: deleted 90 days after the request.",
             "Support requests: for as long as we need them to help you and keep a record of the request.",
@@ -2790,6 +2794,7 @@
       "OWNERSHIP_TRANSFER_REQUESTED": "Ownership transfer request",
       "OWNERSHIP_TRANSFER_ACCEPTED": "Ownership transfer accepted",
       "OWNERSHIP_TRANSFER_DECLINED": "Ownership transfer declined",
+      "OWNERSHIP_TRANSFER_EXPIRED": "Ownership transfer expired",
       "MEMBER_LIMIT_EXCEEDED": "Collaborator limit exceeded",
       "MEMBER_SUSPENDED": "Access changed to read-only",
       "MEMBER_RESTORED": "Access restored",
@@ -2810,6 +2815,7 @@
       "OWNERSHIP_TRANSFER_REQUESTED": "When someone asks you to take over a workspace or project.",
       "OWNERSHIP_TRANSFER_ACCEPTED": "When the person you chose accepts ownership.",
       "OWNERSHIP_TRANSFER_DECLINED": "When the person you chose declines ownership.",
+      "OWNERSHIP_TRANSFER_EXPIRED": "When a transfer you asked for expires without an answer.",
       "MEMBER_LIMIT_EXCEEDED": "When an owner's plan no longer covers all collaborators.",
       "MEMBER_SUSPENDED": "When your access becomes read-only because of a plan limit.",
       "MEMBER_RESTORED": "When your full access comes back.",
@@ -2913,6 +2919,10 @@
       "OWNERSHIP_TRANSFER_DECLINED": {
         "title": "Ownership transfer declined",
         "description": "{name} declined to take over {resourceName}."
+      },
+      "OWNERSHIP_TRANSFER_EXPIRED": {
+        "title": "Ownership transfer expired",
+        "description": "{name} didn't answer in time, so {resourceName} stays yours. You can ask again."
       },
       "MEMBER_LIMIT_EXCEEDED": {
         "title": "Collaborator limit exceeded",

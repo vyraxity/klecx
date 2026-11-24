@@ -251,6 +251,16 @@ export function formatNotificationPresentation(
         href,
         icon: <Crown className="h-4 w-4 text-muted" />,
       };
+    case "OWNERSHIP_TRANSFER_EXPIRED":
+      return {
+        title: title(item.type),
+        description: desc(item.type, "description", {
+          name: text(p.toUserName) ?? t("fallback.recipient"),
+          resourceName: resourceName ?? t("fallback.yourWorkspace"),
+        }),
+        href,
+        icon: <Crown className="h-4 w-4 text-muted" />,
+      };
     case "MEMBER_LIMIT_EXCEEDED":
       return {
         title: title(item.type),
