@@ -14,6 +14,11 @@
  * - images: Cloudinary (files, avatars, generated images) and OAuth avatars,
  *   the same list as `components/markdown/safe-image.tsx` and `next.config.mjs`;
  * - media: read-aloud audio and voice samples (signed Cloudinary URLs);
+ * - private files (images in messages, generated images, shared pages' images,
+ *   read-aloud audio) are signed download links on `api.cloudinary.com`
+ *   (`privateUrl()`, Cloudinary's `private_download_url`), so that host is
+ *   allowed for images, media and frames (PDF preview) too
+ *   (`CSP_PRIVATE_FILE_HOSTS`; fixed 2026-11-24: they were blocked);
  * - connect: direct uploads to Cloudinary (`server/storage/cloudinary.ts`).
  */
 
@@ -25,6 +30,13 @@ export const CSP_IMAGE_HOSTS = [
   "https://lh3.googleusercontent.com",
   "https://avatars.githubusercontent.com",
 ] as const;
+
+/**
+ * Where `privateUrl()` points: short-lived signed download links for private
+ * files. Only for `img-src` / `media-src` / `frame-src` (PDF preview), not the
+ * Markdown image allowlist.
+ */
+export const CSP_PRIVATE_FILE_HOSTS = ["https://api.cloudinary.com"] as const;
 
 export function createNonce(): string {
   const bytes = new Uint8Array(16);
@@ -49,8 +61,8 @@ export function buildCsp(nonce: string, opts: { dev?: boolean } = {}): string {
     ["script-src", scriptSrc],
     // Tailwind, KaTeX and Radix set inline styles; styles can't run code.
     ["style-src", ["'self'", "'unsafe-inline'"]],
-    ["img-src", ["'self'", "data:", "blob:", ...CSP_IMAGE_HOSTS]],
-    ["media-src", ["'self'", "blob:", "https://res.cloudinary.com"]],
+    ["img-src", ["'self'", "data:", "blob:", ...CSP_IMAGE_HOSTS, ...CSP_PRIVATE_FILE_HOSTS]],
+    ["media-src", ["'self'", "blob:", "https://res.cloudinary.com", ...CSP_PRIVATE_FILE_HOSTS]],
     ["font-src", ["'self'", "data:"]],
     [
       "connect-src",
@@ -63,7 +75,8 @@ export function buildCsp(nonce: string, opts: { dev?: boolean } = {}): string {
       ],
     ],
     ["worker-src", ["'self'", "blob:"]],
-    ["frame-src", ["https://checkout.creem.io"]],
+    // Creem's checkout; private PDFs previewed in a message attachment's dialog.
+    ["frame-src", ["https://checkout.creem.io", ...CSP_PRIVATE_FILE_HOSTS]],
     ["frame-ancestors", ["'none'"]],
     ["object-src", ["'none'"]],
     ["base-uri", ["'none'"]],
