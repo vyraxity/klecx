@@ -1,4 +1,5 @@
 import "server-only";
+import type { WebSearchUsage } from "@/server/ai/tools/web-search";
 import { recordLimitHit } from "@/server/monitoring/limit-hits";
 import { db } from "@/server/db/client";
 import type { Entitlements } from "@/server/billing/entitlements";
@@ -126,6 +127,8 @@ export async function executeWebSearchTool(params: {
   query: string;
   executed: boolean;
   response: Record<string, unknown>;
+  /** What the search request used (only when it ran). */
+  usage?: WebSearchUsage;
 }> {
   const rawQuery = (params.args as { query?: unknown } | null)?.query;
   const query = typeof rawQuery === "string" ? rawQuery.trim().slice(0, 500) : "";
@@ -199,6 +202,7 @@ export async function executeWebSearchTool(params: {
   return {
     query,
     executed: true,
+    usage: result.usage,
     response: {
       summary,
       sources: numbered.map((n) => ({ number: n.number, title: n.title, url: n.url })),
@@ -210,4 +214,37 @@ export async function executeWebSearchTool(params: {
           : "No sources were found. Do not cite any.",
     },
   };
+}
+
+/** Running totals of the search requests behind one AI call (fix before 10.3). */
+export interface SearchTotals {
+  queries: number;
+  inputTokens: number;
+  outputTokens: number;
+}
+
+export function newSearchTotals(): SearchTotals {
+  return { queries: 0, inputTokens: 0, outputTokens: 0 };
+}
+
+export function addSearchUsage(totals: SearchTotals, usage: WebSearchUsage | undefined): void {
+  if (!usage) return;
+  totals.queries += usage.queries;
+  totals.inputTokens += usage.inputTokens;
+  totals.outputTokens += usage.outputTokens;
+}
+
+/**
+ * The fields stored in `Generation.usage` next to `searches`: the provider
+ * cost of searching (metrics and alerts). Credits charge the per-search
+ * surcharge only, never these tokens.
+ */
+export function searchUsageFields(totals: SearchTotals) {
+  return totals.queries > 0
+    ? {
+        searchQueries: totals.queries,
+        searchInputTokens: totals.inputTokens,
+        searchOutputTokens: totals.outputTokens,
+      }
+    : {};
 }

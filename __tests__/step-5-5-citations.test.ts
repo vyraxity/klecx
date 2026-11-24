@@ -264,7 +264,7 @@ describe("Step 5.5 — Citations and References", () => {
   });
 
   describe("2. Pricing Surcharge & Plan Gate", () => {
-    it("adds +3 credits per executed web search", () => {
+    it("adds the surcharge (GROUNDING_SURCHARGE_CREDITS) per executed web search", () => {
       const baseCredits = creditsFor("text-economy", {
         inputTokens: 200,
         outputTokens: 100,
@@ -280,9 +280,9 @@ describe("Step 5.5 — Citations and References", () => {
         searches: 2,
       });
 
-      expect(GROUNDING_SURCHARGE_CREDITS).toBe(3);
-      expect(oneSearch).toBe(baseCredits + 3);
-      expect(twoSearches).toBe(baseCredits + 6);
+      expect(GROUNDING_SURCHARGE_CREDITS).toBe(5); // owner, 2026-11-24 (was 3)
+      expect(oneSearch).toBe(baseCredits + GROUNDING_SURCHARGE_CREDITS);
+      expect(twoSearches).toBe(baseCredits + 2 * GROUNDING_SURCHARGE_CREDITS);
     });
 
     it("runs ungrounded without surcharge when web search preference is off", async () => {
@@ -308,7 +308,7 @@ describe("Step 5.5 — Citations and References", () => {
   });
 
   describe("3. Grounded vs Ungrounded Generation & User-Supplied Link Attachments", () => {
-    it("persists GROUNDING citations, positions inline [n] markers, and charges +3 surcharge on grounded turns", async () => {
+    it("persists GROUNDING citations, positions inline [n] markers, and charges the search surcharge on grounded turns", async () => {
       const beforeAcc = await getAccountByUserId(user.id);
       const beforeTotal =
         (beforeAcc?.planBalance ?? 0) + (beforeAcc?.topupBalance ?? 0);

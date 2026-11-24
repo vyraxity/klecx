@@ -172,7 +172,7 @@ describe("Step F4.1 — Web search tool, switchable in Settings, and plan caps",
     setCustomProvider(null);
   });
 
-  it("1. Mocked provider calling web_search produces citations and +3 surcharge stored in Generation.usage", async () => {
+  it("1. Mocked provider calling web_search produces citations and the search surcharge stored in Generation.usage", async () => {
     setUserPlanOverride(user.id, "LITE");
 
     const beforeAcc = await getAccountByUserId(user.id);
@@ -198,7 +198,7 @@ describe("Step F4.1 — Web search tool, switchable in Settings, and plan caps",
     );
     expect(searchingStatus).toBeDefined();
 
-    // Surcharge of +3 credits was applied
+    // The search surcharge was applied
     const afterAcc = await getAccountByUserId(user.id);
     const afterTotal = (afterAcc?.planBalance ?? 0) + (afterAcc?.topupBalance ?? 0);
     const baseCredits = creditsFor("text-economy", { inputTokens: 100, outputTokens: 50 });

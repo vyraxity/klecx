@@ -37,6 +37,13 @@ const formatSourceAria = (idx: number, title: string) => `Source ${idx}: ${title
 const formatSourcesCount = (lbl: string, count: number) => `${lbl} (${count})`;
 const formatSourceHost = (host: string) => `· ${host}`;
 
+/**
+ * A web-search source's stored snippet is a piece of Klecx's own search
+ * summary, not the page's text (answers before 2026-11-24 stored them), so
+ * it isn't shown as if the source said it.
+ */
+const sourceSnippet = (c: CitationDto) => (c.source === "GROUNDING" ? null : c.snippet);
+
 export interface CitationMarkerPopoverProps {
   citation: CitationDto;
 }
@@ -102,9 +109,9 @@ export function CitationMarkerPopover({
           <ExternalLink className="text-fg-muted group-hover/cit:text-accent mt-0.5 h-3 w-3 shrink-0" />
         </a>
 
-        {citation.snippet && (
+        {sourceSnippet(citation) && (
           <p className="text-fg-muted border-border/60 line-clamp-3 border-t pt-1.5 text-[11px] leading-relaxed">
-            {citation.snippet}
+            {sourceSnippet(citation)}
           </p>
         )}
       </PopoverContent>
@@ -216,9 +223,9 @@ export function SourcesAccordion({
                       <ExternalLink className="text-fg-muted group-hover/src:text-accent ml-auto h-3 w-3 shrink-0" />
                     </div>
 
-                    {cit.snippet && (
+                    {sourceSnippet(cit) && (
                       <p className="text-fg-muted line-clamp-2 text-[11px] leading-relaxed">
-                        {cit.snippet}
+                        {sourceSnippet(cit)}
                       </p>
                     )}
                   </div>

@@ -358,7 +358,7 @@
       "languageLabel": "Idioma en el que responde Klecx",
       "auto": "Automático (coincidir con mi mensaje)",
       "searchLabel": "Buscar en la web cuando sea útil",
-      "searchHint": "Klecx busca solo cuando una pregunta necesita información actual. Cada búsqueda usa 3 créditos.",
+      "searchHint": "Klecx busca solo cuando una pregunta necesita información actual. Cada búsqueda usa 5 créditos.",
       "searchOnToast": "Búsqueda web activada",
       "searchOffToast": "Búsqueda web desactivada",
       "languageUpdatedToast": "Idioma de IA actualizado",
@@ -1006,7 +1006,9 @@
         "costVsRevenue": "El coste de IA de las últimas 24 horas fue de {costUsd} USD, el {pct} % de los ingresos diarios medios ({revenueUsd} USD).",
         "limitAbuse": "El usuario {userId} alcanzó el límite {limit} en {days} días distintos esta semana.",
         "stuckGenerations": "{count, plural, one {# solicitud de IA lleva} other {# solicitudes de IA llevan}} más de 15 minutos en curso.",
-        "dbConnections": "Conexiones a la base de datos: {used} de {max} en uso."
+        "dbConnections": "Conexiones a la base de datos: {used} de {max} en uso.",
+        "searchCapNear": "Búsquedas web de hoy: {requests} del límite diario del proveedor de {cap} ({pct} %). Al llegar al límite, las búsquedas se detienen para todos hasta la medianoche UTC.",
+        "searchCapReached": "Las búsquedas web de hoy alcanzaron el límite diario del proveedor ({requests} de {cap}): las búsquedas están desactivadas para todos hasta la medianoche UTC; las respuestas continúan sin ellas."
       }
     }
   },
@@ -1611,8 +1613,8 @@
       "items": {
         "creditDef": {
           "q": "¿Qué es un crédito y cómo funciona?",
-          "a": "Los créditos representan el coste computacional real: ≈ 2 créditos por un mensaje típico con el modelo Rápido, ≈ 7 con el modelo Estándar y ≈ 34 por imagen. Cuando Klecx busca en la web, cada búsqueda añade 3 créditos.",
-          "aTextOnly": "Los créditos representan el coste computacional real: ≈ 2 créditos por un mensaje típico con el modelo Rápido y ≈ 7 con el modelo Estándar. Cuando Klecx busca en la web, cada búsqueda añade 3 créditos."
+          "a": "Los créditos representan el coste computacional real: ≈ 2 créditos por un mensaje típico con el modelo Rápido, ≈ 7 con el modelo Estándar y ≈ 34 por imagen. Cuando Klecx busca en la web, cada búsqueda añade 5 créditos.",
+          "aTextOnly": "Los créditos representan el coste computacional real: ≈ 2 créditos por un mensaje típico con el modelo Rápido y ≈ 7 con el modelo Estándar. Cuando Klecx busca en la web, cada búsqueda añade 5 créditos."
         },
         "rollover": {
           "q": "¿Los créditos no utilizados se acumulan para el mes siguiente?",

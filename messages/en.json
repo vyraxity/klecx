@@ -358,7 +358,7 @@
       "languageLabel": "Language Klecx answers in",
       "auto": "Auto (match my message)",
       "searchLabel": "Search the web when helpful",
-      "searchHint": "Klecx searches only when a question needs current information. Each search uses 3 credits.",
+      "searchHint": "Klecx searches only when a question needs current information. Each search uses 5 credits.",
       "searchOnToast": "Web search turned on",
       "searchOffToast": "Web search turned off",
       "languageUpdatedToast": "AI response language updated",
@@ -1006,7 +1006,9 @@
         "costVsRevenue": "AI cost in the last 24 hours was {costUsd} USD, {pct} % of the average daily revenue ({revenueUsd} USD).",
         "limitAbuse": "User {userId} reached the {limit} limit on {days} different days this week.",
         "stuckGenerations": "{count, plural, one {# AI request has} other {# AI requests have}} been running for more than 15 minutes.",
-        "dbConnections": "Database connections: {used} of {max} in use."
+        "dbConnections": "Database connections: {used} of {max} in use.",
+        "searchCapNear": "Web searches today: {requests} of the provider's daily cap of {cap} ({pct} %). At the cap, searches stop for everyone until midnight UTC.",
+        "searchCapReached": "Web searches today reached the provider's daily cap ({requests} of {cap}): searches are off for everyone until midnight UTC; answers continue without them."
       }
     }
   },
@@ -1611,8 +1613,8 @@
       "items": {
         "creditDef": {
           "q": "What is a credit and how does it work?",
-          "a": "Credits represent real computational cost: ≈ 2 credits for a typical message with the Fast model, ≈ 7 with the Standard model, and ≈ 34 per image. When Klecx searches the web, each search adds 3 credits.",
-          "aTextOnly": "Credits represent real computational cost: ≈ 2 credits for a typical message with the Fast model and ≈ 7 with the Standard model. When Klecx searches the web, each search adds 3 credits."
+          "a": "Credits represent real computational cost: ≈ 2 credits for a typical message with the Fast model, ≈ 7 with the Standard model, and ≈ 34 per image. When Klecx searches the web, each search adds 5 credits.",
+          "aTextOnly": "Credits represent real computational cost: ≈ 2 credits for a typical message with the Fast model and ≈ 7 with the Standard model. When Klecx searches the web, each search adds 5 credits."
         },
         "rollover": {
           "q": "Do unused credits roll over to the next month?",

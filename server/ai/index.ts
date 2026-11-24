@@ -4,6 +4,7 @@ import { AiError, AiProvider, GenerateRequest, ImageRequest, ImageResult, Stream
 import { assertModelAccess, getModel, ModelKey, PlanTier } from "./registry";
 import { GeminiProvider } from "./providers/gemini";
 import { normalizeGeminiError } from "./errors";
+import { currentDateInstruction } from "@/lib/ai/date-context";
 
 export * from "./types";
 export * from "./registry";
@@ -35,6 +36,14 @@ export interface StreamAiOptions {
   userPlan?: PlanTier | string;
   fallbackModelKey?: ModelKey;
   providerInstance?: AiProvider;
+  /** "Now" for the date in the instructions (tests); defaults to the current time. */
+  now?: Date;
+}
+
+/** Adds today's date to the end of a request's instructions (the stable start stays cacheable). */
+export function withCurrentDate(req: GenerateRequest, now: Date = new Date()): GenerateRequest {
+  const line = currentDateInstruction(now);
+  return { ...req, system: req.system ? `${req.system}\n\n${line}` : line };
 }
 
 /**
@@ -57,6 +66,10 @@ export async function* streamAi(
     (req.modelKey === "text-standard" ? "text-economy" : null);
 
   const provider = options.providerInstance || getProvider(req.modelKey);
+
+  // Every request knows today's date (fix before Step 10.3): without it the
+  // model assumes its training-era "now" and searches for stale events.
+  req = withCurrentDate(req, options.now);
 
   let tokensEmitted = false;
   let activeModelKey = primaryModel.providerModelId;

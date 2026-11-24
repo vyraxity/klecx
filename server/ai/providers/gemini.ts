@@ -153,6 +153,8 @@ export class GeminiProvider implements AiProvider {
     }
     let outputCharCount = 0;
     let emittedUsage = false;
+    // Grounded requests: the queries the provider ran (each one is billed).
+    const searchQueries = new Set<string>();
     type DoneFinishReason = Extract<StreamEvent, { type: "done" }>["finishReason"];
     let finishReason: DoneFinishReason = "stop";
 
@@ -204,6 +206,9 @@ export class GeminiProvider implements AiProvider {
 
         // 2. Check grounding metadata (groundingChunks + groundingSupports) for citations
         const groundingMetadata = candidate?.groundingMetadata;
+        for (const q of (groundingMetadata?.webSearchQueries as string[] | undefined) ?? []) {
+          if (typeof q === "string" && q.trim()) searchQueries.add(q.trim());
+        }
         const groundingChunks: Array<{ web?: { uri?: string; title?: string } }> =
           groundingMetadata?.groundingChunks || [];
         const groundingSupports: Array<{
@@ -214,7 +219,7 @@ export class GeminiProvider implements AiProvider {
         for (let chunkIdx = 0; chunkIdx < groundingChunks.length; chunkIdx++) {
           const gc = groundingChunks[chunkIdx];
           if (gc?.web?.uri) {
-            // Collect any segments and snippet text that reference this chunk index
+            // Collect the segments of our text that this chunk supports
             const matchingSupports = groundingSupports.filter(
               (sup) =>
                 Array.isArray(sup.groundingChunkIndices) &&
@@ -226,16 +231,12 @@ export class GeminiProvider implements AiProvider {
                 (seg): seg is { startIndex?: number; endIndex?: number; text?: string } =>
                   Boolean(seg)
               );
-            const snippet = segments
-              .map((seg) => seg.text?.trim())
-              .filter(Boolean)
-              .join(" … ") || undefined;
-
+            // No snippet: the segments are pieces of the model's own text,
+            // not of the source page (shown as the source's words, they misled).
             yield {
               type: "citation",
               url: gc.web.uri,
               title: gc.web.title,
-              ...(snippet ? { snippet } : {}),
               ...(segments.length > 0 ? { segments } : {}),
             };
           }
@@ -261,12 +262,21 @@ export class GeminiProvider implements AiProvider {
           const inputTokens = chunk.usageMetadata.promptTokenCount ?? 0;
           const outputTokens = chunk.usageMetadata.candidatesTokenCount ?? 0;
           const thoughtTokens = chunk.usageMetadata.thoughtsTokenCount ?? 0;
+          const details = (chunk.usageMetadata.promptTokensDetails ?? []) as Array<{
+            modality?: string;
+            tokenCount?: number;
+          }>;
+          const audioInputTokens = details
+            .filter((d) => String(d.modality ?? "").toUpperCase() === "AUDIO")
+            .reduce((sum, d) => sum + (d.tokenCount ?? 0), 0);
 
           yield {
             type: "usage",
             inputTokens,
             outputTokens,
             thoughtTokens,
+            ...(audioInputTokens > 0 ? { audioInputTokens } : {}),
+            ...(searchQueries.size > 0 ? { searchQueries: searchQueries.size } : {}),
             estimated: false,
           };
         }
@@ -281,6 +291,7 @@ export class GeminiProvider implements AiProvider {
         type: "usage",
         inputTokens: Math.max(1, Math.ceil(inputCharCount / 4)),
         outputTokens: Math.max(1, Math.ceil(outputCharCount / 4)),
+        ...(searchQueries.size > 0 ? { searchQueries: searchQueries.size } : {}),
         estimated: true,
       };
     }

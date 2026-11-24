@@ -51,7 +51,7 @@ Use a free external monitor, e.g. **Better Stack Uptime** (10 monitors and a sta
 
 - **Generations** per day and kind, success rate, failures by provider category (`auth`, `rate_limit`, `unavailable`, `timeout`, `safety`…).
 - **Latency** per model: p50/p95 time to first token (`generations.first_token_at`) and total time.
-- **Provider cost** per day, kind and plan = recorded usage × the prices in `lib/ai/model-catalog.ts` (`server/monitoring/costs.ts`), plus **`PROVIDER_SEARCH_USD` per executed search ($0.014: check the provider's pricing page; our search surcharge is 3 credits = $0.006, so each search costs more than it earns at today's prices)**.
+- **Provider cost** per day, kind and plan = recorded usage × the prices in `lib/ai/model-catalog.ts` (`server/monitoring/costs.ts`), plus each search's own cost: **$0.014 per search query the provider ran** (`PROVIDER_SEARCH_USD`; confirmed 2026-11-24) and the search request's tokens. The first **5,000 search requests a month are free** (account-wide): `searches.monthToDate` shows the month's count against them. Our surcharge is 5 credits ($0.010) per search (`OPEN_DECISIONS.md` §17).
 - **Revenue** = `amountPaid` of `subscription.paid` events (gross: Creem's fees and taxes not deducted), per plan; cost-to-revenue ratio.
 - Credits burned per plan; searches (count, surcharge vs provider cost); transcription and read-aloud seconds and cost; document-review cost per review; Ask generations per workspace and Ask depth; notes per workspace.
 - Billing: payments, refunds (rate, first purchase vs renewal), disputes, failed/unprocessed webhooks.
@@ -72,6 +72,7 @@ Use a free external monitor, e.g. **Better Stack Uptime** (10 monitors and a sta
 | `cost_vs_revenue` | (billing on) the day's provider cost > 60 % of the 30-day average daily revenue | warning |
 | `limit_abuse:<user>:<limit>` | someone hit the same plan limit on ≥ 3 days in the last 7 (abuse, or a plan too small) | warning |
 | `stuck_generations` | an AI request still running after 15 min (crash; cleaned up by the 10.3 job) | warning |
+| `search_cap_near` / `search_cap_reached` | Klecx's grounded searches today reach 80 % / 100 % of the provider's 1,500-a-day cap (account-wide; at 100 % searches stop until midnight UTC) | warning / critical |
 | `db_connections` | ≥ 80 % of the database's connections in use (where the host shows it) | critical |
 
 Each alert is emailed to `ALERTS_EMAIL` (default `BILLING_EMAIL`) once, then not again for 1 hour (critical) or 6 hours (warning) while it keeps firing; `monitoring_alerts` keeps the history. Code errors and error spikes are Sentry's alerts (above). Job failures arrive with Step 10.3.

@@ -343,3 +343,16 @@ Known gap: the credit hold before an answer covers the base cost only (decided 2
 **Options (can be combined).** (a) **Protect it:** count Klecx's grounded requests per UTC day; near the cap, stop searches for Free first and keep the rest for paid plans; reuse a recent result for the same query for a short time (e.g. 15 minutes) so repeated questions don't spend new requests; alert at 80 %. (b) **A second search source** behind one interface (`runWebSearch` → a `SearchProvider`): a web-search API (e.g. Brave Search, Tavily, Exa or similar — compare price per 1,000, limits, terms for AI use and data retention) whose results Klecx passes to the model itself; the fallback when Google's cap is reached, or the main source if cheaper. Adds a processor to the Privacy Policy. (c) **Ask Google** whether the grounding cap rises with the paid usage tier or on request (or what Vertex AI's grounding quota is). Never split traffic across several projects or keys to get around a limit.
 
 **Owner, 2026-11-24:** nothing is built for this now; to be decided **after launch**, from the first users' feedback and the search metrics. Until then, past 1,500 grounded requests in a day, searches simply stop for everyone until midnight UTC (answers still work and nobody is charged for a search that didn't run). Only the near-cap alert (count grounded requests per UTC day, warn at ~80 %) is built now, in the fix PR (owner, 2026-11-24), so a full cap never comes as a surprise.
+
+---
+
+## 19. The person's country, location and time zone in Settings (future feature, after launch)
+
+- **Asked by the owner:** 2026-11-24, after a Premier League fixtures answer gave times in a mix of time zones (the owner is in Lagos, WAT = UTC+1; the sources mixed UK time and local times).
+- **Where:** today every AI request gets only "Today is <date> (UTC)" (`lib/ai/date-context.ts`, added by `withCurrentDate()` in `server/ai/index.ts`). Klecx knows nothing about where the person is.
+
+**Wanted.** A Settings preference (Settings → Language & AI) for the person's **country** (and optionally a city/region) and **time zone**, so answers about times, dates, prices, laws, weather, sport or "near me" use the person's location and local time — **unless the prompt names another place or time zone**, which always wins.
+
+**To decide when building it.** (a) Defaults: the time zone from the browser (`Intl.DateTimeFormat().resolvedOptions().timeZone`) and the country from the request's country header (as the language suggestion already does), both editable, with "don't use my location" as an option. (b) Who it applies to: the person sending the prompt (not the workspace owner), including Asks and the question queue. (c) How much to tell the model: country + time zone only, or also a city (more useful for local questions, more personal data). (d) Privacy: a new preference to list in the Privacy Policy and the data export; never logged; erased with the account. (e) Whether the search step gets it too (e.g. "convert times to Africa/Lagos").
+
+**Owner, 2026-11-24:** not for the first release; **one of the first updates after launch**. Until then answers use UTC for "today" and state times as the sources give them.
