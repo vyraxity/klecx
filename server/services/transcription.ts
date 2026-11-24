@@ -227,6 +227,7 @@ export async function transcribeAudio(
   // Sized from the recording so a long one can't be under-reserved.
   const reserveAmount = creditsFor(modelKey, {
     inputTokens: audioSeconds * AUDIO_TOKENS_PER_SECOND + 100,
+    audioInputTokens: audioSeconds * AUDIO_TOKENS_PER_SECOND,
     outputTokens: audioSeconds * TRANSCRIPT_TOKENS_PER_SECOND,
     thoughtTokens: RESERVE_THOUGHT_TOKENS,
   });
@@ -287,7 +288,7 @@ export async function transcribeAudio(
   const dataUrl = `data:${effectiveMime};base64,${audioBuffer.toString("base64")}`;
 
   let transcribedText = "";
-  let usage = { inputTokens: 0, outputTokens: 0, thoughtTokens: 0 };
+  let usage = { inputTokens: 0, outputTokens: 0, thoughtTokens: 0, audioInputTokens: 0 };
 
   try {
     const stream = streamAi(
@@ -326,6 +327,7 @@ export async function transcribeAudio(
           inputTokens: ev.inputTokens,
           outputTokens: ev.outputTokens,
           thoughtTokens: ev.thoughtTokens ?? 0,
+          audioInputTokens: ev.audioInputTokens ?? 0,
         };
       }
     }
@@ -370,7 +372,13 @@ export async function transcribeAudio(
   const outputTokens = usage.outputTokens || Math.ceil(cleanText.split(/\s+/).length * 1.3);
   // Thinking tokens are billed by the provider as output, so they count too.
   const thoughtTokens = usage.thoughtTokens;
-  const chargedCredits = creditsFor(modelKey, { inputTokens, outputTokens, thoughtTokens });
+  // Audio is priced at the audio rate (fix before 10.3); when the provider
+  // doesn't split it out, the recording's own tokens are the audio part.
+  const audioInputTokens = Math.min(
+    inputTokens,
+    usage.audioInputTokens || Math.ceil(audioSeconds * AUDIO_TOKENS_PER_SECOND)
+  );
+  const chargedCredits = creditsFor(modelKey, { inputTokens, outputTokens, thoughtTokens, audioInputTokens });
 
   await settle(account.id, generationId, chargedCredits, settleKey);
 
@@ -383,6 +391,7 @@ export async function transcribeAudio(
         inputTokens,
         outputTokens,
         thoughtTokens,
+        audioInputTokens,
         seconds: audioSeconds,
         durationMs,
       },

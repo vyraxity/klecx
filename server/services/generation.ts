@@ -4,6 +4,9 @@ import { WEB_SEARCH_TOOL } from "@/server/ai/tools/web-search";
 import {
   MAX_SEARCHES_PER_GENERATION,
   executeWebSearchTool,
+  newSearchTotals,
+  addSearchUsage,
+  searchUsageFields,
   resolveWebSearchAccess,
   webSearchNotice,
 } from "@/server/services/web-search";
@@ -276,6 +279,7 @@ async function executeDetachedGeneration(params: {
   // and charged too.
   const usage = { inputTokens: 0, outputTokens: 0, thoughtTokens: 0 };
   let searchesExecuted = 0;
+  const searchTotals = newSearchTotals();
 
   try {
     if (kind === "IMAGE") {
@@ -559,6 +563,7 @@ async function executeDetachedGeneration(params: {
           });
           if (result.executed) {
             searchesExecuted++;
+            addSearchUsage(searchTotals, result.usage);
             const searchThought = webSearchNotice(webSearch.locale, "searchedWeb", {
               query: result.query,
             });
@@ -651,7 +656,7 @@ async function executeDetachedGeneration(params: {
       usage.outputTokens = estimateTokens(active.currentContent);
     }
 
-    // Settle credits (including +3 surcharge per executed web search)
+    // Settle credits (including the per-search surcharge, GROUNDING_SURCHARGE_CREDITS)
     const chargedCredits = creditsFor(modelKey, {
       inputTokens: usage.inputTokens,
       outputTokens: usage.outputTokens,
@@ -703,6 +708,7 @@ async function executeDetachedGeneration(params: {
             outputTokens: usage.outputTokens,
             thoughtTokens: usage.thoughtTokens,
             searches: searchesExecuted,
+            ...searchUsageFields(searchTotals),
           },
           finishedAt: new Date(),
         },
@@ -773,6 +779,7 @@ async function executeDetachedGeneration(params: {
                 inputTokens: usage.inputTokens,
                 outputTokens: estimatedOutput,
                 searches: searchesExecuted,
+                ...searchUsageFields(searchTotals),
               },
               finishedAt: new Date(),
             },
@@ -849,6 +856,7 @@ async function executeDetachedGeneration(params: {
               inputTokens: usage.inputTokens,
               outputTokens: estimateTokens(active.currentContent),
               searches: searchesExecuted,
+              ...searchUsageFields(searchTotals),
             },
             finishedAt: new Date(),
           },

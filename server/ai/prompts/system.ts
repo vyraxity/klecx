@@ -1,4 +1,4 @@
-export const PROMPT_VERSION = "2026-11-14.1";
+export const PROMPT_VERSION = "2026-11-24.1"; // + today's date in every request (fix before 10.3)
 
 function getLanguageDisplayName(code: string): string {
   try {

@@ -2,6 +2,7 @@ import "server-only";
 import { type ToolSpec, type AiProvider } from "../types";
 import { streamAi } from "../index";
 import { validateCitationUrl, type CitationSegment } from "../citations";
+import { searchDateInstruction } from "@/lib/ai/date-context";
 
 export const WEB_SEARCH_TOOL: ToolSpec = {
   name: "web_search",
@@ -27,9 +28,19 @@ export interface WebSearchSource {
   segments?: CitationSegment[];
 }
 
+/** What the search request itself used (recorded on the answer; not charged as tokens). */
+export interface WebSearchUsage {
+  /** Search queries the provider ran (billed per query after the free allowance). */
+  queries: number;
+  inputTokens: number;
+  /** Output and thinking tokens of the search request. */
+  outputTokens: number;
+}
+
 export interface WebSearchResult {
   summary: string;
   sources: WebSearchSource[];
+  usage: WebSearchUsage;
 }
 
 /**
@@ -41,6 +52,8 @@ export async function runWebSearch(
   ctx: {
     modelKey?: string;
     providerInstance?: AiProvider;
+    /** For tests; defaults to now. */
+    now?: Date;
   } = {}
 ): Promise<WebSearchResult> {
   const stream = streamAi(
@@ -52,7 +65,7 @@ export async function runWebSearch(
           parts: [
             {
               type: "text",
-              text: `Search query: ${query}\n\nProvide a factual, compact summary of the latest information found (under 1500 tokens). Include relevant details, dates, or prices.`,
+              text: `${searchDateInstruction(ctx.now)}\n\nSearch query: ${query}\n\nProvide a factual, compact summary of the latest information found (under 1500 tokens). Include relevant details, dates, or prices.`,
             },
           ],
         },
@@ -63,15 +76,22 @@ export async function runWebSearch(
     },
     {
       providerInstance: ctx.providerInstance,
+      now: ctx.now,
     }
   );
 
   let summary = "";
   const sources: WebSearchSource[] = [];
+  const usage: WebSearchUsage = { queries: 1, inputTokens: 0, outputTokens: 0 };
 
   for await (const event of stream) {
     if (event.type === "text_delta") {
       summary += event.text;
+    } else if (event.type === "usage") {
+      usage.inputTokens = event.inputTokens;
+      usage.outputTokens = event.outputTokens + (event.thoughtTokens ?? 0);
+      // At least one query ran for a grounded request, even if none was reported.
+      usage.queries = Math.max(1, event.searchQueries ?? 1);
     } else if (event.type === "citation") {
       const check = validateCitationUrl(event.url);
       if (check.valid && check.normalizedUrl) {
@@ -96,5 +116,6 @@ export async function runWebSearch(
     // Not trimmed: the sources' segment offsets point into this text.
     summary: summary.trim() ? summary : "No relevant search results found.",
     sources,
+    usage,
   };
 }

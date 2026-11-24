@@ -140,7 +140,7 @@ describe("Step F4.2 — AI language preference, system prompt, and settings", ()
     });
 
     it("has bumped prompt version", () => {
-      expect(PROMPT_VERSION).toBe("2026-11-14.1");
+      expect(PROMPT_VERSION).toBe("2026-11-24.1");
     });
   });
 

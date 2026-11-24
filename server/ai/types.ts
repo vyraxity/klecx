@@ -44,6 +44,10 @@ export type StreamEvent =
       inputTokens: number;
       outputTokens: number;
       thoughtTokens?: number;
+      /** Of `inputTokens`, how many were audio (priced differently: voice input). */
+      audioInputTokens?: number;
+      /** Search queries the provider ran for a grounded request (billed per query). */
+      searchQueries?: number;
       estimated: boolean;
     }
   | { type: "done"; finishReason: "stop" | "length" | "safety" | "tool" };

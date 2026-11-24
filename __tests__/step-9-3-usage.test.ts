@@ -98,7 +98,7 @@ beforeAll(async () => {
   await db.workspace.create({ data: { id: W1, ownerId: A.id, title: "=HYPERLINK(\"x\") Marketing plan" } });
   await db.workspace.create({ data: { id: W2, ownerId: A.id, title: "Old workspace", deletedAt: new Date() } });
 
-  // A: an answer with one web search (8 = 5 + 3 for the search).
+  // A: an answer with one web search (8 = 3 + 5 for the search: GROUNDING_SURCHARGE_CREDITS).
   await spend({ id: `g1_${sfx}`, actorId: A.id, kind: "TEXT", modelKey: "text-economy", workspaceId: W1, reserved: 10, settled: 8, usage: { searches: 1 } });
   // B (collaborator, billed to A): an Ask.
   await spend({ id: `g2_${sfx}`, actorId: B.id, kind: "ANNOTATION_REPLY", modelKey: "text-economy", workspaceId: W1, reserved: 5, settled: 5 });
@@ -122,8 +122,8 @@ describe("Step 9.3 — usage numbers equal the ledger", () => {
     expect(s.used).toBe(await ledgerSpendSum(accountId));
     expect(s.remaining).toBe(78);
     expect(s.allowance).toBe(100);
-    expect(s.byKind).toMatchObject({ text: 5, asks: 5, transcription: 2, reviews: 7, images: 0 });
-    expect(s.webSearch).toEqual({ credits: 3, searches: 1 });
+    expect(s.byKind).toMatchObject({ text: 3, asks: 5, transcription: 2, reviews: 7, images: 0 });
+    expect(s.webSearch).toEqual({ credits: 5, searches: 1 });
     expect(s.transcriptionSeconds).toBe(30);
     const kindsTotal = Object.values(s.byKind).reduce((a, b) => a + b, 0) + s.webSearch.credits;
     expect(kindsTotal).toBe(s.used);

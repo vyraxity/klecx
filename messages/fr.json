@@ -358,7 +358,7 @@
       "languageLabel": "Langue dans laquelle Klecx répond",
       "auto": "Automatique (selon mon message)",
       "searchLabel": "Rechercher sur le web si utile",
-      "searchHint": "Klecx recherche uniquement lorsqu'une question nécessite des informations actuelles. Chaque recherche utilise 3 crédits.",
+      "searchHint": "Klecx recherche uniquement lorsqu'une question nécessite des informations actuelles. Chaque recherche utilise 5 crédits.",
       "searchOnToast": "Recherche web activée",
       "searchOffToast": "Recherche web désactivée",
       "languageUpdatedToast": "Langue de l'IA mise à jour",
@@ -1006,7 +1006,9 @@
         "costVsRevenue": "Le coût d'IA des dernières 24 heures était de {costUsd} USD, soit {pct} % du revenu quotidien moyen ({revenueUsd} USD).",
         "limitAbuse": "L'utilisateur {userId} a atteint la limite {limit} sur {days} jours différents cette semaine.",
         "stuckGenerations": "{count, plural, one {# requête d'IA est} other {# requêtes d'IA sont}} en cours depuis plus de 15 minutes.",
-        "dbConnections": "Connexions à la base de données : {used} sur {max} utilisées."
+        "dbConnections": "Connexions à la base de données : {used} sur {max} utilisées.",
+        "searchCapNear": "Recherches web aujourd'hui : {requests} sur la limite quotidienne du fournisseur de {cap} ({pct} %). Une fois la limite atteinte, les recherches s'arrêtent pour tout le monde jusqu'à minuit UTC.",
+        "searchCapReached": "Les recherches web d'aujourd'hui ont atteint la limite quotidienne du fournisseur ({requests} sur {cap}) : les recherches sont désactivées pour tout le monde jusqu'à minuit UTC ; les réponses continuent sans elles."
       }
     }
   },
@@ -1611,8 +1613,8 @@
       "items": {
         "creditDef": {
           "q": "Qu'est-ce qu'un crédit et comment fonctionne-t-il ?",
-          "a": "Les crédits reflètent le coût de calcul réel : ≈ 2 crédits pour un message classique avec le modèle Rapide, ≈ 7 avec le modèle Standard et ≈ 34 par image. Lorsque Klecx effectue une recherche web, chaque recherche ajoute 3 crédits.",
-          "aTextOnly": "Les crédits reflètent le coût de calcul réel : ≈ 2 crédits pour un message classique avec le modèle Rapide et ≈ 7 avec le modèle Standard. Lorsque Klecx effectue une recherche web, chaque recherche ajoute 3 crédits."
+          "a": "Les crédits reflètent le coût de calcul réel : ≈ 2 crédits pour un message classique avec le modèle Rapide, ≈ 7 avec le modèle Standard et ≈ 34 par image. Lorsque Klecx effectue une recherche web, chaque recherche ajoute 5 crédits.",
+          "aTextOnly": "Les crédits reflètent le coût de calcul réel : ≈ 2 crédits pour un message classique avec le modèle Rapide et ≈ 7 avec le modèle Standard. Lorsque Klecx effectue une recherche web, chaque recherche ajoute 5 crédits."
         },
         "rollover": {
           "q": "Les crédits non utilisés sont-ils reportés au mois suivant ?",

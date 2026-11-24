@@ -3,7 +3,8 @@ import { db } from "@/server/db/client";
 import { env } from "@/server/env";
 import { log, errInfo } from "@/server/log";
 import { sendEmail } from "@/server/email/send";
-import { generationCostUsd } from "@/server/monitoring/costs";
+import { DAILY_SEARCH_REQUEST_CAP, generationCostUsd } from "@/server/monitoring/costs";
+import { countSearchRequests, startOfUtcDay } from "@/server/monitoring/search-usage";
 import { readCreemEventData } from "@/server/billing/creem";
 import type { Prisma } from "@/server/db/generated/client";
 
@@ -27,7 +28,9 @@ export type AlertKind =
   | "costVsRevenue"
   | "limitAbuse"
   | "stuckGenerations"
-  | "dbConnections";
+  | "dbConnections"
+  | "searchCapNear"
+  | "searchCapReached";
 
 export interface Alert {
   key: string;
@@ -55,6 +58,8 @@ export const ALERT_THRESHOLDS = {
   dbConnectionShare: 0.8,
   /** Webhook events still RECEIVED (not processed) after this long. */
   webhookStuckMinutes: 15,
+  /** Share of the provider's daily cap on grounded searches (1,500, account-wide) that warns. */
+  searchCapShare: 0.8,
 };
 
 const QUIET_MS = { critical: 60 * 60_000, warning: 6 * 60 * 60_000 };
@@ -180,7 +185,26 @@ export async function evaluateAlerts(now: Date = new Date()): Promise<Alert[]> {
   });
   if (stuck > 0) alerts.push({ key: "stuck_generations", kind: "stuckGenerations", severity: "warning", values: { count: stuck } });
 
-  // 7. Database connections near the limit (skipped where the host hides these views).
+  // 7. The provider's daily cap on grounded searches (1,500 for all of Klecx,
+  //    UTC day): searches stop for everyone once it's reached (OPEN_DECISIONS §18).
+  const searchesToday = await countSearchRequests(startOfUtcDay(now), new Date(now.getTime() + 1));
+  if (searchesToday.requests >= DAILY_SEARCH_REQUEST_CAP) {
+    alerts.push({
+      key: "search_cap_reached",
+      kind: "searchCapReached",
+      severity: "critical",
+      values: { requests: searchesToday.requests, cap: DAILY_SEARCH_REQUEST_CAP },
+    });
+  } else if (searchesToday.requests >= ALERT_THRESHOLDS.searchCapShare * DAILY_SEARCH_REQUEST_CAP) {
+    alerts.push({
+      key: "search_cap_near",
+      kind: "searchCapNear",
+      severity: "warning",
+      values: { requests: searchesToday.requests, cap: DAILY_SEARCH_REQUEST_CAP, pct: pct(searchesToday.requests / DAILY_SEARCH_REQUEST_CAP) },
+    });
+  }
+
+  // 8. Database connections near the limit (skipped where the host hides these views).
   try {
     const rows = await db.$queryRaw<{ used: bigint | number; max: string }[]>`
       SELECT (SELECT count(*) FROM pg_stat_activity) AS used, current_setting('max_connections') AS max`;

@@ -3,12 +3,15 @@ import { db } from "@/server/db/client";
 import { Errors } from "@/server/http/errors";
 import { readCreemEventData } from "@/server/billing/creem";
 import {
-  PROVIDER_SEARCH_USD,
+  FREE_SEARCH_REQUESTS_PER_MONTH,
   SEARCH_SURCHARGE_USD,
   generationCostUsd,
   readUsage,
+  searchCostUsd,
+  searchQueriesOf,
   searchesOf,
 } from "@/server/monitoring/costs";
+import { countSearchRequests, startOfUtcMonth } from "@/server/monitoring/search-usage";
 import { CREDIT_USD } from "@/lib/ai/model-catalog";
 import type { Actor } from "@/server/auth/session";
 
@@ -112,7 +115,7 @@ export async function computeMetrics(from: Date, to: Date) {
   const failures: Bucket = {};
   const latency = new Map<string, { ttft: number[]; total: number[] }>();
   const planCost: Bucket = {};
-  const searches = { executed: 0, byDay: {} as Bucket };
+  const searches = { executed: 0, queries: 0, providerUsd: 0, byDay: {} as Bucket };
   const voice = { transcriptionSeconds: 0, transcriptionUsd: 0, readAloudSeconds: 0, readAloudUsd: 0 };
   const reviews = { count: 0, providerUsd: 0 };
   const asksPerWorkspace: Bucket = {};
@@ -141,6 +144,8 @@ export async function computeMetrics(from: Date, to: Date) {
     const s = searchesOf(g.usage);
     if (s) {
       searches.executed += s;
+      searches.queries += searchQueriesOf(g.usage);
+      searches.providerUsd += searchCostUsd(g.usage);
       add(searches.byDay, d, s);
     }
     if (g.kind === "TRANSCRIPTION") {
@@ -209,6 +214,10 @@ export async function computeMetrics(from: Date, to: Date) {
     }
     if (e.type === "dispute.created") disputes++;
   }
+
+  // --- Searches this calendar month against the provider's free allowance ---------
+  const monthEnd = new Date(to.getTime() - 1);
+  const monthToDate = await countSearchRequests(startOfUtcMonth(monthEnd), to);
 
   // --- Funnel (people who signed up in the range) -----------------------------
   const newIds = newUsers.map((u) => u.id);
@@ -282,9 +291,19 @@ export async function computeMetrics(from: Date, to: Date) {
     ),
     searches: {
       executed: searches.executed,
+      queries: searches.queries,
       byDay: searches.byDay,
       surchargeUsd: round(searches.executed * SEARCH_SURCHARGE_USD),
-      providerUsd: round(searches.executed * PROVIDER_SEARCH_USD),
+      // Queries × $0.014 + the search requests' tokens, before the free allowance.
+      providerUsd: round(searches.providerUsd),
+      // The calendar month that contains `to`, against the 5,000 free requests.
+      monthToDate: {
+        month: startOfUtcMonth(monthEnd).toISOString().slice(0, 7),
+        requests: monthToDate.requests,
+        queries: monthToDate.queries,
+        freeRequests: FREE_SEARCH_REQUESTS_PER_MONTH,
+        freeRemaining: Math.max(0, FREE_SEARCH_REQUESTS_PER_MONTH - monthToDate.requests),
+      },
     },
     voice: {
       transcriptionSeconds: voice.transcriptionSeconds,

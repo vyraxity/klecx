@@ -14,7 +14,14 @@ export const PLAN_RANKS: Record<PlanTier, number> = {
 };
 
 export const CREDIT_USD = 0.002;
-export const GROUNDING_SURCHARGE_CREDITS = 3;
+/**
+ * Credits added per executed web search (owner, 2026-11-24: 5, up from 3).
+ * $0.010, below the provider's $0.014 per query + the search request's tokens:
+ * profitable while most searches fall in the free 5,000 a month (break-even
+ * around 11,000 a month). Revisit (e.g. 8) when the metrics show more:
+ * OPEN_DECISIONS.md §17. Copy that quotes the number is tested against this.
+ */
+export const GROUNDING_SURCHARGE_CREDITS = 5;
 
 /** Typical token usage estimates used to compute per-message credit hints (§2.1) */
 export const TYPICAL_INPUT_TOKENS = 2500;
@@ -38,6 +45,8 @@ interface ModelCatalogBase {
   maxInput: number;
   caps: ModelCaps;
   priceUsdPerM?: { in: number; out: number };
+  /** Input price of audio tokens (voice), when it differs from text. */
+  priceUsdPerMAudioIn?: number;
   priceUsdPerImage?: number;
 }
 
@@ -53,6 +62,8 @@ const CATALOG_BASE: Record<ModelKey, ModelCatalogBase> = {
     tier: "ECONOMY",
     minPlan: "FREE",
     priceUsdPerM: { in: 0.25, out: 1.5 },
+    // Economy model, confirmed 2026-11-24: $0.50 per 1M audio input tokens.
+    priceUsdPerMAudioIn: 0.5,
     maxInput: 200_000,
     caps: {
       vision: true,
@@ -98,6 +109,8 @@ const CATALOG_BASE: Record<ModelKey, ModelCatalogBase> = {
     tier: "ECONOMY",
     minPlan: "FREE",
     priceUsdPerM: { in: 0.25, out: 1.5 },
+    // Economy model, confirmed 2026-11-24: $0.50 per 1M audio input tokens.
+    priceUsdPerMAudioIn: 0.5,
     maxInput: 200_000,
     caps: {
       vision: false,
@@ -125,6 +138,8 @@ export interface TokenUsageInput {
   outputTokens?: number;
   thoughtTokens?: number;
   images?: number;
+  /** Of `inputTokens`, how many were audio (priced at `priceUsdPerMAudioIn`). */
+  audioInputTokens?: number;
   grounding?: boolean;
   searches?: number;
 }
@@ -138,10 +153,14 @@ export function creditsFor(modelKey: string, u: TokenUsageInput = {}): number {
   let costUsd = 0;
   if (model.kind === "TEXT" && model.priceUsdPerM) {
     const inputCount = u.inputTokens ?? 0;
+    const audioCount = Math.min(inputCount, Math.max(0, u.audioInputTokens ?? 0));
+    const audioPrice = model.priceUsdPerMAudioIn ?? model.priceUsdPerM.in;
     // Thinking tokens are billed as output tokens
     const outputCount = (u.outputTokens ?? 0) + (u.thoughtTokens ?? 0);
     costUsd =
-      (inputCount * model.priceUsdPerM.in + outputCount * model.priceUsdPerM.out) /
+      ((inputCount - audioCount) * model.priceUsdPerM.in +
+        audioCount * audioPrice +
+        outputCount * model.priceUsdPerM.out) /
       1_000_000;
   } else if (model.kind === "IMAGE" && model.priceUsdPerImage !== undefined) {
     const imagesCount = u.images ?? 1;

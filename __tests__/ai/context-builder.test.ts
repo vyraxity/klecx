@@ -470,7 +470,7 @@ describe("Context builder and system prompts (Step 2.3)", () => {
       });
 
       expect(result.system).toContain("Response language: German.");
-      expect(PROMPT_VERSION).toBe("2026-11-14.1"); // bumped in F4.2 (Auto language instruction)
+      expect(PROMPT_VERSION).toBe("2026-11-24.1"); // bumped in the fix before 10.3 (today's date)
     });
   });
 

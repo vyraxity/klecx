@@ -263,7 +263,7 @@ describe("provider cost and business metrics (hand calculation)", () => {
 
     expect(m.searches).toMatchObject({ executed: 2, byDay: { "2001-03-02": 2 } });
     expect(m.searches.providerUsd).toBeCloseTo(2 * PROVIDER_SEARCH_USD, 6);
-    expect(m.searches.surchargeUsd).toBeCloseTo(2 * 3 * 0.002, 6);
+    expect(m.searches.surchargeUsd).toBeCloseTo(2 * 5 * 0.002, 6);
     expect(m.voice).toMatchObject({ transcriptionSeconds: 30, readAloudSeconds: 100 });
     expect(m.asks).toMatchObject({ generations: 2, workspaces: 1, perWorkspaceMax: 2 });
 

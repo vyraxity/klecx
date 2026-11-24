@@ -44,6 +44,9 @@ import { WEB_SEARCH_TOOL } from "@/server/ai/tools/web-search";
 import {
   MAX_SEARCHES_PER_GENERATION,
   executeWebSearchTool,
+  newSearchTotals,
+  addSearchUsage,
+  searchUsageFields,
   resolveWebSearchAccess,
   webSearchNotice,
 } from "@/server/services/web-search";
@@ -1309,6 +1312,7 @@ export async function streamAnnotationAnswer(
       let usage: { inputTokens: number; outputTokens: number; thoughtTokens: number } | null =
         null;
       let searchesExecuted = 0;
+      const searchTotals = newSearchTotals();
 
       try {
         send("started", {
@@ -1432,6 +1436,7 @@ export async function streamAnnotationAnswer(
             });
             if (result.executed) {
               searchesExecuted++;
+              addSearchUsage(searchTotals, result.usage);
               const notice = webSearchNotice(webSearch.locale, "searchedWeb", {
                 query: result.query,
               });
@@ -1513,6 +1518,7 @@ export async function streamAnnotationAnswer(
               outputTokens: usage?.outputTokens || estimateTokens(fullAssistantText),
               thoughtTokens: usage?.thoughtTokens ?? 0,
               searches: searchesExecuted,
+              ...searchUsageFields(searchTotals),
             },
           },
         });
