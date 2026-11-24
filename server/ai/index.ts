@@ -1,4 +1,5 @@
 import "server-only";
+import { log } from "@/server/log";
 import { AiError, AiProvider, GenerateRequest, ImageRequest, ImageResult, StreamEvent } from "./types";
 import { assertModelAccess, getModel, ModelKey, PlanTier } from "./registry";
 import { GeminiProvider } from "./providers/gemini";
@@ -81,8 +82,9 @@ export async function* streamAi(
     }
 
     // Fallback path: retryable error occurred before the first token was emitted
-    console.warn(
-      `[AI Engine] Primary model ${req.modelKey} failed (${normalized.category}). Triggering pre-token fallback to ${fallbackCandidate}...`
+    log.warn(
+      { model: req.modelKey, category: normalized.category, fallback: fallbackCandidate },
+      "[AI Engine] primary model failed before the first token; falling back"
     );
 
     const fallbackModel = assertModelAccess(

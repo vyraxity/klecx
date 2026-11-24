@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import { db } from "@/server/db/client";
 import type { Actor } from "@/server/auth/session";
 import { getAccountByUserId } from "@/server/services/credits";
@@ -83,7 +84,7 @@ async function currentGrant(userId: string): Promise<Date | null> {
   try {
     return (await ensureCurrentGrantForUser(userId)).resetsAt;
   } catch (e) {
-    console.error({ home: "ensure_current_grant", err: e instanceof Error ? e.message : "unknown" });
+    log.error({ home: "ensure_current_grant", err: errInfo(e) });
     return null;
   }
 }

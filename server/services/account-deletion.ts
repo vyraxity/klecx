@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 
 import { createHash, randomBytes } from "node:crypto";
 import { db } from "@/server/db/client";
@@ -377,6 +378,8 @@ export async function purgeDeletedAccount(
     await tx.account.deleteMany({ where: { userId } });
     // Two-factor sign-in: secret, backup codes and trusted devices.
     await tx.twoFactor.deleteMany({ where: { userId } });
+    // Step 10.2: monitoring counters of plan limits reached.
+    await tx.usageLimitHit.deleteMany({ where: { userId } });
     await tx.verification.deleteMany({ where: { identifier: { startsWith: "trust-device-" }, value: userId } });
     await tx.verification.deleteMany({ where: { identifier: { contains: email, mode: "insensitive" } } });
     await tx.user.update({
@@ -415,7 +418,7 @@ export async function purgeDueAccounts(now: Date = new Date(), limit = 20): Prom
       if ((await purgeDeletedAccount(d.userId, { now })).purged) purged++;
     } catch (err) {
       failed++;
-      console.error("[account-deletion] purge failed", { userId: d.userId, error: err instanceof Error ? err.name : "unknown" });
+      log.error({ err: errInfo(err), userId: d.userId }, "[account-deletion] purge failed");
     }
   }
   return { purged, failed };

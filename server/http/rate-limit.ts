@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import { isIP } from "node:net";
 import { Ratelimit, type Duration } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
@@ -284,17 +285,11 @@ export async function limit(
 
     // Operational / Redis error: fail closed for auth:*, fail open for others
     if (policy.startsWith("auth:")) {
-      console.error(
-        `[rate-limit] Backend error on ${policy}; failing closed:`,
-        String(err)
-      );
+      log.error({ err: errInfo(err) }, `[rate-limit] Backend error on ${policy}; failing closed`);
       throw Errors.rateLimited(60);
     }
 
-    console.error(
-      `[rate-limit] Backend error on ${policy}; failing open:`,
-      String(err)
-    );
+    log.error({ err: errInfo(err) }, `[rate-limit] Backend error on ${policy}; failing open`);
   }
 }
 

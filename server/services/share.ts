@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import crypto from "node:crypto";
 import { db } from "@/server/db/client";
 import { env } from "@/server/env";
@@ -147,7 +148,7 @@ export async function createShareLink(
       }
     );
   } catch (err) {
-    console.warn("[share] Failed to send share-created notification:", err);
+    log.warn({ err: errInfo(err) }, "[share] Failed to send share-created notification");
   }
 
   return {

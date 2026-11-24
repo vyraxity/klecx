@@ -35,6 +35,7 @@ import { ApiError } from "@/server/http/errors";
 import { route } from "@/server/http/route";
 import { POST as authPostHandler } from "@/app/api/auth/[...all]/route";
 import { getActor, type Actor } from "../../server/auth/session";
+import { log } from "@/server/log";
 
 const mockedGetActor = getActor as jest.MockedFunction<typeof getActor>;
 
@@ -257,7 +258,7 @@ describe("server/http/rate-limit (Step 1.4)", () => {
   });
 
   it("fails CLOSED (429) for auth:* policies and fails OPEN for non-auth policies when Redis is down", async () => {
-    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(log, "error").mockImplementation(() => {});
     setRateLimitBackendForTests(async () => {
       throw new Error("Redis connection refused");
     });

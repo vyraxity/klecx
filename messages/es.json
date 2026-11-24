@@ -986,6 +986,28 @@
         "heading": "Inicio de sesión en dos pasos quitado",
         "body": "A petición tuya, el soporte de Klecx quitó el inicio de sesión en dos pasos de tu cuenta el {time}. Puedes volver a activarlo en tu configuración de seguridad."
       }
+    },
+    "monitoringAlert": {
+      "subject": "{critical, plural, =0 {Klecx: {count, plural, one {# alerta} other {# alertas}}} other {Klecx: {count, plural, one {# alerta} other {# alertas}} ({critical} críticas)}}",
+      "heading": "Alerta de supervisión",
+      "greeting": "Hola:",
+      "body": "Estas comprobaciones se activaron el {time}. Los detalles están en la consola de administración (alertas y métricas).",
+      "disclaimer": "Alerta interna enviada al buzón de alertas. La misma alerta no se vuelve a enviar durante 1 hora (crítica) o 6 horas (aviso).",
+      "severity": {
+        "critical": "Crítica",
+        "warning": "Aviso"
+      },
+      "kinds": {
+        "providerErrors": "Errores del proveedor de IA: {failed} de {total} solicitudes de IA fallaron en la última hora ({rate} %).",
+        "providerAuth": "El proveedor de IA rechazó nuestra clave de API {count, plural, one {# vez} other {# veces}} en la última hora: revisa la clave y la cuenta del proveedor.",
+        "providerQuota": "La cuota o el límite de frecuencia del proveedor de IA detuvo {count, plural, one {# solicitud} other {# solicitudes}} en la última hora.",
+        "webhookFailures": "Webhooks de facturación: {failed} fallaron en las últimas 24 horas, {stuck} se recibieron pero no se procesaron.",
+        "accountCost": "La cuenta {userId} ({plan}) costó {usd} USD en el proveedor de IA en las últimas 24 horas (umbral {limit} USD).",
+        "costVsRevenue": "El coste de IA de las últimas 24 horas fue de {costUsd} USD, el {pct} % de los ingresos diarios medios ({revenueUsd} USD).",
+        "limitAbuse": "El usuario {userId} alcanzó el límite {limit} en {days} días distintos esta semana.",
+        "stuckGenerations": "{count, plural, one {# solicitud de IA lleva} other {# solicitudes de IA llevan}} más de 15 minutos en curso.",
+        "dbConnections": "Conexiones a la base de datos: {used} de {max} en uso."
+      }
     }
   },
   "AppShell": {
@@ -1999,6 +2021,10 @@
         {
           "name": "Resend",
           "purpose": "Envío de correos electrónicos."
+        },
+        {
+          "name": "Sentry",
+          "purpose": "Supervisión de errores: informes técnicos cuando algo falla (la página o solicitud que falló, el tipo de navegador y el identificador de tu cuenta; sin nombres, direcciones de correo ni contenido)."
         },
         {
           "name": "Creem",

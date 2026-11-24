@@ -56,6 +56,12 @@ export interface PasswordChangedData {
   time: string;
 }
 
+/** Step 10.2: internal monitoring alerts (to ALERTS_EMAIL). */
+export interface MonitoringAlertData {
+  alerts: { kind: string; severity: "critical" | "warning"; values: Record<string, string | number> }[];
+  time: string;
+}
+
 /** Two-factor sign-in changed (on, off, new backup codes, or reset by support). */
 export interface TwoFactorChangedData {
   kind: "enabled" | "disabled" | "backupCodes" | "resetBySupport";
@@ -185,6 +191,7 @@ export interface EmailTemplateMap {
   "new-sign-in": NewSignInData;
   "password-changed": PasswordChangedData;
   "two-factor-changed": TwoFactorChangedData;
+  "monitoring-alert": MonitoringAlertData;
   "change-email-confirm": ChangeEmailConfirmData;
   "change-email-verify": ChangeEmailVerifyData;
   "share-created": ShareCreatedData;

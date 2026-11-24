@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { log } from "@/server/log";
 import { getClientIp, limit } from "@/server/http/rate-limit";
 import { ApiError } from "@/server/http/errors";
 import { CSP_REPORT_MAX_BYTES, parseCspReport } from "@/server/security/csp-report";
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
   if (!text || text.length > CSP_REPORT_MAX_BYTES) return done();
 
   for (const v of parseCspReport(text)) {
-    console.warn({ event: "csp_violation", ...v });
+    log.warn({ event: "csp_violation", ...v });
   }
   return done();
 }

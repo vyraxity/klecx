@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import { db } from "@/server/db/client";
 import { sendEmail } from "@/server/email/send";
 import { detectUiLocale, isUiLocale, type UiLocale } from "@/lib/locale";
@@ -52,10 +53,7 @@ export async function sendWelcomeEmailOnce(
     );
     return { sent: result.success };
   } catch (err: unknown) {
-    console.error(
-      `[Welcome] Failed to send the welcome email for user ${userId}:`,
-      err instanceof Error ? err.message : "unknown error"
-    );
+    log.error({ err: errInfo(err) }, `[Welcome] Failed to send the welcome email for user ${userId}`);
     return { sent: false };
   }
 }

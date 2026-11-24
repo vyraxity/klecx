@@ -1,4 +1,5 @@
 import "server-only";
+import { recordLimitHit } from "@/server/monitoring/limit-hits";
 import crypto from "crypto";
 import { fileTypeFromBuffer } from "file-type";
 import { db } from "@/server/db/client";
@@ -209,6 +210,7 @@ export async function transcribeAudio(
   const audioSeconds = Math.ceil(durationMs / 1000);
 
   if ((await countVoiceSecondsToday(actorId)) + audioSeconds > voiceLimitSeconds) {
+    void recordLimitHit(actorId, "VOICE_CAP");
     throw dailyVoiceLimitError();
   }
 

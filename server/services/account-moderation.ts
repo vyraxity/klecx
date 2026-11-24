@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import { db } from "@/server/db/client";
 import { Errors } from "@/server/http/errors";
 import type { Actor } from "@/server/auth/session";
@@ -45,7 +46,7 @@ export async function revokeAllSessions(userId: string): Promise<void> {
     const ctx = await auth.$context;
     await ctx.internalAdapter.deleteUserSessions(userId);
   } catch (err) {
-    console.error("[moderation] session revoke failed", err instanceof Error ? err.name : "unknown");
+    log.error({ err: errInfo(err) }, "[moderation] session revoke failed");
   }
   // Whatever the cache did, no session row may survive.
   await db.session.deleteMany({ where: { userId } });

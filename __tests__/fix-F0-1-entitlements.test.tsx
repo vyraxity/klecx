@@ -30,6 +30,7 @@ import {
 import { GET as getMeEntitlementsRoute } from "@/app/api/v1/me/entitlements/route";
 import enMessages from "../messages/en.json";
 import type { Actor } from "@/server/auth/session";
+import { log } from "@/server/log";
 
 let mockActor: Actor | null = null;
 
@@ -191,9 +192,7 @@ describe("Step F0.1 — Interim entitlements + plan-gating primitives", () => {
     });
 
     it("ignores DEV_DEFAULT_PLAN with a warning when NODE_ENV=production", async () => {
-      const warnSpy = jest
-        .spyOn(console, "warn")
-        .mockImplementation(() => undefined);
+      const warnSpy = jest.spyOn(log, "warn").mockImplementation(() => undefined);
 
       process.env.DEV_DEFAULT_PLAN = "PRO";
       (process.env as Record<string, string | undefined>).NODE_ENV =
@@ -203,6 +202,7 @@ describe("Step F0.1 — Interim entitlements + plan-gating primitives", () => {
       expect(ent.plan).toBe("FREE");
       expect(ent.features.images).toBe(false);
       expect(warnSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ devDefaultPlan: "PRO" }),
         expect.stringContaining("DEV_DEFAULT_PLAN")
       );
     });

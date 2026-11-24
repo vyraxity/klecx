@@ -322,3 +322,24 @@ Known gap: the credit hold before an answer covers the base cost only (decided 2
 **Options.** (a) Keep it (the usual behaviour; recommended for launch). (b) Also ask for the Klecx code after a Google/GitHub sign-in when two-factor is on: a custom hook on the OAuth callback that replaces the new session with a challenge, like the plugin does for passwords (more code, and the callback is a redirect, so it needs its own flow).
 
 **If nothing is decided:** (a).
+
+---
+
+## 17. The web-search surcharge (decided)
+
+- **Decided by the owner on 2026-11-24:** the surcharge goes from **3 to 5 credits** per search ($0.010), applied in the "search date and AI prices" fix PR (CLAUDE.md). Standard Reasoning keeps today's credit prices.
+- **Why 5 and not 7–8:** the provider charges $0.014 per search query after 5,000 free a month (shared by all Gemini 3+ models), plus the search step's own tokens (about $0.001–0.003). At 5 credits each search earns ~$0.008 while inside the free 5,000 and loses ~$0.006 beyond it, so the month stays profitable up to roughly 11,000 searches (one query each; more queries per search lower that).
+- **Revisit when** the metrics (`GET /api/v1/admin/metrics` → `searches`) show the month regularly passing ~10,000 searches, or several queries per search: then about 8 credits covers the full cost.
+
+---
+
+## 18. The provider's daily cap on searches (1,500 a day for all of Klecx)
+
+- **Found:** 2026-11-24 (owner, from the pricing page).
+- **Where:** every Klecx web search is one grounded request to the economy model (`runWebSearch()` in `server/ai/tools/web-search.ts`, called by `server/services/web-search.ts`).
+
+**Today.** The provider allows 1,500 grounded requests a day for the whole account. Past that, searches fail until the next day; Klecx then answers without searching and doesn't charge (the search "didn't run"), but everyone loses search for the rest of the day. With the plan caps (10 / 50 / 100 / 200 a day per person), ~8 Pro users at their cap, or ~150 Free users, could use it all.
+
+**Options (can be combined).** (a) **Protect it:** count Klecx's grounded requests per UTC day; near the cap, stop searches for Free first and keep the rest for paid plans; reuse a recent result for the same query for a short time (e.g. 15 minutes) so repeated questions don't spend new requests; alert at 80 %. (b) **A second search source** behind one interface (`runWebSearch` → a `SearchProvider`): a web-search API (e.g. Brave Search, Tavily, Exa or similar — compare price per 1,000, limits, terms for AI use and data retention) whose results Klecx passes to the model itself; the fallback when Google's cap is reached, or the main source if cheaper. Adds a processor to the Privacy Policy. (c) **Ask Google** whether the grounding cap rises with the paid usage tier or on request (or what Vertex AI's grounding quota is). Never split traffic across several projects or keys to get around a limit.
+
+**Owner, 2026-11-24:** nothing is built for this now; to be decided **after launch**, from the first users' feedback and the search metrics. Until then, past 1,500 grounded requests in a day, searches simply stop for everyone until midnight UTC (answers still work and nobody is charged for a search that didn't run). Only the near-cap alert (count grounded requests per UTC day, warn at ~80 %) is built now, in the fix PR (owner, 2026-11-24), so a full cap never comes as a surprise.

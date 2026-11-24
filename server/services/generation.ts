@@ -8,6 +8,8 @@ import {
   webSearchNotice,
 } from "@/server/services/web-search";
 import "server-only";
+import { firstTokenMarker } from "@/server/services/generation-timing";
+import { log, errInfo } from "@/server/log";
 import crypto from "node:crypto";
 import { db } from "@/server/db/client";
 import { env } from "@/server/env";
@@ -462,6 +464,7 @@ async function executeDetachedGeneration(params: {
       // for this call: keep the last one, then add the calls together.
       let callUsage = { inputTokens: 0, outputTokens: 0, thoughtTokens: 0 };
 
+      const markFirstToken = firstTokenMarker(generationId);
       for await (const event of stream) {
         if (abortController.signal.aborted) {
           throw new Error("Cancelled");
@@ -478,6 +481,7 @@ async function executeDetachedGeneration(params: {
             broadcastEvent(active, "thought", { text: event.text });
           }
         } else if (event.type === "text_delta") {
+          markFirstToken();
           if (stage !== "writing") {
             stage = "writing";
             broadcastEvent(active, "status", { stage: "writing" });
@@ -793,7 +797,7 @@ async function executeDetachedGeneration(params: {
 
     // Provider or unexpected error
     if (process.env.NODE_ENV !== "test") {
-      console.error("[Generation] Error during generation:", err);
+      log.error({ err: errInfo(err) }, "[Generation] Error during generation");
     }
     const normalized = normalizeGeminiError(err);
     const errorCode = normalized.category || "generation_error";
@@ -1196,7 +1200,7 @@ export async function createAndStreamGeneration(
             mime: att.mime,
           });
         } catch (err) {
-          console.error(`Failed to download attachment buffer for ${att.id}:`, err);
+          log.error({ err: errInfo(err) }, `Failed to download attachment buffer for ${att.id}`);
         }
       }
     }
@@ -1237,7 +1241,8 @@ export async function createAndStreamGeneration(
           }
         }
       } catch (err: unknown) {
-        console.warn(`[SafeFetch] Could not auto-ingest link "${urlStr}":`, err);
+        // The URL came from the prompt: never log it.
+        log.warn({ err: errInfo(err) }, "[SafeFetch] Could not auto-ingest a link");
       }
     }
   }
@@ -1470,7 +1475,7 @@ export async function createAndStreamGeneration(
     isFirstTurn,
     abortController,
   }).catch((err) => {
-    console.error(`[Generation Service] Error in detached pipeline:`, err);
+    log.error({ err: errInfo(err) }, "[Generation Service] Error in detached pipeline");
   });
 
   // 9. Build ReadableStream for SSE HTTP response

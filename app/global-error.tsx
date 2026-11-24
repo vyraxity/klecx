@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import * as Sentry from "@sentry/nextjs";
 import { AlertTriangle, RefreshCw, LifeBuoy } from "lucide-react";
 import { GLOBAL_ERROR_COPY, resolveGlobalErrorLocale } from "@/lib/i18n/global-error";
 import { defaultLocale } from "@/i18n/config";
@@ -24,10 +25,8 @@ export default function GlobalError({
   const t = GLOBAL_ERROR_COPY[locale];
 
   React.useEffect(() => {
-    console.error("[Global Error]", {
-      digest: error.digest,
-      message: error.message,
-    });
+    // Step 10.2: to Sentry (when configured) with the digest that links it to server logs.
+    Sentry.captureException(error, { tags: { digest: error.digest ?? "none", boundary: "Global Error" } });
   }, [error]);
 
   const reportUrl = error.digest

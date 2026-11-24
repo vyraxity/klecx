@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import crypto from "node:crypto";
 import { db } from "@/server/db/client";
 import type { Actor } from "@/server/auth/session";
@@ -77,7 +78,7 @@ async function deliverInvitation(opts: {
 
   if (!opts.targetUserId) {
     await sendEmail("invitation", opts.targetEmail, emailData).catch((err) => {
-      console.error("[Invitation] Failed to send email:", err);
+      log.error({ err: errInfo(err) }, "[Invitation] Failed to send email");
     });
     return;
   }
@@ -101,7 +102,7 @@ async function deliverInvitation(opts: {
       emailData: { template: "invitation", data: emailData },
     }
   ).catch((err) => {
-    console.error("[Invitation] Failed to notify invitee:", err);
+    log.error({ err: errInfo(err) }, "[Invitation] Failed to notify invitee");
   });
 }
 
@@ -783,7 +784,7 @@ async function acceptLoadedInvitation(actor: Actor, invite: LoadedInvitation) {
       );
     }
   } catch (err) {
-    console.error("[Invitation] Failed to send acceptance notifications:", err);
+    log.error({ err: errInfo(err) }, "[Invitation] Failed to send acceptance notifications");
   }
 
   return result;

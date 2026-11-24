@@ -1,4 +1,5 @@
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import { db } from "@/server/db/client";
 import type { Actor } from "@/server/auth/session";
 import { requireWorkspace, requireProject } from "@/server/authz/access";
@@ -40,7 +41,7 @@ export async function logActivity(
     // so swallowing here would make the caller's COMMIT silently roll back.
     // Let it propagate so the change and its activity entry stay atomic (§7.4).
     if (prisma !== db) throw err;
-    console.error("[ActivityLog] Failed to log activity:", err);
+    log.error({ err: errInfo(err) }, "[ActivityLog] Failed to log activity");
     return null;
   }
 }

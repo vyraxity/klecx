@@ -1,4 +1,6 @@
 import "server-only";
+import { recordLimitHit } from "@/server/monitoring/limit-hits";
+import { log, errInfo } from "@/server/log";
 import { db } from "@/server/db/client";
 import { ApiError, Errors } from "@/server/http/errors";
 import {
@@ -369,7 +371,7 @@ export async function checkAndNotifyOwnerAllowanceThresholds(opts: {
         dedupeKey: `${threshold === 100 ? "credits_exhausted" : "credits_low"}:${periodKey}`,
       }
     ).catch((err) => {
-      console.error(`[Billing] Failed to send ${threshold}% alert:`, err);
+      log.error({ err: errInfo(err) }, `[Billing] Failed to send ${threshold}% alert`);
     });
 
     return true;
@@ -443,6 +445,8 @@ export async function reserveForWorkspaceGeneration(opts: {
     if (!plan) return;
     const dailyCap = getDailyCapForPlan(plan);
     if ((await getDailyUsage(billedAccountId, tx)) + opts.amount > dailyCap) {
+      // Outside the transaction (it rolls back): Step 10.2 monitoring.
+      void recordLimitHit(ownerId, "DAILY_CREDIT_CAP");
       throw new ApiError(
         429,
         "daily_cap_reached",
@@ -452,6 +456,7 @@ export async function reserveForWorkspaceGeneration(opts: {
     }
     const maxConcurrent = PLANS[plan].maxConcurrent;
     if ((await countOpenReservations(billedAccountId, ANSWER_STALE_MS, tx)) >= maxConcurrent) {
+      void recordLimitHit(ownerId, "CONCURRENCY");
       throw new ApiError(
         429,
         "too_many_concurrent",

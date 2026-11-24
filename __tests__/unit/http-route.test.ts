@@ -12,6 +12,7 @@ import { Errors } from "@/server/http/errors";
 import { pageQuery, toPage } from "@/server/http/pagination";
 import { idSchema, localeSchema, titleSchema } from "@/lib/schemas/common";
 import { getActor, type Actor } from "../../server/auth/session";
+import { log } from "@/server/log";
 
 const mockedGetActor = getActor as jest.MockedFunction<typeof getActor>;
 
@@ -169,7 +170,7 @@ describe("server/http API foundation (Step 1.2)", () => {
 
   it("returns 500 internal_error with no stack trace or internal error leak on unexpected throws", async () => {
     mockedGetActor.mockResolvedValue(mockActor);
-    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(log, "error").mockImplementation(() => {});
 
     const handler = route({
       handler: async () => {
@@ -193,7 +194,12 @@ describe("server/http API foundation (Step 1.2)", () => {
         requestId: expect.any(String),
       },
     });
-    expect(consoleSpy).toHaveBeenCalledTimes(1);
+    // Step 10.2: the error (name + short message, in the server log only) and the request line.
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ requestId: json.error.requestId, err: expect.objectContaining({ name: "Error" }) }),
+      "unhandled error"
+    );
+    expect(consoleSpy).toHaveBeenCalledWith(expect.objectContaining({ status: 500 }), "request failed");
     consoleSpy.mockRestore();
   });
 

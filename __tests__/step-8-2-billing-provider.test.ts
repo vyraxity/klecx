@@ -28,6 +28,7 @@ import { POST as checkoutRoute } from "@/app/api/v1/billing/checkout/route";
 import { POST as portalRoute } from "@/app/api/v1/billing/portal/route";
 import { POST as cancelRoute } from "@/app/api/v1/billing/cancel/route";
 import { GET as mySubscriptionRoute } from "@/app/api/v1/me/subscription/route";
+import { log } from "@/server/log";
 
 let mockActor: Actor | null = null;
 jest.mock("../server/auth/session", () => ({
@@ -389,7 +390,7 @@ describe("Step 8.2 — billing endpoints", () => {
   it("a provider failure is a generic 503 without provider details", async () => {
     mockActor = actorFor(buyer);
     fail = true;
-    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    const errorSpy = jest.spyOn(log, "error").mockImplementation(() => {});
     const res = await checkoutRoute(post("/api/v1/billing/checkout", { plan: "LITE", interval: "month", consentImmediateStart: true }));
     expect(res.status).toBe(503);
     const body = await res.json();

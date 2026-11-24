@@ -1,4 +1,5 @@
 import "server-only";
+import { log } from "@/server/log";
 import crypto from "node:crypto";
 import { Errors } from "@/server/http/errors";
 
@@ -167,16 +168,14 @@ export function recordModerationBlock(
   };
   moderationAuditLogs.push(entry);
 
-  console.warn(
-    JSON.stringify({
-      event: "moderation.image_prompt_blocked",
-      userId,
-      promptHash,
-      category,
-      blockCount: nextCount,
-      locked: nextCount >= MAX_IMAGE_BLOCKS_PER_DAY,
-    })
-  );
+  log.warn({
+    event: "moderation.image_prompt_blocked",
+    userId,
+    promptHash,
+    category,
+    blockCount: nextCount,
+    locked: nextCount >= MAX_IMAGE_BLOCKS_PER_DAY,
+  });
 
   return {
     blockCount: nextCount,

@@ -465,6 +465,8 @@ model Generation {
   usage           Json?
   errorCode       String?   @map("error_code")
   startedAt       DateTime? @map("started_at")
+  /// Step 10.2: when the first text arrived (time to first token); null for non-streamed calls.
+  firstTokenAt    DateTime? @map("first_token_at")
   finishedAt      DateTime? @map("finished_at")
   createdAt       DateTime  @default(now()) @map("created_at")
 
@@ -1171,4 +1173,39 @@ model AccountDeletion {
 
   @@index([purgeAfter, purgedAt])
   @@map("account_deletions")
+}
+
+/// Step 10.2: how often a person ran into a plan limit, per day (abuse signal
+/// for the alerts: e.g. hitting the search cap every day). `kind`:
+/// DAILY_CREDIT_CAP | CONCURRENCY | SEARCH_CAP | VOICE_CAP | READ_ALOUD_CAP.
+model UsageLimitHit {
+  id      String   @id @default(uuid(7))
+  userId  String   @map("user_id")
+  kind    String
+  day     DateTime @db.Date
+  count   Int      @default(1)
+  firstAt DateTime @default(now()) @map("first_at")
+  lastAt  DateTime @default(now()) @map("last_at")
+
+  @@unique([userId, kind, day])
+  @@index([day])
+  @@map("usage_limit_hits")
+}
+
+/// Step 10.2: one row per alert condition (e.g. `provider_errors`,
+/// `account_cost:<userId>`), so the same alert isn't emailed again within its
+/// quiet period and admins can see the history.
+model MonitoringAlert {
+  id          String    @id @default(uuid(7))
+  key         String    @unique
+  severity    String
+  summary     String
+  details     Json?
+  firstSeenAt DateTime  @default(now()) @map("first_seen_at")
+  lastSeenAt  DateTime  @default(now()) @map("last_seen_at")
+  lastSentAt  DateTime? @map("last_sent_at")
+  occurrences Int       @default(1)
+
+  @@index([lastSeenAt])
+  @@map("monitoring_alerts")
 }

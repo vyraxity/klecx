@@ -1,6 +1,7 @@
 import { safeFetch, SsrfError } from "../files/safe-fetch";
 import { limit } from "../http/rate-limit";
 import "server-only";
+import { log, errInfo } from "@/server/log";
 import crypto from "crypto";
 import { fileTypeFromBuffer } from "file-type";
 import { db } from "@/server/db/client";
@@ -431,7 +432,7 @@ export async function completeAttachment(
       const extracted = await extractDocumentText(buffer, attachment.mime);
       extractedText = extracted.text;
     } catch (err: unknown) {
-      console.warn(`[Attachment] Text extraction warning for ${attachmentId}:`, err);
+      log.warn({ err: errInfo(err) }, `[Attachment] Text extraction warning for ${attachmentId}`);
       if (err instanceof Error && err.message.includes("page count")) {
         await storage.delete(attachment.providerId, {
           resourceType: attachment.resourceType as StorageResourceType,
