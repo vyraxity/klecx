@@ -2,7 +2,7 @@ import "server-only";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
-import { bearer, username } from "better-auth/plugins";
+import { bearer, twoFactor, username } from "better-auth/plugins";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { db } from "@/server/db/client";
 import { env } from "@/server/env";
@@ -10,11 +10,26 @@ import { sendEmail } from "@/server/email/send";
 import { authSecondaryStorage } from "@/server/http/rate-limit";
 import { createAccountWithFreeGrant } from "@/server/services/credits";
 import { isDisposableEmail } from "@/server/auth/disposable-email";
+import { TWO_FACTOR_TRUST_DAYS } from "@/lib/auth/two-factor";
 import { PASSWORD_SETTING_PATHS, shouldRefusePassword } from "@/server/auth/pwned-passwords";
 import { getSignInBlock } from "@/server/services/account-moderation";
 import { generateUniqueDefaultUsername } from "@/server/services/username";
 import { parseDeviceMetadata, checkAndAlertNewSignIn } from "@/server/services/device";
 import { welcomeOnUserCreated, welcomeOnUserUpdated } from "@/server/services/welcome";
+
+/** Password sign-in paths the twoFactor plugin challenges. */
+const TWO_FACTOR_CHALLENGED_PATHS = new Set(["/sign-in/email", "/sign-in/username"]);
+
+/**
+ * A session created by a password sign-in of an account with two-factor on is
+ * only temporary: the plugin deletes it and asks for the code. (On a trusted
+ * device it's kept, but then the device isn't new either.)
+ */
+async function isPendingTwoFactorSession(userId: string, path: string | undefined) {
+  if (!path || !TWO_FACTOR_CHALLENGED_PATHS.has(path)) return false;
+  const user = await db.user.findUnique({ where: { id: userId }, select: { twoFactorEnabled: true } });
+  return Boolean(user?.twoFactorEnabled);
+}
 
 /**
  * Whether a verification token belongs to an email change (Better Auth puts
@@ -115,7 +130,12 @@ export const auth = betterAuth({
             },
           };
         },
-        after: async (session) => {
+        after: async (session, ctx) => {
+          // Two-factor sign-in: a correct password for an account with
+          // two-factor on creates a temporary session that the plugin deletes
+          // right away and replaces once the code is entered. Only that second
+          // session counts as a sign-in for the "new sign-in" alert.
+          if (await isPendingTwoFactorSession(session.userId, ctx?.path)) return;
           await checkAndAlertNewSignIn(session);
         },
       },
@@ -317,6 +337,17 @@ export const auth = betterAuth({
       maxUsernameLength: 30,
       usernameValidator: (u) =>
         /^[a-z][a-z0-9_]{2,29}$/.test(u) && !u.includes("__"),
+    }),
+    // Two-factor sign-in (after Step 10.1): an authenticator-app code (TOTP)
+    // or a one-time backup code after the password. Turning it on, off, or
+    // making new backup codes needs the password. It applies to email-and-
+    // password sign-in; Google/GitHub sign-ins rely on that account's security.
+    twoFactor({
+      issuer: "Klecx",
+      // "Trust this device" skips the code on that browser for 30 days.
+      trustDeviceMaxAge: TWO_FACTOR_TRUST_DAYS * 24 * 60 * 60,
+      // The pending-challenge cookie lasts 10 minutes.
+      twoFactorCookieMaxAge: 10 * 60,
     }),
   ],
 });

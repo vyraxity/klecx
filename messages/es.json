@@ -35,7 +35,9 @@
       "resetPasswordTitle": "Restablecer contraseña",
       "resetPasswordDescription": "Establezca una nueva contraseña segura para su cuenta de Klecx.",
       "verifyEmailTitle": "Verificar correo electrónico",
-      "verifyEmailDescription": "Verifique su dirección de correo electrónico para su cuenta de Klecx."
+      "verifyEmailDescription": "Verifique su dirección de correo electrónico para su cuenta de Klecx.",
+      "twoFactorTitle": "Inicio de sesión en dos pasos",
+      "twoFactorDescription": "Escribe el código de tu app de autenticación para terminar de iniciar sesión."
     },
     "settings": {
       "title": "Configuración",
@@ -257,10 +259,33 @@
       "DISPOSABLE_EMAIL": "Este servicio de correo no se acepta. Regístrate con una dirección de correo permanente.",
       "ACCOUNT_SUSPENDED": "Esta cuenta está suspendida. Si crees que es un error, contacta con nuestro equipo de soporte.",
       "ACCOUNT_DELETED": "Esta cuenta se eliminó. Usa el enlace del correo que te enviamos para restaurarla.",
-      "PASSWORD_COMPROMISED": "Esta contraseña aparece en una filtración de datos conocida. Elige otra."
+      "PASSWORD_COMPROMISED": "Esta contraseña aparece en una filtración de datos conocida. Elige otra.",
+      "INVALID_CODE": "Ese código no es correcto. Revisa tu app de autenticación e inténtalo de nuevo.",
+      "INVALID_BACKUP_CODE": "Ese código de respaldo no es correcto o ya se usó.",
+      "TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE": "Demasiados códigos incorrectos. Vuelve a iniciar sesión para intentarlo de nuevo.",
+      "ACCOUNT_TEMPORARILY_LOCKED": "Demasiados códigos incorrectos. El inicio de sesión en dos pasos está bloqueado unos minutos; inténtalo más tarde.",
+      "INVALID_TWO_FACTOR_COOKIE": "Este inicio de sesión caducó. Vuelve a iniciar sesión con tu correo y contraseña."
     },
     "planIntent": "Elegiste {plan} ({interval}). Después de confirmar tu correo, continuarás al pago.",
-    "accountDeleted": "Tu cuenta está eliminada. Revisa tu correo: ahí está el enlace para restaurarla si cambias de opinión."
+    "accountDeleted": "Tu cuenta está eliminada. Revisa tu correo: ahí está el enlace para restaurarla si cambias de opinión.",
+    "twoFactor": {
+      "title": "Inicio de sesión en dos pasos",
+      "subtitleTotp": "Escribe el código de 6 dígitos de tu app de autenticación.",
+      "subtitleBackup": "Escribe uno de los códigos de respaldo que guardaste. Cada código sirve una vez.",
+      "codeLabel": "Código de autenticación",
+      "backupLabel": "Código de respaldo",
+      "codePlaceholder": "123456",
+      "backupPlaceholder": "abcde-12345",
+      "trustDevice": "No volver a pedirlo en este dispositivo durante {days} días",
+      "verify": "Verificar",
+      "verifying": "Verificando…",
+      "useBackup": "Usar un código de respaldo",
+      "useApp": "Usar la app de autenticación",
+      "lostAccess": "¿Perdiste el teléfono y los códigos de respaldo? Escribe a {email} desde la dirección de correo de tu cuenta; comprobaremos que eres tú antes de quitar el inicio de sesión en dos pasos.",
+      "backToSignIn": "Volver a iniciar sesión",
+      "signInAgain": "Iniciar sesión de nuevo",
+      "errorGeneric": "No se pudo comprobar el código. Inténtalo de nuevo."
+    }
   },
   "Chat": {
     "newChat": "Nuevo espacio de trabajo",
@@ -472,7 +497,41 @@
       "cancel": "Cancelar",
       "sessionsTitle": "Sesiones y dispositivos",
       "sessionsHint": "Mira dónde tienes la sesión iniciada y ciérrala en los dispositivos que no reconozcas.",
-      "sessionsLink": "Gestionar sesiones"
+      "sessionsLink": "Gestionar sesiones",
+      "twoFactor": {
+        "title": "Inicio de sesión en dos pasos",
+        "hint": "Después de tu contraseña, Klecx también pide un código de una app de autenticación en tu teléfono, así una contraseña robada no basta para abrir tu cuenta. Al iniciar sesión con una cuenta conectada (los otros métodos de la página de inicio de sesión) se usa la protección de esa cuenta.",
+        "needsPassword": "El inicio de sesión en dos pasos protege el acceso con correo y contraseña. Primero crea una contraseña arriba; al iniciar sesión con una cuenta conectada se usa la protección de esa cuenta.",
+        "statusOn": "Activado",
+        "statusOff": "Desactivado",
+        "turnOn": "Activar",
+        "turnOff": "Desactivar",
+        "newBackupCodes": "Nuevos códigos de respaldo",
+        "passwordForSetup": "Escribe tu contraseña para empezar.",
+        "passwordForDisable": "Escribe tu contraseña para desactivar el inicio de sesión en dos pasos. Si lo vuelves a activar, los dispositivos de confianza volverán a pedir un código.",
+        "passwordForCodes": "Escribe tu contraseña para crear nuevos códigos de respaldo. Los anteriores dejarán de funcionar.",
+        "passwordLabel": "Contraseña",
+        "continue": "Continuar",
+        "cancel": "Cancelar",
+        "scanStep1": "Abre una app de autenticación en tu teléfono (cualquiera que admita códigos basados en tiempo).",
+        "scanStep2": "Escanea este código QR o escribe la clave a mano.",
+        "scanStep3": "Escribe el código de 6 dígitos que muestra la app.",
+        "qrLabel": "Código QR para añadir Klecx a tu app de autenticación",
+        "manualKeyLabel": "¿No puedes escanearlo? Escribe esta clave:",
+        "copyKey": "Copiar clave",
+        "codeLabel": "Código de la app",
+        "codePlaceholder": "123456",
+        "confirm": "Activar",
+        "codesWarning": "Guarda estos códigos de respaldo en un lugar seguro. Si pierdes el teléfono, cada uno te permite iniciar sesión una vez. No se volverán a mostrar.",
+        "codesListLabel": "Códigos de respaldo",
+        "copyCodes": "Copiar códigos",
+        "downloadCodes": "Descargar",
+        "savedCodes": "Ya los guardé",
+        "codesFileHeader": "Códigos de respaldo de Klecx. Cada código sirve una vez para iniciar sesión.",
+        "enabledToast": "El inicio de sesión en dos pasos está activado.",
+        "disabledToast": "El inicio de sesión en dos pasos está desactivado.",
+        "actionError": "No se pudo actualizar el inicio de sesión en dos pasos. Inténtalo de nuevo."
+      }
     },
     "language": {
       "title": "Idioma e IA",
@@ -902,6 +961,31 @@
       "body": "Tu cuenta de Klecx está restaurada. Ya puedes iniciar sesión; tus espacios de trabajo y tu configuración están como los dejaste.",
       "button": "Iniciar sesión",
       "disclaimer": "Si no restauraste tu cuenta, contacta con soporte."
+    },
+    "twoFactorChanged": {
+      "greeting": "Hola:",
+      "button": "Revisar la configuración de seguridad",
+      "disclaimer": "Si hiciste este cambio, puedes ignorar este correo. Si no fuiste tú, cambia tu contraseña de inmediato y contacta con soporte.",
+      "enabled": {
+        "subject": "El inicio de sesión en dos pasos está activado en tu cuenta de Klecx",
+        "heading": "Inicio de sesión en dos pasos activado",
+        "body": "El inicio de sesión en dos pasos se activó en tu cuenta de Klecx el {time}. A partir de ahora, iniciar sesión con tu contraseña también pide un código de tu app de autenticación."
+      },
+      "disabled": {
+        "subject": "Se desactivó el inicio de sesión en dos pasos en tu cuenta de Klecx",
+        "heading": "Inicio de sesión en dos pasos desactivado",
+        "body": "El inicio de sesión en dos pasos se desactivó en tu cuenta de Klecx el {time}. Iniciar sesión con tu contraseña ya no pide un código."
+      },
+      "backupCodes": {
+        "subject": "Nuevos códigos de respaldo para tu cuenta de Klecx",
+        "heading": "Nuevos códigos de respaldo creados",
+        "body": "Se crearon nuevos códigos de respaldo para tu cuenta de Klecx el {time}. Los códigos anteriores ya no funcionan."
+      },
+      "resetBySupport": {
+        "subject": "El soporte de Klecx quitó el inicio de sesión en dos pasos",
+        "heading": "Inicio de sesión en dos pasos quitado",
+        "body": "A petición tuya, el soporte de Klecx quitó el inicio de sesión en dos pasos de tu cuenta el {time}. Puedes volver a activarlo en tu configuración de seguridad."
+      }
     }
   },
   "AppShell": {
@@ -1864,7 +1948,7 @@
           "id": "security",
           "heading": "9. Seguridad",
           "paragraphs": [
-            "Protegemos tus datos con conexiones cifradas (HTTPS), contraseñas cifradas mediante hash, controles de acceso que limitan cada espacio de trabajo a las personas invitadas, almacenamiento privado de los archivos subidos con enlaces de descarga de corta duración, alertas de inicio de sesión y límites de uso contra abusos. Ningún sistema es totalmente seguro; si una brecha afecta a tus datos, te lo comunicaremos a ti y a las autoridades como exige la ley."
+            "Protegemos tus datos con conexiones cifradas (HTTPS), contraseñas cifradas mediante hash, una comprobación que rechaza las contraseñas que aparecen en filtraciones de datos conocidas (solo se compara un fragmento breve y anónimo del hash de la contraseña, nunca la contraseña), el inicio de sesión en dos pasos opcional con una app de autenticación (su clave secreta y sus códigos de respaldo se guardan cifrados), controles de acceso que limitan cada espacio de trabajo a las personas invitadas, almacenamiento privado de los archivos subidos con enlaces de descarga de corta duración, alertas de inicio de sesión y límites de uso contra abusos. Ningún sistema es totalmente seguro; si una brecha afecta a tus datos, te lo comunicaremos a ti y a las autoridades como exige la ley."
           ]
         },
         {
@@ -2359,7 +2443,12 @@
       "purge_not_due": "El período de gracia de la cuenta aún no ha terminado.",
       "origin_mismatch": "Esta solicitud venía de otro sitio y se bloqueó. Vuelve a cargar Klecx e inténtalo de nuevo.",
       "payload_too_large": "Es demasiado largo para enviarlo. Acórtalo e inténtalo de nuevo.",
-      "PASSWORD_COMPROMISED": "Esta contraseña aparece en una filtración de datos conocida. Elige otra."
+      "PASSWORD_COMPROMISED": "Esta contraseña aparece en una filtración de datos conocida. Elige otra.",
+      "invalid_code": "Ese código no es correcto. Revisa tu app de autenticación e inténtalo de nuevo.",
+      "two_factor_already_on": "El inicio de sesión en dos pasos ya está activado.",
+      "two_factor_not_on": "El inicio de sesión en dos pasos no está activado.",
+      "two_factor_not_started": "Empieza de nuevo: escribe tu contraseña para obtener un nuevo código QR.",
+      "password_required": "Primero crea una contraseña para usar el inicio de sesión en dos pasos."
     }
   },
   "Gates": {

@@ -78,6 +78,21 @@ async function enforceAuthRateLimit(
     throw Errors.rateLimited(60);
   }
 
+  // Two-factor codes (sign-in challenge and setup): the plugin also limits
+  // attempts per challenge and locks the account after repeated failures.
+  if (pathname.endsWith("/two-factor/verify-totp") || pathname.endsWith("/two-factor/verify-backup-code")) {
+    if (ip) {
+      await limit("auth:2fa", `ip:${ip}`);
+      return;
+    }
+    // Without a trusted proxy (local development) everyone shares one bucket.
+    if (!trustProxy) {
+      await limit("auth:2fa", "local");
+      return;
+    }
+    throw Errors.rateLimited(60);
+  }
+
   if (pathname.endsWith("/send-verification-email")) {
     const email = await readNormalizedEmail(req);
     if (email) {
@@ -103,7 +118,30 @@ export async function GET(req: NextRequest): Promise<Response> {
   return res;
 }
 
+/**
+ * Two-factor management goes through /api/v1/me/two-factor/* (origin check,
+ * audit log, security emails), never Better Auth's own endpoints from the
+ * browser. Only the sign-in challenge (verify-totp / verify-backup-code) is open.
+ */
+const BLOCKED_TWO_FACTOR_PATHS = [
+  "/two-factor/enable",
+  "/two-factor/disable",
+  "/two-factor/generate-backup-codes",
+  "/two-factor/get-totp-uri",
+  "/two-factor/view-backup-codes",
+  "/two-factor/send-otp",
+  "/two-factor/verify-otp",
+  "/totp/generate",
+];
+
+function isBlockedTwoFactorPath(pathname: string) {
+  return BLOCKED_TWO_FACTOR_PATHS.some((p) => pathname.endsWith(p));
+}
+
 export async function POST(req: NextRequest): Promise<Response> {
+  if (isBlockedTwoFactorPath(req.nextUrl.pathname)) {
+    return NextResponse.json({ error: { code: "not_found", message: "Not found" } }, { status: 404 });
+  }
   try {
     await enforceAuthRateLimit(req);
   } catch (err) {

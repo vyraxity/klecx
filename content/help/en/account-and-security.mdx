@@ -1,9 +1,9 @@
 ---
 title: "Account & Security"
 category: "billing-account"
-description: "Passwords, signed-in devices, sign-in alerts, and deleting your data."
-keywords: ["security", "password", "sessions", "devices", "sign-in alert", "account deletion", "privacy"]
-version: 4
+description: "Passwords, two-factor sign-in, signed-in devices, sign-in alerts, and deleting your data."
+keywords: ["security", "password", "two-factor", "2FA", "authenticator", "backup codes", "sessions", "devices", "sign-in alert", "account deletion", "privacy"]
+version: 5
 updated: "2026-11-23"
 ---
 
@@ -20,6 +20,17 @@ updated: "2026-11-23"
 - Password reset emails are limited to 3 requests per hour.
 
 To change your email address, open **Settings → Profile** and choose **Change email**. We send a link to your current address to approve the change, then a link to the new address to confirm it: your email changes only after both. Your username can be chosen once and then stays the same.
+
+## Two-factor Sign-in
+
+Two-factor sign-in adds a second step after your password: a 6-digit code from an authenticator app on your phone. Someone who learns your password still can't open your account without your phone.
+
+- **Turn it on** in **Settings → Security → Two-factor sign-in**: enter your password, scan the QR code with an authenticator app (any app that supports time-based codes), and enter the code it shows.
+- **Save your backup codes.** You get 10 one-time codes when you turn it on. If you lose your phone, each code lets you sign in once. You can make new ones (the old ones stop working) in the same place.
+- **Trusted devices:** when you sign in, you can tick **Don't ask again on this device for 30 days**.
+- **Turn it off** in the same place, with your password. We email you whenever two-factor sign-in is turned on or off, or new backup codes are made.
+- Two-factor sign-in protects signing in with your email and password, so it needs a password on the account. Signing in with a connected account (the other sign-in methods on the sign-in page) uses that account's own protection: turn on two-step verification there too.
+- **Lost your phone and your backup codes?** Write to %%SUPPORT_EMAIL%% from your account's email address. We check that it's you before removing two-factor sign-in, and we email you when it's removed.
 
 ## Sessions & Devices
 

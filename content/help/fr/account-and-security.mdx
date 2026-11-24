@@ -1,9 +1,9 @@
 ---
 title: "Compte et sécurité"
 category: "billing-account"
-description: "Mots de passe, appareils connectés, alertes de connexion et suppression de vos données."
-keywords: ["sécurité", "mot de passe", "sessions", "appareils", "alerte de connexion", "suppression du compte", "confidentialité"]
-sourceVersion: 4
+description: "Mots de passe, connexion en deux étapes, appareils connectés, alertes de connexion et suppression de vos données."
+keywords: ["sécurité", "mot de passe", "deux étapes", "2FA", "authentification", "codes de secours", "sessions", "appareils", "alerte de connexion", "suppression du compte", "confidentialité"]
+sourceVersion: 5
 updated: "2026-11-23"
 ---
 
@@ -20,6 +20,17 @@ updated: "2026-11-23"
 - **Paramètres → Sécurité → Moyens de connexion** associe ou dissocie les autres comptes avec lesquels vous vous connectez. Vous gardez toujours au moins un moyen de connexion.
 
 Pour changer votre adresse e-mail, ouvrez **Paramètres → Profil** et choisissez **Modifier l'e-mail**. Nous envoyons un lien à votre adresse actuelle pour approuver la modification, puis un lien à la nouvelle adresse pour la confirmer : votre e-mail ne change qu'après les deux. Votre nom d'utilisateur se choisit une fois et ne change plus ensuite.
+
+## Connexion en deux étapes
+
+La connexion en deux étapes ajoute une deuxième étape après votre mot de passe : un code à 6 chiffres d'une application d'authentification sur votre téléphone. Une personne qui connaît votre mot de passe ne peut pas ouvrir votre compte sans votre téléphone.
+
+- **Activez-la** dans **Paramètres → Sécurité → Connexion en deux étapes** : saisissez votre mot de passe, scannez le code QR avec une application d'authentification (toute application compatible avec les codes temporels) et saisissez le code affiché.
+- **Conservez vos codes de secours.** Vous recevez 10 codes à usage unique lors de l'activation. Si vous perdez votre téléphone, chaque code permet de vous connecter une fois. Vous pouvez en créer de nouveaux (les anciens ne fonctionnent plus) au même endroit.
+- **Appareils de confiance :** lors de la connexion, vous pouvez cocher **Ne plus demander sur cet appareil pendant 30 jours**.
+- **Désactivez-la** au même endroit, avec votre mot de passe. Nous vous envoyons un e-mail chaque fois qu'elle est activée ou désactivée, ou que de nouveaux codes de secours sont créés.
+- La connexion en deux étapes protège la connexion par e-mail et mot de passe : elle nécessite donc un mot de passe sur le compte. La connexion avec un compte associé (les autres méthodes de la page de connexion) utilise la protection de ce compte : activez-y aussi la validation en deux étapes.
+- **Vous avez perdu votre téléphone et vos codes de secours ?** Écrivez à %%SUPPORT_EMAIL%% depuis l'adresse e-mail de votre compte. Nous vérifions que c'est bien vous avant de retirer la connexion en deux étapes, et nous vous prévenons par e-mail.
 
 ## Sessions et appareils
 

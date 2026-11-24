@@ -35,7 +35,9 @@
       "resetPasswordTitle": "Réinitialiser le mot de passe",
       "resetPasswordDescription": "Définissez un nouveau mot de passe sécurisé pour votre compte Klecx.",
       "verifyEmailTitle": "Vérifier l'e-mail",
-      "verifyEmailDescription": "Vérifiez votre adresse e-mail pour votre compte Klecx."
+      "verifyEmailDescription": "Vérifiez votre adresse e-mail pour votre compte Klecx.",
+      "twoFactorTitle": "Connexion en deux étapes",
+      "twoFactorDescription": "Saisissez le code de votre application d'authentification pour terminer la connexion."
     },
     "settings": {
       "title": "Paramètres",
@@ -257,10 +259,33 @@
       "DISPOSABLE_EMAIL": "Ce service de messagerie n'est pas accepté. Inscrivez-vous avec une adresse e-mail permanente.",
       "ACCOUNT_SUSPENDED": "Ce compte est suspendu. Si vous pensez qu'il s'agit d'une erreur, contactez notre équipe d'assistance.",
       "ACCOUNT_DELETED": "Ce compte a été supprimé. Utilisez le lien de l'e-mail que nous vous avons envoyé pour le restaurer.",
-      "PASSWORD_COMPROMISED": "Ce mot de passe figure dans une fuite de données connue. Choisissez-en un autre."
+      "PASSWORD_COMPROMISED": "Ce mot de passe figure dans une fuite de données connue. Choisissez-en un autre.",
+      "INVALID_CODE": "Ce code n'est pas correct. Vérifiez votre application d'authentification et réessayez.",
+      "INVALID_BACKUP_CODE": "Ce code de secours n'est pas correct ou a déjà été utilisé.",
+      "TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE": "Trop de codes incorrects. Reconnectez-vous pour réessayer.",
+      "ACCOUNT_TEMPORARILY_LOCKED": "Trop de codes incorrects. La connexion en deux étapes est bloquée quelques minutes ; réessayez plus tard.",
+      "INVALID_TWO_FACTOR_COOKIE": "Cette connexion a expiré. Reconnectez-vous avec votre e-mail et votre mot de passe."
     },
     "planIntent": "Vous avez choisi {plan} ({interval}). Après avoir confirmé votre e-mail, vous passerez au paiement.",
-    "accountDeleted": "Votre compte est supprimé. Consultez vos e-mails : vous y trouverez le lien pour le restaurer si vous changez d'avis."
+    "accountDeleted": "Votre compte est supprimé. Consultez vos e-mails : vous y trouverez le lien pour le restaurer si vous changez d'avis.",
+    "twoFactor": {
+      "title": "Connexion en deux étapes",
+      "subtitleTotp": "Saisissez le code à 6 chiffres de votre application d'authentification.",
+      "subtitleBackup": "Saisissez l'un des codes de secours que vous avez enregistrés. Chaque code ne sert qu'une fois.",
+      "codeLabel": "Code d'authentification",
+      "backupLabel": "Code de secours",
+      "codePlaceholder": "123456",
+      "backupPlaceholder": "abcde-12345",
+      "trustDevice": "Ne plus demander sur cet appareil pendant {days} jours",
+      "verify": "Vérifier",
+      "verifying": "Vérification…",
+      "useBackup": "Utiliser un code de secours",
+      "useApp": "Utiliser l'application d'authentification",
+      "lostAccess": "Vous avez perdu votre téléphone et vos codes de secours ? Écrivez à {email} depuis l'adresse e-mail de votre compte ; nous vérifierons que c'est bien vous avant de retirer la connexion en deux étapes.",
+      "backToSignIn": "Retour à la connexion",
+      "signInAgain": "Se reconnecter",
+      "errorGeneric": "Impossible de vérifier le code. Réessayez."
+    }
   },
   "Chat": {
     "newChat": "Nouvel espace de travail",
@@ -472,7 +497,41 @@
       "cancel": "Annuler",
       "sessionsTitle": "Sessions et appareils",
       "sessionsHint": "Voyez où vous êtes connecté et déconnectez les appareils que vous ne reconnaissez pas.",
-      "sessionsLink": "Gérer les sessions"
+      "sessionsLink": "Gérer les sessions",
+      "twoFactor": {
+        "title": "Connexion en deux étapes",
+        "hint": "Après votre mot de passe, Klecx demande aussi un code d'une application d'authentification sur votre téléphone : un mot de passe volé ne suffit donc pas à ouvrir votre compte. La connexion avec un compte associé (les autres méthodes de la page de connexion) utilise la protection de ce compte.",
+        "needsPassword": "La connexion en deux étapes protège la connexion par e-mail et mot de passe. Définissez d'abord un mot de passe ci-dessus ; la connexion avec un compte associé utilise la protection de ce compte.",
+        "statusOn": "Activée",
+        "statusOff": "Désactivée",
+        "turnOn": "Activer",
+        "turnOff": "Désactiver",
+        "newBackupCodes": "Nouveaux codes de secours",
+        "passwordForSetup": "Saisissez votre mot de passe pour commencer.",
+        "passwordForDisable": "Saisissez votre mot de passe pour désactiver la connexion en deux étapes. Si vous la réactivez, les appareils de confiance demanderont de nouveau un code.",
+        "passwordForCodes": "Saisissez votre mot de passe pour créer de nouveaux codes de secours. Les anciens ne fonctionneront plus.",
+        "passwordLabel": "Mot de passe",
+        "continue": "Continuer",
+        "cancel": "Annuler",
+        "scanStep1": "Ouvrez une application d'authentification sur votre téléphone (toute application compatible avec les codes temporels).",
+        "scanStep2": "Scannez ce code QR ou saisissez la clé à la main.",
+        "scanStep3": "Saisissez le code à 6 chiffres affiché par l'application.",
+        "qrLabel": "Code QR pour ajouter Klecx à votre application d'authentification",
+        "manualKeyLabel": "Impossible de le scanner ? Saisissez cette clé :",
+        "copyKey": "Copier la clé",
+        "codeLabel": "Code de l'application",
+        "codePlaceholder": "123456",
+        "confirm": "Activer",
+        "codesWarning": "Conservez ces codes de secours en lieu sûr. Si vous perdez votre téléphone, chacun permet de vous connecter une fois. Ils ne seront plus affichés.",
+        "codesListLabel": "Codes de secours",
+        "copyCodes": "Copier les codes",
+        "downloadCodes": "Télécharger",
+        "savedCodes": "Je les ai enregistrés",
+        "codesFileHeader": "Codes de secours Klecx. Chaque code permet de se connecter une seule fois.",
+        "enabledToast": "La connexion en deux étapes est activée.",
+        "disabledToast": "La connexion en deux étapes est désactivée.",
+        "actionError": "Impossible de modifier la connexion en deux étapes. Réessayez."
+      }
     },
     "language": {
       "title": "Langue et IA",
@@ -902,6 +961,31 @@
       "body": "Votre compte Klecx est restauré. Vous pouvez vous reconnecter ; vos espaces de travail et vos paramètres sont tels que vous les avez laissés.",
       "button": "Se connecter",
       "disclaimer": "Si vous n'avez pas restauré votre compte, contactez l'assistance."
+    },
+    "twoFactorChanged": {
+      "greeting": "Bonjour,",
+      "button": "Voir les paramètres de sécurité",
+      "disclaimer": "Si vous êtes à l'origine de ce changement, vous pouvez ignorer cet e-mail. Sinon, changez votre mot de passe immédiatement et contactez le support.",
+      "enabled": {
+        "subject": "La connexion en deux étapes est activée sur votre compte Klecx",
+        "heading": "Connexion en deux étapes activée",
+        "body": "La connexion en deux étapes a été activée sur votre compte Klecx le {time}. Désormais, la connexion avec votre mot de passe demande aussi un code de votre application d'authentification."
+      },
+      "disabled": {
+        "subject": "La connexion en deux étapes a été désactivée sur votre compte Klecx",
+        "heading": "Connexion en deux étapes désactivée",
+        "body": "La connexion en deux étapes a été désactivée sur votre compte Klecx le {time}. La connexion avec votre mot de passe ne demande plus de code."
+      },
+      "backupCodes": {
+        "subject": "Nouveaux codes de secours pour votre compte Klecx",
+        "heading": "Nouveaux codes de secours créés",
+        "body": "De nouveaux codes de secours ont été créés pour votre compte Klecx le {time}. Les anciens codes ne fonctionnent plus."
+      },
+      "resetBySupport": {
+        "subject": "Le support Klecx a retiré la connexion en deux étapes",
+        "heading": "Connexion en deux étapes retirée",
+        "body": "À votre demande, le support Klecx a retiré la connexion en deux étapes de votre compte le {time}. Vous pouvez la réactiver dans vos paramètres de sécurité."
+      }
     }
   },
   "AppShell": {
@@ -1864,7 +1948,7 @@
           "id": "security",
           "heading": "9. Sécurité",
           "paragraphs": [
-            "Nous protégeons vos données par des connexions chiffrées (HTTPS), des mots de passe hachés, des contrôles d'accès qui limitent chaque espace de travail aux personnes invitées, un stockage privé des fichiers importés avec des liens de téléchargement à durée limitée, des alertes de connexion et des limites d'utilisation contre les abus. Aucun système n'est parfaitement sûr ; si une violation touche vos données, nous vous en informerons, ainsi que les autorités, comme la loi l'exige."
+            "Nous protégeons vos données par des connexions chiffrées (HTTPS), des mots de passe hachés, une vérification qui refuse les mots de passe figurant dans des fuites de données connues (seul un court fragment anonyme du hachage du mot de passe est comparé, jamais le mot de passe lui-même), la connexion en deux étapes facultative avec une application d'authentification (sa clé secrète et ses codes de secours sont stockés chiffrés), des contrôles d'accès qui limitent chaque espace de travail aux personnes invitées, un stockage privé des fichiers importés avec des liens de téléchargement à durée limitée, des alertes de connexion et des limites d'utilisation contre les abus. Aucun système n'est parfaitement sûr ; si une violation touche vos données, nous vous en informerons, ainsi que les autorités, comme la loi l'exige."
           ]
         },
         {
@@ -2359,7 +2443,12 @@
       "purge_not_due": "Le délai de grâce du compte n'est pas encore terminé.",
       "origin_mismatch": "Cette requête venait d'un autre site et a été bloquée. Rechargez Klecx et réessayez.",
       "payload_too_large": "C'est trop long pour être envoyé. Raccourcissez le texte et réessayez.",
-      "PASSWORD_COMPROMISED": "Ce mot de passe figure dans une fuite de données connue. Choisissez-en un autre."
+      "PASSWORD_COMPROMISED": "Ce mot de passe figure dans une fuite de données connue. Choisissez-en un autre.",
+      "invalid_code": "Ce code n'est pas correct. Vérifiez votre application d'authentification et réessayez.",
+      "two_factor_already_on": "La connexion en deux étapes est déjà activée.",
+      "two_factor_not_on": "La connexion en deux étapes n'est pas activée.",
+      "two_factor_not_started": "Recommencez : saisissez votre mot de passe pour obtenir un nouveau code QR.",
+      "password_required": "Définissez d'abord un mot de passe pour utiliser la connexion en deux étapes."
     }
   },
   "Gates": {

@@ -309,3 +309,16 @@ Known gap: the credit hold before an answer covers the base cost only (decided 2
 **Options.** (a) Nothing until there's a real need (recommended for launch: low risk, no extra cost). (b) A Cloudinary add-on that scans uploads (paid per file; check the plan). (c) A ClamAV service (needs hosting outside Vercel).
 
 **If nothing is decided:** (a); `docs/security-review.md` keeps it as gap G6.
+
+---
+
+## 16. Two-factor sign-in for Google/GitHub sign-ins
+
+- **Found:** 2026-11-23, two-factor sign-in (after Step 10.1).
+- **Where:** Better Auth's `twoFactor` plugin challenges only password sign-ins (`/sign-in/email`); `server/auth/auth.ts`.
+
+**Today.** Two-factor protects signing in with email and password, and needs a password on the account. Signing in with Google or GitHub skips Klecx's code and relies on that provider's own two-step verification (the help article and Settings say so). Someone with both a password and Google connected could therefore be reached through Google without Klecx's code.
+
+**Options.** (a) Keep it (the usual behaviour; recommended for launch). (b) Also ask for the Klecx code after a Google/GitHub sign-in when two-factor is on: a custom hook on the OAuth callback that replaces the new session with a challenge, like the plugin does for passwords (more code, and the callback is a redirect, so it needs its own flow).
+
+**If nothing is decided:** (a).

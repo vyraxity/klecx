@@ -37,6 +37,7 @@ jest.mock("better-auth/react", () => ({
 
 jest.mock("better-auth/client/plugins", () => ({
   inferAdditionalFields: () => ({}),
+  twoFactorClient: () => ({ id: "two-factor" }),
 }));
 
 jest.mock("@/components/providers/theme-provider", () => ({

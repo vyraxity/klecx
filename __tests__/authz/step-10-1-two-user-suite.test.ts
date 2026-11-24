@@ -206,6 +206,7 @@ const ROWS: Row[] = [
   { route: "admin/users/[id]/unfreeze-credits", method: "POST", params: () => ({ id: A.id }), expect: [403] },
   { route: "admin/users/[id]/reset-username-limit", method: "POST", params: () => ({ id: A.id }), expect: [403] },
   { route: "admin/users/[id]/purge-deleted", method: "POST", params: () => ({ id: A.id }), body: () => ({}), expect: [403] },
+  { route: "admin/users/[id]/reset-two-factor", method: "POST", params: () => ({ id: A.id }), expect: [403] },
 
   // Endpoints that take A's ids in the body or query instead of the path.
   { route: "shares", method: "POST", body: () => ({ workspaceId: ID.workspace, scope: "WORKSPACE" }) },

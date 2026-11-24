@@ -16,6 +16,7 @@ import {
   type LoginInput,
 } from "@/lib/schemas/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/utils/routes";
+import { TWO_FACTOR_CHALLENGE_PATH } from "@/lib/auth/two-factor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -74,7 +75,7 @@ const LoginForm = (): React.JSX.Element => {
 
     startTransition(async () => {
       try {
-        const { error } = await authClient.signIn.email({
+        const { data, error } = await authClient.signIn.email({
           email: values.email.trim(),
           password: values.password,
           callbackURL: redirectTo,
@@ -107,6 +108,12 @@ const LoginForm = (): React.JSX.Element => {
             message: getAuthErrorMessage(error, tRoot, t("errors.INVALID_EMAIL_OR_PASSWORD")),
             success: false,
           });
+          return;
+        }
+
+        // Two-factor on: the password was right; the code comes next.
+        if (data && "twoFactorRedirect" in data && data.twoFactorRedirect) {
+          router.push(`${TWO_FACTOR_CHALLENGE_PATH}?next=${encodeURIComponent(redirectTo)}`);
           return;
         }
 

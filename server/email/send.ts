@@ -17,6 +17,7 @@ import { renderResetPassword } from "./templates/reset-password";
 import { renderInvitation } from "./templates/invitation";
 import { renderNewSignIn } from "./templates/new-sign-in";
 import { renderPasswordChanged } from "./templates/password-changed";
+import { renderTwoFactorChanged } from "./templates/two-factor-changed";
 import { renderChangeEmailConfirm, renderChangeEmailVerify } from "./templates/change-email";
 import { renderShareCreated } from "./templates/share-created";
 import { renderCreditsLow } from "./templates/credits-low";
@@ -118,6 +119,8 @@ export async function renderEmail<T extends EmailTemplateName>(
       return renderInvitation(data as EmailTemplateMap["invitation"], t, to);
     case "new-sign-in":
       return renderNewSignIn(data as EmailTemplateMap["new-sign-in"], t, to, locale);
+    case "two-factor-changed":
+      return renderTwoFactorChanged(data as EmailTemplateMap["two-factor-changed"], t, to);
     case "password-changed":
       return renderPasswordChanged(
         data as EmailTemplateMap["password-changed"],
