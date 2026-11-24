@@ -17,7 +17,14 @@ import {
 import { createAccountWithFreeGrant } from "@/server/services/credits";
 import { setUserPlanOverride, clearUserPlanOverrides } from "@/server/billing/plans";
 import { creditsFor, GROUNDING_SURCHARGE_CREDITS, MODEL_CATALOG } from "@/lib/ai/model-catalog";
-import { currentDateInstruction, formatPromptDate, searchDateInstruction } from "@/lib/ai/date-context";
+import {
+  currentDateInstruction,
+  formatPromptDate,
+  searchDateInstruction,
+  searchReportInstruction,
+} from "@/lib/ai/date-context";
+import { WEB_SEARCH_TOOL } from "@/server/ai/tools/web-search";
+import { buildSystemPrompt } from "@/server/ai/prompts/system";
 import { withCurrentDate } from "@/server/ai";
 import { runWebSearch } from "@/server/ai/tools/web-search";
 import { generationCostUsd, searchCostUsd, PROVIDER_SEARCH_USD } from "@/server/monitoring/costs";
@@ -36,7 +43,13 @@ class RecordingProvider implements AiProvider {
     this.requests.push(req);
     if (req.grounding) {
       yield { type: "text_delta", text: "Matchday 11 results, 2026/27 season." };
-      yield { type: "citation", url: "https://example.com/results", title: "Results", source: "GROUNDING" };
+      yield {
+        type: "citation",
+        url: "https://example.com/results",
+        title: "Results",
+        snippet: "As of today, Tuesday, 24 November 2026, our own summary text",
+        source: "GROUNDING",
+      };
       yield { type: "usage", inputTokens: 2_000, outputTokens: 400, thoughtTokens: 100, searchQueries: 2, estimated: false };
       return;
     }
@@ -88,6 +101,43 @@ describe("today's date in AI requests", () => {
     expect(text.text.startsWith(searchDateInstruction(NOW))).toBe(true);
     expect(req.system).toContain("Today is Saturday, 21 November 2026");
     expect(result.usage).toEqual({ queries: 2, inputTokens: 2_000, outputTokens: 500 });
+  });
+
+  test("the date line can't be mistaken for a test date (owner's report, 2026-11-24)", () => {
+    const line = currentDateInstruction(NOW);
+    expect(line).toContain("comes from the system clock and is correct");
+    expect(line).toContain("placeholder");
+    expect(line).toContain('"next", "upcoming"');
+    expect(searchDateInstruction(NOW)).toContain("Turn relative words");
+  });
+
+  test("the search step keeps dates, times and time zones exactly, and gives complete lists", async () => {
+    const provider = new RecordingProvider();
+    const result = await runWebSearch("premier league fixtures 27-30 November 2026", {
+      providerInstance: provider,
+      now: NOW,
+    });
+    const text = (provider.requests[0]!.messages[0]!.parts.find((p) => p.type === "text") as { text: string }).text;
+    expect(text).toContain(searchReportInstruction());
+    expect(searchReportInstruction()).toContain("with its time zone");
+    expect(searchReportInstruction()).toContain("complete list");
+    expect(searchReportInstruction()).toContain("If sources disagree");
+    // The provider's snippet is our own summary text: never kept as the source's words.
+    expect(result.sources).toEqual([
+      expect.objectContaining({ url: "https://example.com/results", title: "Results" }),
+    ]);
+    expect(result.sources[0]!.snippet).toBeUndefined();
+  });
+
+  test("the search tool asks for queries with actual dates; answers keep times with their time zone", () => {
+    expect(WEB_SEARCH_TOOL.description).toContain("put the actual dates");
+    expect(buildSystemPrompt("auto")).toContain("each time with its time zone");
+  });
+
+  test("source cards don't show web-search snippets (old answers stored our summary as one)", () => {
+    const src = fs.readFileSync("components/response/citations.tsx", "utf8");
+    expect(src).toContain('c.source === "GROUNDING" ? null : c.snippet');
+    expect(src).not.toMatch(/\{c(itation|it)\.snippet\}/);
   });
 
   test("not the read-aloud voice (it would read the date out loud)", () => {

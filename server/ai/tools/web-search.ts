@@ -2,12 +2,12 @@ import "server-only";
 import { type ToolSpec, type AiProvider } from "../types";
 import { streamAi } from "../index";
 import { validateCitationUrl, type CitationSegment } from "../citations";
-import { searchDateInstruction } from "@/lib/ai/date-context";
+import { searchDateInstruction, searchReportInstruction } from "@/lib/ai/date-context";
 
 export const WEB_SEARCH_TOOL: ToolSpec = {
   name: "web_search",
   description:
-    "Search the web for current or verifiable information. Use it for recent events, prices, statistics, documentation or anything you are not sure about. Do not use it for general knowledge, writing or math.",
+    "Search the web for current or verifiable information. Use it for recent events, prices, statistics, documentation or anything you are not sure about. Do not use it for general knowledge, writing or math. Write specific queries: for anything time-related, put the actual dates, season or year in the query (e.g. \"Premier League fixtures 27-30 November 2026\"), never only words like \"next\" or \"upcoming\".",
   parameters: {
     type: "object",
     properties: {
@@ -23,6 +23,11 @@ export const WEB_SEARCH_TOOL: ToolSpec = {
 export interface WebSearchSource {
   url: string;
   title?: string;
+  /**
+   * Not filled for grounded searches: the provider's "snippet" is a piece of
+   * our own summary, not text from the page, so showing it under the source
+   * would put words in the source's mouth (owner's report, 2026-11-24).
+   */
   snippet?: string;
   /** Where in `summary` this source is used (from the provider's grounding). */
   segments?: CitationSegment[];
@@ -65,7 +70,7 @@ export async function runWebSearch(
           parts: [
             {
               type: "text",
-              text: `${searchDateInstruction(ctx.now)}\n\nSearch query: ${query}\n\nProvide a factual, compact summary of the latest information found (under 1500 tokens). Include relevant details, dates, or prices.`,
+              text: `${searchDateInstruction(ctx.now)}\n\nSearch query: ${query}\n\nProvide a factual, compact summary of the latest information found (under 1500 tokens). Include relevant details, dates, times, or prices.\n\n${searchReportInstruction()}`,
             },
           ],
         },
@@ -104,7 +109,6 @@ export async function runWebSearch(
           sources.push({
             url: check.normalizedUrl,
             title: event.title || check.hostname || undefined,
-            snippet: event.snippet || undefined,
             segments: event.segments?.length ? [...event.segments] : undefined,
           });
         }

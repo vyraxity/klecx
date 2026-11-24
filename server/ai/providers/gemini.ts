@@ -219,7 +219,7 @@ export class GeminiProvider implements AiProvider {
         for (let chunkIdx = 0; chunkIdx < groundingChunks.length; chunkIdx++) {
           const gc = groundingChunks[chunkIdx];
           if (gc?.web?.uri) {
-            // Collect any segments and snippet text that reference this chunk index
+            // Collect the segments of our text that this chunk supports
             const matchingSupports = groundingSupports.filter(
               (sup) =>
                 Array.isArray(sup.groundingChunkIndices) &&
@@ -231,16 +231,12 @@ export class GeminiProvider implements AiProvider {
                 (seg): seg is { startIndex?: number; endIndex?: number; text?: string } =>
                   Boolean(seg)
               );
-            const snippet = segments
-              .map((seg) => seg.text?.trim())
-              .filter(Boolean)
-              .join(" … ") || undefined;
-
+            // No snippet: the segments are pieces of the model's own text,
+            // not of the source page (shown as the source's words, they misled).
             yield {
               type: "citation",
               url: gc.web.uri,
               title: gc.web.title,
-              ...(snippet ? { snippet } : {}),
               ...(segments.length > 0 ? { segments } : {}),
             };
           }
