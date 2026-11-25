@@ -23,7 +23,7 @@ npm run lint
 npm run check:tokens
 npm run check:i18n
 npm run typecheck
-npm test -- --ci
+npm run test:coverage -- --ci
 npm run build
 npm run check:audit
 

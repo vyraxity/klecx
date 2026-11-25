@@ -38,7 +38,7 @@ jobs:
       - run: npm run check:tokens
       - run: npm run check:i18n
       - run: npm run typecheck
-      - run: npm test -- --ci
+      - run: npm run test:coverage -- --ci # Step 10.4: fails under 80 % of lines in server/services
       - run: npm run build
         env:
           UPSTASH_REDIS_REST_URL: https://ci-dummy-redis.upstash.io

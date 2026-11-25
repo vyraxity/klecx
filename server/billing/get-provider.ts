@@ -2,6 +2,7 @@ import "server-only";
 import { env } from "@/server/env";
 import { CREEM_TEST_API_BASE, createCreemProvider, type CreemProductIds } from "@/server/billing/creem";
 import type { BillingProvider } from "@/server/billing/provider";
+import { fakeCreemFetch } from "@/server/testing/e2e";
 
 let testProvider: BillingProvider | null | undefined;
 
@@ -33,10 +34,14 @@ export function getBillingProvider(): BillingProvider | null {
   if (!products) return null;
   const apiBase = env.CREEM_API_BASE ?? (env.NODE_ENV === "production" ? undefined : CREEM_TEST_API_BASE);
   if (!apiBase) return null;
-  return createCreemProvider({
-    apiKey: env.CREEM_API_KEY,
-    apiBase,
-    webhookSecret: env.CREEM_WEBHOOK_SECRET,
-    products,
-  });
+  return createCreemProvider(
+    {
+      apiKey: env.CREEM_API_KEY,
+      apiBase,
+      webhookSecret: env.CREEM_WEBHOOK_SECRET,
+      products,
+    },
+    // Step 10.4: end-to-end test mode talks to a fake Creem (`server/testing/e2e.ts`).
+    env.E2E_TEST_MODE ? fakeCreemFetch : fetch
+  );
 }

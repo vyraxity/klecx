@@ -1,0 +1,89 @@
+import { NextResponse } from "next/server";
+import { z } from "zod";
+import { route } from "@/server/http/route";
+import { Errors } from "@/server/http/errors";
+import { db } from "@/server/db/client";
+import {
+  completeFakeCheckout,
+  isE2ETestMode,
+  ledgerCheck,
+  readTestEmails,
+  sendFakeSubscriptionEvent,
+  subscribeForTest,
+} from "@/server/testing/e2e";
+
+/**
+ * Step 10.4: helpers for the end-to-end tests. **404 unless
+ * `E2E_TEST_MODE=true`**, which `server/env.ts` refuses on any Vercel
+ * deployment, so these never exist on dev.klecx.com or klecx.com.
+ *
+ * - `GET  /api/test/emails?to=` — the test inbox (newest last).
+ * - `GET  /api/test/creem-checkout?checkout=` — the fake hosted checkout:
+ *   "pays", sends the signed webhooks, redirects back like Creem.
+ * - `POST /api/test/subscribe` `{ email, plan, interval? }` — a paid plan
+ *   through the real checkout and webhook path, without a browser.
+ * - `POST /api/test/subscription-event` `{ email, type }` — Creem reports a
+ *   change (e.g. `subscription.past_due`).
+ * - `GET  /api/test/ledger-check?email=` — the load test's check: balances
+ *   equal the ledger sums and never went negative.
+ */
+const subscribeBody = z.object({
+  email: z.string().email(),
+  plan: z.enum(["LITE", "STANDARD", "PRO"]),
+  interval: z.enum(["month", "year"]).optional(),
+});
+const eventBody = z.object({
+  email: z.string().email(),
+  type: z.enum(["subscription.past_due", "subscription.active", "subscription.canceled", "subscription.expired", "subscription.paid"]),
+});
+
+function guard(action: string): void {
+  if (!isE2ETestMode()) throw Errors.notFound("Route");
+  void action;
+}
+
+export const GET = route({
+  auth: "optional",
+  handler: async ({ req, params }) => {
+    const action = String(params.action ?? "");
+    guard(action);
+    if (action === "emails") {
+      return { emails: readTestEmails(req.nextUrl.searchParams.get("to") ?? undefined) };
+    }
+    if (action === "ledger-check") {
+      const out = await ledgerCheck(req.nextUrl.searchParams.get("email") ?? "");
+      if (!out) throw Errors.notFound("Account");
+      return out;
+    }
+    if (action === "creem-checkout") {
+      const back = await completeFakeCheckout(req.nextUrl.searchParams.get("checkout") ?? "");
+      if (!back) throw Errors.notFound("Checkout");
+      return NextResponse.redirect(back, 303);
+    }
+    throw Errors.notFound("Route");
+  },
+});
+
+export const POST = route({
+  auth: "optional",
+  handler: async ({ req, params }) => {
+    const action = String(params.action ?? "");
+    guard(action);
+    const raw = await req.json().catch(() => ({}));
+    if (action === "subscribe") {
+      const body = subscribeBody.parse(raw);
+      return subscribeForTest(body.email, body.plan, body.interval ?? "month");
+    }
+    if (action === "subscription-event") {
+      const body = eventBody.parse(raw);
+      const sub = await db.subscription.findFirst({
+        where: { user: { email: { equals: body.email, mode: "insensitive" } } },
+        select: { providerSubscriptionId: true },
+      });
+      if (!sub?.providerSubscriptionId) throw Errors.notFound("Subscription");
+      const status = await sendFakeSubscriptionEvent(sub.providerSubscriptionId, body.type);
+      return { webhookStatus: status };
+    }
+    throw Errors.notFound("Route");
+  },
+});

@@ -17,7 +17,11 @@
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed",
     "postinstall": "prisma generate",
-    "verify": "bash scripts/verify.sh"
+    "verify": "bash scripts/verify.sh",
+    "test:coverage": "jest --coverage",
+    "e2e:build": "node scripts/e2e-build.mjs",
+    "e2e": "playwright test",
+    "e2e:start": "node scripts/e2e-start.mjs"
   },
   "dependencies": {
     "@breezystack/lamejs": "^1.2.7",
@@ -99,6 +103,7 @@
     "zustand": "^5.0.16"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",

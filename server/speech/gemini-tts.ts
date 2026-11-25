@@ -65,9 +65,35 @@ function sampleRateOf(mime: string | undefined): number {
 
 let provider: SpeechProvider | null = null;
 
+/**
+ * Step 10.4: `AI_PROVIDER=fake` (never in production) — a short tone per
+ * part, no network: end-to-end and load tests can play natural voices.
+ */
+export class FakeSpeechProvider implements SpeechProvider {
+  public readonly id = "natural" as const;
+  public readonly modelId = "fake-tts";
+
+  listVoices() {
+    return NATURAL_VOICES.map((v) => ({ id: v.id, style: v.style }));
+  }
+
+  async synthesize({ text, voiceId }: SynthesizeInput): Promise<SynthesizeResult> {
+    if (!isNaturalVoice(voiceId)) throw new SpeechProviderError(`Unknown voice ${voiceId}`, false);
+    // ~0.06 s per character, between 0.5 s and 10 s, of a quiet 440 Hz tone at 24 kHz.
+    const seconds = Math.min(10, Math.max(0.5, text.length * 0.06));
+    const rate = 24_000;
+    const pcm = Buffer.alloc(Math.round(seconds * rate) * 2);
+    for (let i = 0; i < pcm.length / 2; i++) {
+      pcm.writeInt16LE(Math.round(Math.sin((2 * Math.PI * 440 * i) / rate) * 2000), i * 2);
+    }
+    const audio = pcmToWav(pcm, rate);
+    return { audio, mime: "audio/wav", usage: { chars: text.length, audioSeconds: wavDurationSeconds(audio) } };
+  }
+}
+
 /** The natural-voice provider (tests can swap it). */
 export function getNaturalSpeechProvider(): SpeechProvider {
-  provider ??= new GeminiSpeechProvider();
+  provider ??= env.AI_PROVIDER === "fake" ? new FakeSpeechProvider() : new GeminiSpeechProvider();
   return provider;
 }
 

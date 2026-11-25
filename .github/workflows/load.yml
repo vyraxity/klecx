@@ -1,0 +1,46 @@
+# Step 10.4 — load test (k6, load/k6-load.js), run by hand (Actions → load).
+# 50 simultaneous AI answers on the fake provider, 20 sessions spending one
+# balance, then: balances equal their ledger sums and never went negative,
+# and non-AI endpoints keep p95 < 300 ms.
+name: load
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  k6:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16.15-alpine
+        env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: klecx_e2e }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 10
+    env:
+      E2E_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/klecx_e2e
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/klecx_e2e
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run e2e:build
+      - name: Start the test-mode server
+        run: |
+          npm run e2e:start > server.log 2>&1 &
+          for i in $(seq 1 60); do curl -fs http://localhost:3100/api/health && break; sleep 2; done
+      - name: Install k6
+        run: |
+          curl -fsSL -o k6.tgz https://github.com/grafana/k6/releases/download/v1.2.3/k6-v1.2.3-linux-amd64.tar.gz
+          tar xzf k6.tgz
+          sudo mv k6-v1.2.3-linux-amd64/k6 /usr/local/bin/k6
+      - run: k6 run load/k6-load.js
+      - if: failure()
+        run: tail -200 server.log
