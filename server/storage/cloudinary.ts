@@ -1,6 +1,7 @@
 import "server-only";
 import { v2 as cloudinary } from "cloudinary";
 import { env } from "@/server/env";
+import { log, errInfo } from "@/server/log";
 import {
   CreateSignatureOptions,
   SignedUploadPayload,
@@ -15,18 +16,33 @@ export interface CloudinaryConfig {
   cloudName?: string;
   apiKey?: string;
   apiSecret?: string;
+  /** Skip asking Cloudinary (env `CLOUDINARY_FOLDER_MODE`, or tests). */
+  folderMode?: FolderMode;
 }
+
+export type FolderMode = "fixed" | "dynamic";
+
+/** The folder part of a public id ("klecx/dev/speech/abc" → "klecx/dev/speech"); "" at the root. */
+export function assetFolderOf(publicId: string): string {
+  const i = publicId.lastIndexOf("/");
+  return i > 0 ? publicId.slice(0, i) : "";
+}
+
+/** One lookup per process and account (the mode never changes for an account). */
+const folderModeCache = new Map<string, Promise<FolderMode>>();
 
 export class CloudinaryStorageProvider implements StorageProvider {
   public readonly name = "cloudinary";
   private readonly cloudName: string;
   private readonly apiKey: string;
   private readonly apiSecret: string;
+  private readonly configuredFolderMode: FolderMode | undefined;
 
   constructor(config?: CloudinaryConfig) {
     this.cloudName = config?.cloudName ?? env.CLOUDINARY_CLOUD_NAME ?? "";
     this.apiKey = config?.apiKey ?? env.CLOUDINARY_API_KEY ?? "";
     this.apiSecret = config?.apiSecret ?? env.CLOUDINARY_API_SECRET ?? "";
+    this.configuredFolderMode = config?.folderMode ?? env.CLOUDINARY_FOLDER_MODE;
 
     if (this.cloudName && this.apiKey && this.apiSecret) {
       cloudinary.config({
@@ -36,6 +52,37 @@ export class CloudinaryStorageProvider implements StorageProvider {
         secure: true,
       });
     }
+  }
+
+  /**
+   * The account's folder mode (fixed 2026-11-24: on an account in dynamic
+   * mode, files whose public id is "klecx/dev/speech/abc" sat at the Media
+   * Library's root, because only `asset_folder` makes folders there).
+   * `CLOUDINARY_FOLDER_MODE` wins; else Cloudinary's Admin API is asked once;
+   * if that fails, "fixed" (the old behaviour: nothing extra is sent).
+   */
+  async folderMode(): Promise<FolderMode> {
+    if (this.configuredFolderMode) return this.configuredFolderMode;
+    let pending = folderModeCache.get(this.cloudName);
+    if (!pending) {
+      pending = Promise.resolve()
+        .then(() => cloudinary.api.config({ settings: true }))
+        .then((res) => (res?.settings?.folder_mode === "dynamic" ? "dynamic" : "fixed") as FolderMode)
+        .catch((err: unknown) => {
+          folderModeCache.delete(this.cloudName);
+          log.warn({ err: errInfo(err) }, "[storage] could not read Cloudinary's folder mode; assuming fixed");
+          return "fixed" as FolderMode;
+        });
+      folderModeCache.set(this.cloudName, pending);
+    }
+    return pending;
+  }
+
+  /** `asset_folder` to send with an upload: the public id's folder, in dynamic mode only. */
+  private async assetFolderFor(publicId: string, folder?: string): Promise<string | undefined> {
+    if ((await this.folderMode()) !== "dynamic") return undefined;
+    const dir = assetFolderOf(publicId) || folder || "";
+    return dir || undefined;
   }
 
   async createUploadSignature(
@@ -67,6 +114,11 @@ export class CloudinaryStorageProvider implements StorageProvider {
       paramsToSign.tags = options.tags.join(",");
     }
 
+    const assetFolder = await this.assetFolderFor(options.publicId, effectiveFolder);
+    if (assetFolder) {
+      paramsToSign.asset_folder = assetFolder;
+    }
+
     const signature = cloudinary.utils.api_sign_request(
       paramsToSign,
       this.apiSecret
@@ -77,6 +129,7 @@ export class CloudinaryStorageProvider implements StorageProvider {
     return {
       publicId: options.publicId,
       folder: effectiveFolder,
+      ...(assetFolder ? { assetFolder } : {}),
       signature,
       timestamp,
       apiKey: this.apiKey,
@@ -101,12 +154,14 @@ export class CloudinaryStorageProvider implements StorageProvider {
     const type = options.isPublic ? "upload" : "authenticated";
     const publicIdHasFolder = options.publicId.includes("/");
     const effectiveFolder = publicIdHasFolder ? undefined : options.folder;
+    const assetFolder = await this.assetFolderFor(options.publicId, effectiveFolder);
 
     return new Promise<UploadBufferResult>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           public_id: options.publicId,
           folder: effectiveFolder,
+          ...(assetFolder ? { asset_folder: assetFolder } : {}),
           resource_type: resourceType,
           type,
           format: options.format,

@@ -11,6 +11,8 @@ export interface AttachmentInitResponse {
   uploadPayload?: {
     publicId: string;
     folder?: string;
+    /** Cloudinary dynamic folder mode: signed, sent as `asset_folder`. */
+    assetFolder?: string;
     signature: string;
     timestamp: number;
     apiKey: string;
@@ -177,6 +179,9 @@ export async function uploadAttachment(
         }
         if (uploadPayload.folder) {
           formData.append("folder", uploadPayload.folder);
+        }
+        if (uploadPayload.assetFolder) {
+          formData.append("asset_folder", uploadPayload.assetFolder);
         }
 
         xhr.send(formData);

@@ -11,6 +11,12 @@ export type AttachmentKind =
 export interface SignedUploadPayload {
   publicId: string;
   folder: string;
+  /**
+   * Media Library folder for accounts in Cloudinary's dynamic folder mode
+   * (the folder part of `publicId`); signed, so the browser must send it as
+   * `asset_folder`. Absent in fixed folder mode.
+   */
+  assetFolder?: string;
   signature: string;
   timestamp: number;
   apiKey: string;

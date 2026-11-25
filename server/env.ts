@@ -64,6 +64,10 @@ export const envSchema = z
     CLOUDINARY_API_KEY: emptyToUndefined(z.string().optional()),
     CLOUDINARY_API_SECRET: emptyToUndefined(z.string().optional()),
     CLOUDINARY_UPLOAD_FOLDER: z.string().default("klecx/dev"),
+    // The Cloudinary account's folder mode. Unset: asked once from Cloudinary's Admin API.
+    // "dynamic" (newer accounts): Media Library folders come from `asset_folder`, not from
+    // slashes in the public id, so uploads also send `asset_folder`.
+    CLOUDINARY_FOLDER_MODE: emptyToUndefined(z.enum(["fixed", "dynamic"]).optional()),
     NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: emptyToUndefined(z.string().optional()),
     TRUST_PROXY: z
       .enum(["true", "false"])
