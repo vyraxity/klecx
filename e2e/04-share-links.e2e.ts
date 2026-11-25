@@ -53,12 +53,13 @@ test("share a workspace and one response, open them signed out, revoke → 404",
 
   // Revoke both: the links stop working.
   const panel = owner.page.getByRole("dialog").getByRole("tabpanel", { name: "Public Link" });
-  for (let i = 0; i < 2; i++) {
+  // One at a time: the list re-renders after each revoke.
+  for (const left of ["1 active", "0 active"]) {
     await panel.getByRole("button", { name: /Revoke/ }).first().click();
     const confirm = owner.page.getByRole("alertdialog").getByRole("button", { name: /Revoke/ });
     if (await confirm.isVisible().catch(() => false)) await confirm.click();
+    await expect(panel.getByText(left)).toBeVisible();
   }
-  await expect(panel.getByText("0 active")).toBeVisible();
   for (const link of [workspaceLink, responseLink]) {
     const res = await guest.goto(link);
     expect(res?.status()).toBe(404);

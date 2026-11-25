@@ -132,6 +132,9 @@ export async function untilAnswered(page: Page, action: () => Promise<unknown>):
   );
   await action();
   await (await response).finished();
+  // After the stream the page refetches the saved answer; acting before that
+  // (e.g. opening the editor) would work on the state from before it.
+  await page.waitForLoadState("networkidle", { timeout: 10_000 }).catch(() => undefined);
   await expect(page.locator("main").getByRole("button", { name: "Regenerate" }).last()).toBeVisible();
 }
 
