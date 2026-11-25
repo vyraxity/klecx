@@ -1,4 +1,4 @@
-import { expect, test, ask, credits, newUser, selectText, subscribe, waitForEmail } from "./helpers";
+import { expect, test, ask, credits, newUser, selectText, subscribe, waitForEmail, openShare } from "./helpers";
 
 /**
  * Journey 3 (guide 10.4): invite a collaborator → they accept and generate →
@@ -18,8 +18,7 @@ test("invite a collaborator who generates on the owner's credits; activity and @
   const workspaceUrl = owner.page.url();
 
   // Invite by email from the Share dialog.
-  await owner.page.getByRole("banner").getByRole("button", { name: "Share" }).click();
-  const share = owner.page.getByRole("dialog", { name: /^Share/ });
+  const share = await openShare(owner.page);
   await share.getByRole("textbox", { name: "Invite people by email or @username" }).fill(member.email);
   await share.getByRole("button", { name: "Invite" }).click();
   await expect(share.getByRole("tab", { name: "Invitations" })).toBeVisible();
@@ -53,8 +52,7 @@ test("invite a collaborator who generates on the owner's credits; activity and @
 
   // The owner sees who did what in the activity.
   await owner.page.goto(workspaceUrl);
-  await owner.page.getByRole("banner").getByRole("button", { name: "Share" }).click();
-  const dialog = owner.page.getByRole("dialog", { name: /^Share/ });
+  const dialog = await openShare(owner.page);
   await dialog.getByRole("tab", { name: "Activity" }).click();
   await expect(dialog.getByRole("tabpanel").getByText("Mia Member").first()).toBeVisible();
 });

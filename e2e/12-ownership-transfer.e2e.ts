@@ -1,4 +1,4 @@
-import { expect, test, ask, inviteAndAccept, newUser, subscribe } from "./helpers";
+import { expect, test, ask, inviteAndAccept, newUser, subscribe, openShare } from "./helpers";
 
 /**
  * Journey 12 (after the interlude): an ownership transfer is refused while it
@@ -18,8 +18,7 @@ test("transfer ownership: blocked by the recipient's plan, then requested and ac
 
   const openTransfer = async () => {
     await owner.page.goto(workspaceUrl);
-    await owner.page.getByRole("banner").getByRole("button", { name: "Share" }).click();
-    const share = owner.page.getByRole("dialog", { name: /^Share/ });
+    const share = await openShare(owner.page);
     await share.getByRole("button", { name: "Transfer ownership" }).click();
     return owner.page.getByRole("dialog", { name: "Transfer ownership" });
   };
@@ -40,15 +39,14 @@ test("transfer ownership: blocked by the recipient's plan, then requested and ac
 
   // The recipient accepts from the workspace's Share dialog.
   await recipient.page.goto(workspaceUrl);
-  await recipient.page.getByRole("banner").getByRole("button", { name: "Share" }).click();
-  const share = recipient.page.getByRole("dialog", { name: /^Share/ });
+  const share = await openShare(recipient.page);
   await expect(share.getByText(/wants to transfer ownership/)).toBeVisible();
   await share.getByRole("button", { name: "Accept", exact: true }).click();
   await expect(recipient.page.getByText("You're now the owner.")).toBeVisible();
 
   // The new owner shows as Owner in People.
   await recipient.page.reload();
-  await recipient.page.getByRole("banner").getByRole("button", { name: "Share" }).click();
+  await openShare(recipient.page);
   const people = recipient.page.getByRole("dialog", { name: /^Share/ }).getByRole("tabpanel");
   await expect(people.getByText(/Tara Taker\s*You\s*Owner/)).toBeVisible();
 });

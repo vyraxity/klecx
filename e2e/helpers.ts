@@ -198,8 +198,7 @@ async function dragOver(page: Page, target: Locator): Promise<void> {
 
 /** The owner invites `member` to the open workspace from the Share dialog; the member accepts the emailed link. */
 export async function inviteAndAccept(owner: TestUser, member: TestUser): Promise<void> {
-  await owner.page.getByRole("banner").getByRole("button", { name: "Share" }).click();
-  const share = owner.page.getByRole("dialog", { name: /^Share/ });
+  const share = await openShare(owner.page);
   await share.getByRole("textbox", { name: "Invite people by email or @username" }).fill(member.email);
   await share.getByRole("button", { name: "Invite" }).click();
   await expect(share.getByRole("tab", { name: "Invitations" })).toBeVisible();
@@ -210,4 +209,21 @@ export async function inviteAndAccept(owner: TestUser, member: TestUser): Promis
   await member.page.goto(link!);
   await member.page.getByRole("button", { name: /Accept/ }).click();
   await member.page.waitForURL(/\/workspaces\/[0-9a-f-]{36}/);
+}
+
+/**
+ * Opens the workspace's Share dialog from the top bar. A click right after the
+ * first answer can land while the workspace page is still settling and get
+ * lost, so it clicks again until the dialog is open.
+ */
+export async function openShare(page: Page): Promise<Locator> {
+  const dialog = page.getByRole("dialog", { name: /^Share/ });
+  await expect(async () => {
+    if (!(await dialog.isVisible())) {
+      await page.keyboard.press("Escape");
+      await page.getByRole("banner").getByRole("button", { name: "Share" }).click();
+    }
+    await expect(dialog).toBeVisible({ timeout: 3_000 });
+  }).toPass({ timeout: 20_000 });
+  return dialog;
 }

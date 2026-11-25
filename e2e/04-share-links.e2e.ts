@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { E2E_BASE_URL } from "./env.mjs";
-import { expect, test, ask, newUser, waitForEmail } from "./helpers";
+import { expect, test, ask, newUser, waitForEmail, openShare } from "./helpers";
 
 /**
  * Journey 4 (guide 10.4): share the whole workspace and a single response →
@@ -9,7 +9,7 @@ import { expect, test, ask, newUser, waitForEmail } from "./helpers";
 
 async function createLink(page: Page, openFrom: "workspace" | "response"): Promise<void> {
   if (openFrom === "workspace") {
-    await page.getByRole("banner").getByRole("button", { name: "Share" }).click();
+    await openShare(page);
     await page.getByRole("dialog").getByRole("tab", { name: "Public Link" }).click();
   } else {
     await page.locator("main").getByRole("button", { name: "Share" }).first().click();
