@@ -300,9 +300,15 @@ export function useCreateResponseEdit(userId: string, workspaceId: string) {
         }
       }
     },
-    onSettled: () => {
+    onSettled: (_data, _err, { responseId }) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.responses.all(userId, workspaceId),
+      });
+      // The card shows the version from the versions list (a separate key):
+      // without this, an edit saved right after a regeneration stayed
+      // invisible until a reload (found by the Step 10.4 journeys).
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.responses.versions(userId, responseId),
       });
     },
   });
@@ -316,9 +322,12 @@ export function useRevertResponseEdit(userId: string, workspaceId: string) {
       api<{ reverted: boolean }>(`/api/v1/responses/${responseId}/edits`, {
         method: "DELETE",
       }),
-    onSettled: () => {
+    onSettled: (_data, _err, responseId) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.responses.all(userId, workspaceId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.responses.versions(userId, responseId),
       });
     },
   });
@@ -384,6 +393,11 @@ export function useCreateVersionEdit(userId: string, workspaceId: string) {
         },
       );
       queryClient.invalidateQueries({ queryKey: baseKey });
+      // Cards read their version from the versions lists (another key);
+      // only the ones on screen refetch.
+      queryClient.invalidateQueries({
+        predicate: (q) => q.queryKey[q.queryKey.length - 1] === "versions" && q.queryKey.includes("responses"),
+      });
       if (typeof window !== "undefined") {
         window.dispatchEvent(
           new CustomEvent("annotation-changed", { detail: {} })

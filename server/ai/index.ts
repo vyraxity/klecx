@@ -3,6 +3,8 @@ import { log } from "@/server/log";
 import { AiError, AiProvider, GenerateRequest, ImageRequest, ImageResult, StreamEvent } from "./types";
 import { assertModelAccess, getModel, ModelKey, PlanTier } from "./registry";
 import { GeminiProvider } from "./providers/gemini";
+import { FakeAiProvider } from "./providers/fake";
+import { env } from "@/server/env";
 import { normalizeGeminiError } from "./errors";
 import { currentDateInstruction } from "@/lib/ai/date-context";
 
@@ -14,12 +16,18 @@ export * from "./moderation";
 export * from "./citations";
 
 const geminiProvider = new GeminiProvider();
+/** Step 10.4: `AI_PROVIDER=fake` (refused in production by `server/env.ts`): no network, deterministic. */
+let fakeProvider: FakeAiProvider | null = null;
 
 /**
  * Returns the appropriate provider instance for a given model key.
  */
 export function getProvider(modelKey: string): AiProvider {
   const model = getModel(modelKey);
+  if (env.AI_PROVIDER === "fake") {
+    fakeProvider ??= new FakeAiProvider();
+    return fakeProvider;
+  }
   switch (model.provider) {
     case "gemini":
       return geminiProvider;

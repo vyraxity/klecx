@@ -254,6 +254,13 @@ export async function sendEmail<T extends EmailTemplateName>(
 ): Promise<SendEmailResult> {
   const rendered = await renderEmail(template, to, data, opts);
 
+  // Step 10.4: end-to-end test mode keeps emails in a test inbox (never sent).
+  if (env.E2E_TEST_MODE) {
+    const { recordTestEmail } = await import("@/server/testing/e2e");
+    recordTestEmail({ to, template, subject: rendered.subject, text: rendered.text, html: rendered.html });
+    return { success: true, id: `e2e-${Date.now()}` };
+  }
+
   // In development with no live Resend key or a placeholder key, log the email and link for local clicking
   if (
     env.NODE_ENV === "development" &&

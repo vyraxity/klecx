@@ -262,7 +262,7 @@ export async function limit(
           reset: r.reset,
           remaining: r.remaining,
         };
-      } else if (env.NODE_ENV === "production") {
+      } else if (env.NODE_ENV === "production" && !env.E2E_TEST_MODE) {
         throw new Error(
           "Upstash Redis credentials are required for rate limiting in production"
         );

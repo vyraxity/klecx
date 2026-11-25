@@ -11,6 +11,15 @@ export const envSchema = z
     DATABASE_URL: z.string().url(),
     BETTER_AUTH_SECRET: z.string().min(32),
     GEMINI_API_KEY: z.string().min(10),
+    // Step 10.4: "fake" = the deterministic test provider (`server/ai/providers/fake.ts`):
+    // no AI network calls, for end-to-end and load tests. Refused in production.
+    AI_PROVIDER: emptyToUndefined(z.enum(["gemini", "fake"]).optional()),
+    // Step 10.4: end-to-end/load test mode (`server/testing/e2e.ts`): test inbox instead of
+    // emails, fake Creem, in-memory rate limits, fake AI allowed in a production build.
+    // Never on a hosted deployment: refused whenever VERCEL is set.
+    E2E_TEST_MODE: emptyToUndefined(z.enum(["true", "false"]).default("false")).transform((v) => v === "true"),
+    /** Set by Vercel on every deployment; only read to refuse test mode there. */
+    VERCEL: emptyToUndefined(z.string().optional()),
     GEMINI_TEXT_MODEL: z.string().default("gemini-2.5-flash"),
     GEMINI_TEXT_MODEL_ECONOMY: z.string().default("gemini-2.5-flash"),
     GEMINI_TEXT_MODEL_STANDARD: z.string().default("gemini-2.5-pro"),
@@ -78,6 +87,20 @@ export const envSchema = z
     ),
   })
   .superRefine((data, ctx) => {
+    if (data.E2E_TEST_MODE && data.VERCEL) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["E2E_TEST_MODE"],
+        message: "E2E_TEST_MODE is for CI and local test runs; it is refused on Vercel deployments",
+      });
+    }
+    if (data.AI_PROVIDER === "fake" && (data.VERCEL || (data.NODE_ENV === "production" && !data.E2E_TEST_MODE))) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["AI_PROVIDER"],
+        message: 'AI_PROVIDER="fake" is for tests only: refused in production (except a local E2E_TEST_MODE build) and on Vercel',
+      });
+    }
     const hasRedisUrl = Boolean(data.UPSTASH_REDIS_REST_URL);
     const hasRedisToken = Boolean(data.UPSTASH_REDIS_REST_TOKEN);
 
@@ -101,7 +124,8 @@ export const envSchema = z
       return;
     }
 
-    if (data.NODE_ENV === "production") {
+    // A local end-to-end run of a production build uses the in-memory limiter.
+    if (data.NODE_ENV === "production" && !data.E2E_TEST_MODE) {
       if (!hasRedisUrl) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,

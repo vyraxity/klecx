@@ -27,7 +27,8 @@ const config: Config = {
   // collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  // collectCoverageFrom: undefined,
+  // Step 10.4: coverage is measured on the business rules (`npm run test:coverage`, CI).
+  collectCoverageFrom: ["server/services/**/*.ts"],
 
   // The directory where Jest should output its coverage files
   // coverageDirectory: 'coverage',
@@ -41,15 +42,11 @@ const config: Config = {
   coverageProvider: 'v8',
 
   // A list of reporter names that Jest uses when writing coverage reports
-  // coverageReporters: [
-  //   "json",
-  //   "text",
-  //   "lcov",
-  //   "clover"
-  // ],
+  coverageReporters: ["text-summary", "json-summary"],
 
   // An object that configures minimum threshold enforcement for coverage results
-  // coverageThreshold: undefined,
+  // Step 10.4: the guide's target, ≥ 80 % of lines in server/services (91.6 % on 2026-11-25).
+  coverageThreshold: { global: {}, "./server/services/": { lines: 80 } },
 
   // A path to a custom dependency extractor
   // dependencyExtractor: undefined,
