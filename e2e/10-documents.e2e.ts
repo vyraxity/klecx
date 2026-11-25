@@ -1,7 +1,6 @@
-import { test, expect } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
-import { ask, composer, newUser, subscribe } from "./helpers";
+import { expect, test, ask, composer, newUser, subscribe } from "./helpers";
 
 /**
  * Journey 10 (after the interlude): add a DOCX to the workspace → Ask Klecx

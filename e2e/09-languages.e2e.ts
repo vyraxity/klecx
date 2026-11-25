@@ -1,5 +1,5 @@
-import { test, expect, type Page } from "@playwright/test";
-import { newUser } from "./helpers";
+import type { Page } from "@playwright/test";
+import { expect, test, newUser } from "./helpers";
 
 /**
  * Journey 9 (guide 10.4): the app's language, the language Klecx answers in

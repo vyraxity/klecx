@@ -1,5 +1,4 @@
-import { test, expect } from "@playwright/test";
-import { credits, newUser } from "./helpers";
+import { expect, test, credits, newUser } from "./helpers";
 
 /**
  * Journey 7 (guide 10.4): Free → Lite through Plan & billing and the

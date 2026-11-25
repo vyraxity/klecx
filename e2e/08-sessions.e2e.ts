@@ -1,6 +1,5 @@
-import { test, expect } from "@playwright/test";
 import { E2E_BASE_URL } from "./env.mjs";
-import { PASSWORD, dismissCookieNotice, newUser } from "./helpers";
+import { expect, test, PASSWORD, dismissCookieNotice, newUser } from "./helpers";
 
 /**
  * Journey 8 (guide 10.4): sign in on two browsers → revoke one from

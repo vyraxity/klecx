@@ -1,5 +1,5 @@
-import { test, expect, type Page } from "@playwright/test";
-import { composer, newUser } from "./helpers";
+import type { Page } from "@playwright/test";
+import { expect, test, composer, newUser } from "./helpers";
 
 /**
  * Journey 11 (after the interlude): voice input with a mocked microphone

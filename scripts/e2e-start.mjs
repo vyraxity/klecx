@@ -7,5 +7,7 @@ import { E2E_ENV, E2E_PORT } from "../e2e/env.mjs";
 const child = spawn("npx", ["next", "start", "-p", String(E2E_PORT)], {
   env: { ...process.env, ...E2E_ENV },
   stdio: "inherit",
+  // On Windows `npx` is a .cmd script, which Node only starts through a shell.
+  shell: process.platform === "win32",
 });
 child.on("exit", (code) => process.exit(code ?? 0));

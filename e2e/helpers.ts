@@ -1,4 +1,4 @@
-import { expect, type APIRequestContext, type Browser, type BrowserContext, type Locator, type Page } from "@playwright/test";
+import { test as base, expect, type APIRequestContext, type Browser, type BrowserContext, type Locator, type Page } from "@playwright/test";
 import { E2E_BASE_URL } from "./env.mjs";
 
 /**
@@ -8,6 +8,26 @@ import { E2E_BASE_URL } from "./env.mjs";
  */
 
 export const PASSWORD = "A-long-e2e-test-passphrase-42";
+
+/** Browser contexts opened by `newUser()` in the current test (closed after it). */
+const openContexts = new Set<BrowserContext>();
+
+/**
+ * Use this `test` (not Playwright's) in journeys: after every test it closes
+ * the people's browser contexts. Left open, their pages keep polling the app
+ * and slow down every later test in the worker (seen as random timeouts).
+ */
+export const test = base.extend<{ closeUsers: void }>({
+  closeUsers: [
+    async ({}, use) => {
+      await use();
+      await Promise.all([...openContexts].map((c) => c.close().catch(() => undefined)));
+      openContexts.clear();
+    },
+    { auto: true },
+  ],
+});
+export { expect };
 let counter = 0;
 
 export function uniqueEmail(label: string): string {
@@ -60,6 +80,7 @@ export async function newUser(browser: Browser, label: string, opts: { name?: st
   const email = uniqueEmail(label);
   const name = opts.name ?? `${label[0]!.toUpperCase()}${label.slice(1)} Tester`;
   const context = await browser.newContext({ baseURL: E2E_BASE_URL });
+  openContexts.add(context);
   const page = await context.newPage();
   const res = await context.request.post("/api/auth/sign-up/email", {
     data: { email, password: PASSWORD, name, callbackURL: "/workspaces" },
@@ -98,11 +119,27 @@ export function composer(page: Page) {
   return page.getByRole("textbox", { name: "How can Klecx help you today?" });
 }
 
-/** Sends a prompt and waits for the fake answer to finish streaming. */
+/**
+ * Runs `action` (a click that starts an AI answer) and waits until that
+ * answer's stream has ended and the saved card is back: earlier answers
+ * already show the same fixed text, so waiting for text alone isn't enough.
+ */
+export async function untilAnswered(page: Page, action: () => Promise<unknown>): Promise<void> {
+  const response = page.waitForResponse(
+    // A new answer (`/generations`) or a regeneration (`/responses/:id/regenerate`): both stream.
+    (r) => r.request().method() === "POST" && /\/(generations|regenerate)$/.test(new URL(r.url()).pathname),
+    { timeout: 30_000 }
+  );
+  await action();
+  await (await response).finished();
+  await expect(page.locator("main").getByRole("button", { name: "Regenerate" }).last()).toBeVisible();
+}
+
+/** Sends a prompt and waits for the fake answer to finish streaming and be saved. */
 export async function ask(page: Page, prompt: string): Promise<void> {
   await composer(page).fill(prompt);
-  await page.getByRole("button", { name: "Send" }).click();
   const before = await page.locator("main").getByRole("button", { name: "Regenerate" }).count();
+  await untilAnswered(page, () => page.getByRole("button", { name: "Send" }).click());
   await expect(page.getByText("A closing sentence ends the answer.").last()).toBeVisible();
   // The saved card (with its actions) replaces the streaming one.
   await expect(page.locator("main").getByRole("button", { name: "Regenerate" })).toHaveCount(before + 1);

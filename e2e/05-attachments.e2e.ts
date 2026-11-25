@@ -1,6 +1,5 @@
-import { test, expect } from "@playwright/test";
 import path from "node:path";
-import { composer, newUser } from "./helpers";
+import { expect, test, composer, newUser } from "./helpers";
 
 /**
  * Journey 5 (guide 10.4): attach a PDF and an image → send → the answer used

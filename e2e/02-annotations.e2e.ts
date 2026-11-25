@@ -1,5 +1,5 @@
-import { test, expect, type Page } from "@playwright/test";
-import { ask, newUser, selectText } from "./helpers";
+import type { Page } from "@playwright/test";
+import { expect, test, ask, newUser, selectText } from "./helpers";
 
 /**
  * Journey 2 (guide 10.4, as changed after the interlude): select → Comment

@@ -3,6 +3,28 @@
  * secrets). The app runs as a production build (`next start`) in test mode:
  * fake AI and voice, fake Creem, test inbox, mock storage, its own database.
  */
+import fs from "node:fs";
+import path from "node:path";
+
+/**
+ * `E2E_DATABASE_URL` / `E2E_PORT` may be set in `.env.local` or `.env` (the
+ * e2e scripts and Playwright don't load those files themselves). Only the
+ * `E2E_*` keys are read; a value already in the environment wins.
+ */
+for (const file of [".env.local", ".env"]) {
+  let text = "";
+  try {
+    text = fs.readFileSync(path.join(process.cwd(), file), "utf8");
+  } catch {
+    continue;
+  }
+  for (const line of text.split(/\r?\n/)) {
+    const m = line.match(/^\s*(?:export\s+)?(E2E_[A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
+    if (!m || process.env[m[1]] !== undefined) continue;
+    process.env[m[1]] = m[2].replace(/^(['"])(.*)\1$/, "$2");
+  }
+}
+
 export const E2E_PORT = Number(process.env.E2E_PORT ?? 3100);
 export const E2E_BASE_URL = `http://localhost:${E2E_PORT}`;
 export const E2E_DATABASE_URL =

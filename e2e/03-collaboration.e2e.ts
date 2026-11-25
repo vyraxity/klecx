@@ -1,5 +1,4 @@
-import { test, expect } from "@playwright/test";
-import { ask, credits, newUser, selectText, subscribe, waitForEmail } from "./helpers";
+import { expect, test, ask, credits, newUser, selectText, subscribe, waitForEmail } from "./helpers";
 
 /**
  * Journey 3 (guide 10.4): invite a collaborator → they accept and generate →

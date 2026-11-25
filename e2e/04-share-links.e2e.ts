@@ -1,6 +1,6 @@
-import { test, expect, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 import { E2E_BASE_URL } from "./env.mjs";
-import { ask, newUser, waitForEmail } from "./helpers";
+import { expect, test, ask, newUser, waitForEmail } from "./helpers";
 
 /**
  * Journey 4 (guide 10.4): share the whole workspace and a single response →

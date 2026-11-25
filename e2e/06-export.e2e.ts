@@ -1,6 +1,6 @@
-import { test, expect, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 import fs from "node:fs";
-import { ask, newUser, subscribe } from "./helpers";
+import { expect, test, ask, newUser, subscribe } from "./helpers";
 
 /**
  * Journey 6 (guide 10.4): export a response as PDF and Word (and Markdown).

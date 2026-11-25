@@ -30,12 +30,14 @@ End-to-end and load tests run a **production build** of Klecx in test mode (`e2e
 
 Jest: see `CLAUDE.md` (test database, environment). With coverage: `npm run test:coverage`.
 
-End-to-end, locally:
+End-to-end, locally (Windows, macOS or Linux):
 
-1. Create the e2e database once (local Postgres): `createdb klecx_e2e`, or set `E2E_DATABASE_URL` to another empty database.
-2. `npx playwright install chromium webkit` (once, on your machine).
-3. `npm run e2e:build` — migrates the e2e database and builds the app in test mode (rebuild after changing app code).
+1. Point the tests at an e2e database on your local Postgres: add `E2E_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/klecx_e2e` (your user, password and port) to `.env` or `.env.local`. It's a **separate database inside the same Postgres server** (not a new container), and the build creates it if it doesn't exist. Never point it at your normal development database: the journeys fill it with test people.
+2. `npx playwright install chromium webkit` (once).
+3. `npm run e2e:build` — creates the database if needed, applies the migrations, then builds the app in test mode. It prints each step (`[e2e] …`) and ends with "Build ready". Rebuild after changing app code.
 4. `npm run e2e` — starts the build on port 3100 and runs every journey. One file: `npx playwright test e2e/07-billing.e2e.ts`; one browser: `--project=chromium`; watch it: `--headed`; step through: `--debug`.
+
+The test build and your normal `npm run build` share the `.next` folder: run `npm run e2e:build` again after a normal build before `npm run e2e`.
 
 In a Claude Code cloud session (Chromium only, preinstalled): `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium npx playwright test --trace off` (WebKit runs in CI).
 

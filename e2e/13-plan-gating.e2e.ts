@@ -1,6 +1,5 @@
-import { test, expect } from "@playwright/test";
 import { E2E_BASE_URL } from "./env.mjs";
-import { ask, newUser } from "./helpers";
+import { expect, test, ask, newUser } from "./helpers";
 
 /**
  * Journey 13 (after the interlude): a Free person sees plan-gated controls
@@ -20,10 +19,12 @@ test("Free plan: gated controls are disabled with a reason, and forged requests 
   await page.getByRole("dialog").getByText(/Standard Reasoning/).hover();
   await expect(page.getByRole("tooltip").first()).toBeVisible();
   await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
 
   // Inviting is gated too (Free: no collaborators).
   await page.getByRole("banner").getByRole("button", { name: "Share" }).click();
   const share = page.getByRole("dialog", { name: /^Share/ });
+  await expect(share).toBeVisible();
   await expect(share.getByRole("button", { name: "Invite" })).toBeDisabled();
   await page.keyboard.press("Escape");
 

@@ -1,5 +1,4 @@
-import { test, expect } from "@playwright/test";
-import { PASSWORD, ask, dismissCookieNotice, uniqueEmail, uniqueUsername, waitForEmail } from "./helpers";
+import { expect, test, PASSWORD, ask, dismissCookieNotice, uniqueEmail, uniqueUsername, untilAnswered, waitForEmail } from "./helpers";
 
 /**
  * Journey 1 (guide 10.4): register → verify (the email from the test inbox)
@@ -39,10 +38,9 @@ test("register, verify, claim a username, get an answer, regenerate, edit, switc
   await expect(page.getByText('Here is a test answer about "Explain photosynthesis".')).toBeVisible();
 
   // Regenerate: a second version, with navigation between them.
-  await page.getByRole("button", { name: "Regenerate" }).click();
+  await untilAnswered(page, () => page.getByRole("button", { name: "Regenerate" }).click());
   const versions = page.getByRole("group", { name: /Version \d of \d/ });
   await expect(versions).toHaveAccessibleName("Version 2 of 2");
-  await expect(page.getByText("A closing sentence ends the answer.").last()).toBeVisible();
 
   // Edit: the edit is saved separately, the AI original is kept.
   await page.getByRole("button", { name: "Edit", exact: true }).click();
