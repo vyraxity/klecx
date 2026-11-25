@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, test, newUser } from "./helpers";
+import { expect, test, newUser, typeInComposer } from "./helpers";
 
 /**
  * Journey 9 (guide 10.4): the app's language, the language Klecx answers in
@@ -9,7 +9,7 @@ import { expect, test, newUser } from "./helpers";
 async function askIn(page: Page, label: string, prompt: string, expected: string) {
   const box = page.getByRole("textbox", { name: label });
   const before = await page.getByText(expected).count();
-  await box.fill(prompt);
+  await typeInComposer(page, box, prompt);
   await page.getByRole("region").filter({ has: box }).getByRole("button").last().click();
   // One more answer saying it, so an earlier answer can't satisfy the check.
   await expect(page.getByText(expected)).toHaveCount(before + 1);

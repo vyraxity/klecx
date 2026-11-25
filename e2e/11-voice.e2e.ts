@@ -30,6 +30,10 @@ async function mockMicrophone(page: Page) {
 
 test("record a voice prompt: Stop inserts the transcript, Send while recording sends it", async ({ browser }) => {
   const { page } = await newUser(browser, "voice");
+  // The app offers voice input only where the browser can record
+  // (MediaRecorder). Some WebKit builds can't: nothing to test there.
+  const canRecord = await page.evaluate(() => typeof window.MediaRecorder !== "undefined");
+  test.skip(!canRecord, "This browser has no MediaRecorder, so the app doesn't offer voice input");
   await mockMicrophone(page);
   await page.reload();
 

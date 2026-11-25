@@ -57,7 +57,7 @@ Load test: `npm run e2e:build`, `npm run e2e:start` (keep it running), then `k6 
 | `08-sessions` | a second browser signs in → revoked from Sessions & devices → signed out |
 | `09-languages` | app in French, answers in Spanish (Settings), a prompt asking for German wins for that answer |
 | `10-documents` | add a DOCX → Ask Klecx to review → accept the fix → Save; generate a Word document → edit → download |
-| `11-voice` | mocked microphone → Stop puts the transcript in the composer; Send while recording sends it |
+| `11-voice` | mocked microphone → Stop puts the transcript in the composer; Send while recording sends it (skipped, with that reason, in a browser without `MediaRecorder`, where the app doesn't offer voice input) |
 | `12-ownership-transfer` | refused while it doesn't fit the recipient's plan → sent once it fits → accepted |
 | `13-plan-gating` | Free: Standard model and inviting disabled with a reason; forged requests refused by the server |
 

@@ -1,5 +1,5 @@
 import path from "node:path";
-import { expect, test, composer, newUser } from "./helpers";
+import { expect, test, composer, newUser, typeInComposer } from "./helpers";
 
 /**
  * Journey 5 (guide 10.4): attach a PDF and an image → send → the answer used
@@ -11,7 +11,7 @@ test("attach a PDF and an image; the answer receives both", async ({ browser }) 
   const fixtures = path.join(__dirname, "fixtures");
 
   // The first prompt creates the workspace; files attach to the next one.
-  await composer(page).fill("Start a workspace for my files");
+  await typeInComposer(page, composer(page), "Start a workspace for my files");
   await page.getByRole("button", { name: "Send" }).click();
   await expect(page.getByText("A closing sentence ends the answer.")).toBeVisible();
   await expect(page).toHaveURL(/\/workspaces\/[0-9a-f-]{36}/);

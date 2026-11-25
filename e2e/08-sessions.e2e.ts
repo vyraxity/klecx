@@ -9,7 +9,12 @@ test("revoke another session and it is signed out", async ({ browser }) => {
   const user = await newUser(browser, "sessions");
 
   // A second device signs in through the login form.
-  const other = await browser.newContext({ baseURL: E2E_BASE_URL, userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15" });
+  // A browser none of the test projects uses (WebKit's own name is Safari),
+  // so the two devices can be told apart on the sessions page.
+  const other = await browser.newContext({
+    baseURL: E2E_BASE_URL,
+    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0",
+  });
   const second = await other.newPage();
   await second.goto("/auth/login");
   await dismissCookieNotice(second);
@@ -22,11 +27,11 @@ test("revoke another session and it is signed out", async ({ browser }) => {
   await user.page.goto("/settings/sessions");
   const main = user.page.locator("main");
   await expect(main.getByText("This device")).toBeVisible();
-  await expect(main.getByText(/Safari/).first()).toBeVisible();
+  await expect(main.getByText(/Firefox/).first()).toBeVisible();
   await main.getByRole("button", { name: /Revoke|Sign out/ }).first().click();
   const confirm = user.page.getByRole("alertdialog");
   if (await confirm.isVisible().catch(() => false)) await confirm.getByRole("button", { name: /Revoke|Sign out/ }).last().click();
-  await expect(main.getByText(/Safari/)).toHaveCount(0);
+  await expect(main.getByText(/Firefox/)).toHaveCount(0);
 
   // The revoked browser is signed out: the API refuses it and the app sends it to sign in.
   const me = await other.request.get("/api/v1/me");

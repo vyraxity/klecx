@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { expect, test, ask, composer, newUser, subscribe } from "./helpers";
+import { expect, test, ask, composer, newUser, subscribe, typeInComposer } from "./helpers";
 
 /**
  * Journey 10 (after the interlude): add a DOCX to the workspace → Ask Klecx
@@ -39,7 +39,7 @@ test("review an uploaded DOCX and accept a fix; generate, edit and download a Wo
   await expect(page.getByRole("article").filter({ hasText: "handbook.docx" }).getByText("Welcome to the team.", { exact: false })).toBeVisible();
 
   // Generate a Word document from a prompt.
-  await composer(page).fill("Write an onboarding guide as a Word document [[fake:docx]]");
+  await typeInComposer(page, composer(page), "Write an onboarding guide as a Word document [[fake:docx]]");
   await page.getByRole("button", { name: "Send" }).click();
   await expect(page.getByText("The document is ready.")).toBeVisible();
   const generated = page.getByText("Fake test document").first();

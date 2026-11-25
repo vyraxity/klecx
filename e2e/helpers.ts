@@ -139,8 +139,22 @@ export async function untilAnswered(page: Page, action: () => Promise<unknown>):
 }
 
 /** Sends a prompt and waits for the fake answer to finish streaming and be saved. */
+/**
+ * Types into a composer box until its Send button is enabled. Right after a
+ * load the box can take text before the page is interactive (WebKit is slower
+ * there); the app then never sees it and Send stays disabled, so type again.
+ */
+export async function typeInComposer(page: Page, box: Locator, text: string): Promise<void> {
+  const send = page.getByRole("region").filter({ has: box }).locator('button[type="submit"]');
+  await expect(async () => {
+    await box.fill("");
+    await box.fill(text);
+    await expect(send).toBeEnabled({ timeout: 2_000 });
+  }).toPass({ timeout: 20_000 });
+}
+
 export async function ask(page: Page, prompt: string): Promise<void> {
-  await composer(page).fill(prompt);
+  await typeInComposer(page, composer(page), prompt);
   const before = await page.locator("main").getByRole("button", { name: "Regenerate" }).count();
   await untilAnswered(page, () => page.getByRole("button", { name: "Send" }).click());
   await expect(page.getByText("A closing sentence ends the answer.").last()).toBeVisible();
