@@ -14,3 +14,8 @@ f3810472137746689a4067d5bb3ad6ce94f83e61:.gitleaksignore:generic-api-key:2
 3eb90bc65ebad1d94a92b8618082082670ad1690:__tests__/unit/env.test.ts:generic-api-key:15
 09af68f9e8a5be1c4888ce7ad832fc6302c48fd8:__tests__/ai/errors.test.ts:generic-api-key:39
 f72ba7211a64e35a195ad5d0ba28108dacbba11c:__tests__/unit/env.test.ts:generic-api-key:15
+# Step 10.4 (2026-11-25): made-up end-to-end values, not secrets: the dummy Creem webhook
+# secret the test-mode app and the fake checkout share (e2e/env.mjs), and the password of the
+# throwaway accounts the journeys create (e2e/helpers.ts).
+baaa0779ec5b4a542b06253c51fbd5734c2ba74e:e2e/env.mjs:generic-api-key:11
+baaa0779ec5b4a542b06253c51fbd5734c2ba74e:e2e/helpers.ts:generic-api-key:10
