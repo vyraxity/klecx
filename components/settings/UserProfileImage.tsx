@@ -234,7 +234,7 @@ export function UserProfileImage({
         </button>
       </div>
 
-      <div className="flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
+      <div className="flex flex-col gap-2 items-center sm:items-start text-center sm:text-start">
         <div className="flex flex-wrap gap-2">
           <Button
             type="button"

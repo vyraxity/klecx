@@ -46,7 +46,7 @@ export function PricingView() {
           </div>
 
           <div className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-2xs">
-            <table className="w-full text-left text-xs sm:text-sm border-collapse min-w-[560px]">
+            <table className="w-full text-start text-xs sm:text-sm border-collapse min-w-[560px]">
               <thead>
                 <tr className="border-b border-border bg-surface-2 text-fg font-semibold">
                   <th className="p-4">{tc("capability")}</th>

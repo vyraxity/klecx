@@ -36,8 +36,8 @@ const sheetVariants = cva(
       side: {
         top: "inset-x-0 top-0 border-b border-border",
         bottom: "inset-x-0 bottom-0 border-t border-border",
-        left: "inset-y-0 left-0 h-full w-3/4 border-r border-border sm:max-w-sm",
-        right: "inset-y-0 right-0 h-full w-3/4 border-l border-border sm:max-w-sm",
+        left: "inset-y-0 left-0 h-full w-3/4 border-e border-border sm:max-w-sm",
+        right: "inset-y-0 right-0 h-full w-3/4 border-s border-border sm:max-w-sm",
       },
     },
     defaultVariants: {
@@ -95,7 +95,7 @@ const SheetHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     data-slot="sheet-header"
-    className={cn("flex flex-col space-y-2 text-left", className)}
+    className={cn("flex flex-col space-y-2 text-start", className)}
     {...props}
   />
 );

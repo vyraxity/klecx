@@ -105,7 +105,7 @@ export function ConfirmDialog({
               variant={variant === "destructive" ? "destructive" : "default"}
               disabled={!isMatch || loading}
             >
-              {loading && <Spinner size="sm" className="mr-1" />}
+              {loading && <Spinner size="sm" className="me-1" />}
               {confirmLabel ?? t("confirm")}
             </Button>
           </DialogFooter>

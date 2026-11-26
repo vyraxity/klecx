@@ -111,7 +111,7 @@ export default async function StatusPage() {
               : "border-warning/30 bg-warning/5"
           }`}
         >
-          <div className="flex items-center gap-4 text-center sm:text-left">
+          <div className="flex items-center gap-4 text-center sm:text-start">
             <div
               className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
                 isAllOperational

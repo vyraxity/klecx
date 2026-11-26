@@ -121,7 +121,7 @@ export function BatchColumn({
       data-thread-column-index={index}
       data-testid={`batch-column-${id}`}
       className={cn(
-        "flex flex-col h-full min-w-0 bg-background border-r border-border focus-visible:outline-none shrink-0 transition-[width] duration-200 ease-out motion-reduce:transition-none select-text",
+        "flex flex-col h-full min-w-0 bg-background border-e border-border focus-visible:outline-none shrink-0 transition-[width] duration-200 ease-out motion-reduce:transition-none select-text",
         className
       )}
     >
@@ -157,7 +157,7 @@ export function BatchColumn({
       <div className="flex-1 overflow-y-auto p-4 space-y-5">
         {isLoading ? (
           <div className="flex items-center justify-center h-48 text-muted">
-            <Loader2 className="w-5 h-5 animate-spin mr-2" />
+            <Loader2 className="w-5 h-5 animate-spin me-2" />
             <span className="text-xs">{t("loading")}</span>
           </div>
         ) : notFound || questions.length === 0 ? (
@@ -182,12 +182,12 @@ export function BatchColumn({
                   data-testid={`batch-item-${q.id}`}
                   className="space-y-2 border-b border-border/60 pb-5 last:border-b-0 last:pb-0"
                 >
-                  <div className="rounded-lg bg-surface border-l-2 border-accent p-3 text-xs space-y-1">
+                  <div className="rounded-lg bg-surface border-s-2 border-accent p-3 text-xs space-y-1">
                     <blockquote className="italic text-foreground/80 line-clamp-2">
                       «{q.quote}»
                     </blockquote>
                     <p className="font-medium text-foreground">
-                      <span className="text-muted mr-1">{formatIndexDot(i + 1)}</span>
+                      <span className="text-muted me-1">{formatIndexDot(i + 1)}</span>
                       {q.question}
                     </p>
                   </div>

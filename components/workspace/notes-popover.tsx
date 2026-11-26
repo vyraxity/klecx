@@ -271,7 +271,7 @@ function NotesPopoverInner({ workspaceId, className }: NotesPopoverProps) {
                   </div>
 
                   {/* Highlight Quote */}
-                  <div className="pl-2.5 border-l-2 border-accent/60 text-fg-muted italic text-[11px] line-clamp-2">
+                  <div className="ps-2.5 border-s-2 border-accent/60 text-fg-muted italic text-[11px] line-clamp-2">
                     «{note.quote}»
                   </div>
 
@@ -303,12 +303,12 @@ function NotesPopoverInner({ workspaceId, className }: NotesPopoverProps) {
                         >
                           {note.status === "ACTIVE" ? (
                             <>
-                              <Archive className="h-3 w-3 mr-1" />
+                              <Archive className="h-3 w-3 me-1" />
                               <span>{t("archive")}</span>
                             </>
                           ) : (
                             <>
-                              <RotateCcw className="h-3 w-3 mr-1" />
+                              <RotateCcw className="h-3 w-3 me-1" />
                               <span>{t("restore")}</span>
                             </>
                           )}

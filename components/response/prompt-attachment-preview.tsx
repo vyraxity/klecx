@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { formatFileSize } from "@/lib/format/file-size";
 import {
   FileText,
   Sparkles,
@@ -32,6 +33,7 @@ export function PromptAttachmentPreview({
   attachment: AttachmentData;
 }) {
   const t = useTranslations("PromptAttachment");
+  const locale = useLocale();
   const [url, setUrl] = React.useState<string | null>(null);
   const [isOpen, setIsOpen] = React.useState(false);
   const isImage =
@@ -76,7 +78,7 @@ export function PromptAttachmentPreview({
     attachment.mime === "application/pdf" ||
     attachment.originalName.toLowerCase().endsWith(".pdf");
 
-  const formattedSize = `(${Math.max(1, Math.round(attachment.bytes / 1024))} KB)`;
+  const formattedSize = `(${formatFileSize(attachment.bytes, locale)})`;
 
   return (
     <>
@@ -92,7 +94,7 @@ export function PromptAttachmentPreview({
             }
           }}
           className="group relative flex flex-col items-center overflow-hidden rounded-xl border border-border/70 bg-surface-3 transition-all hover:border-accent hover:shadow-xs cursor-pointer focus-visible:outline-2 focus-visible:outline-ring"
-          title={`View ${attachment.originalName} (${formattedSize})`}
+          title={t("viewTitle", { name: attachment.originalName, size: formattedSize })}
         >
           <div className="relative h-20 w-20 overflow-hidden bg-surface-2 sm:h-24 sm:w-24">
             {url ? (
@@ -127,7 +129,7 @@ export function PromptAttachmentPreview({
           title={`Click to view ${attachment.originalName}`}
         >
           <FileText className="size-3.5 text-accent shrink-0" />
-          <div className="flex flex-col text-left">
+          <div className="flex flex-col text-start">
             <span className="max-w-[140px] truncate font-medium text-fg">
               {attachment.originalName}
             </span>
@@ -141,7 +143,7 @@ export function PromptAttachmentPreview({
         <DialogContent className="max-w-3xl p-4 sm:p-6 bg-surface text-fg">
           <DialogHeader className="border-b border-border/60 pb-3">
             <DialogTitle className="flex items-center justify-between text-base font-semibold">
-              <span className="truncate pr-4">{attachment.originalName}</span>
+              <span className="truncate pe-4">{attachment.originalName}</span>
               <span className="text-xs font-normal text-fg-muted shrink-0">
                 {formattedSize}
               </span>

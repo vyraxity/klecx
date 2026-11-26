@@ -224,7 +224,7 @@ export function MarketingHero() {
           </div>
 
           {/* Realistic Product UI Preview */}
-          <div className="relative mx-auto max-w-4xl text-left">
+          <div className="relative mx-auto max-w-4xl text-start">
             <div className="border-border bg-surface overflow-hidden rounded-2xl border shadow-md">
               {/* Window Chrome / Title Bar */}
               <div className="border-border/80 bg-surface-2/80 text-fg-muted flex items-center justify-between border-b px-4 py-2.5 text-xs select-none">
@@ -234,7 +234,7 @@ export function MarketingHero() {
                     <div className="bg-warning/60 h-2.5 w-2.5 rounded-full" />
                     <div className="bg-success/60 h-2.5 w-2.5 rounded-full" />
                   </div>
-                  <span className="text-fg-subtle ml-2 truncate font-mono text-[11px]">
+                  <span className="text-fg-subtle ms-2 truncate font-mono text-[11px]">
                     {t("mockPath", { slug: currentDef.slug })}
                   </span>
                 </div>
@@ -309,7 +309,7 @@ function HeroScene({
       )}
     >
       {/* Left Projects & Workspaces Rail */}
-      <div className="border-border bg-surface-2/40 hidden space-y-4 border-r p-3 text-xs md:col-span-4 md:block">
+      <div className="border-border bg-surface-2/40 hidden space-y-4 border-e p-3 text-xs md:col-span-4 md:block">
         <div>
           <div className="text-fg-subtle flex items-center justify-between px-2 py-1 text-[11px] font-semibold tracking-wider uppercase">
             <span>{t("projectsLabel")}</span>
@@ -359,7 +359,7 @@ function HeroScene({
       <div className="bg-bg col-span-1 flex flex-col justify-between space-y-4 p-4 sm:p-5 md:col-span-8">
         {/* User Prompt */}
         <div className="flex justify-end">
-          <div className="bg-surface-2 border-border text-fg max-w-[90%] rounded-2xl rounded-tr-xs border px-3.5 py-2.5 text-xs leading-relaxed shadow-2xs">
+          <div className="bg-surface-2 border-border text-fg max-w-[90%] rounded-2xl rounded-se-xs border px-3.5 py-2.5 text-xs leading-relaxed shadow-2xs">
             {t(`scenes.${sceneKey}.prompt`)}
           </div>
         </div>
@@ -448,7 +448,7 @@ function HeroScene({
             )}
 
             {def.artifactType === "quote" && (
-              <blockquote className="border-accent/40 text-fg-muted border-l-2 pl-3 text-[11px] italic">
+              <blockquote className="border-accent/40 text-fg-muted border-s-2 ps-3 text-[11px] italic">
                 {artifactLines.join(" ")}
               </blockquote>
             )}
@@ -456,7 +456,7 @@ function HeroScene({
         </div>
 
         {/* Sub-question branch preview */}
-        <div className="border-accent/30 space-y-1 border-l-2 pl-4">
+        <div className="border-accent/30 space-y-1 border-s-2 ps-4">
           <div className="text-fg-muted flex items-center gap-1 text-[11px] font-medium">
             <CornerDownRight className="text-accent h-3 w-3" />
             <span>{t(`scenes.${sceneKey}.sideQuestion`)}</span>

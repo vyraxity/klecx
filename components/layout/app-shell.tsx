@@ -553,7 +553,7 @@ export function AppShell({
       >
         <SheetContent
           side="left"
-          className="border-border bg-surface w-70 border-r p-0 md:hidden"
+          className="border-border bg-surface w-70 border-e p-0 md:hidden"
         >
           <SheetTitle className="sr-only">{t("openNavigation")}</SheetTitle>
           <SheetDescription className="sr-only">

@@ -209,7 +209,7 @@ export function DocumentReview({
               data-testid={`preset-${id}`}
               onClick={() => setPreset(id)}
               className={cn(
-                "rounded-md border px-2.5 py-1.5 text-xs text-left transition-colors cursor-pointer",
+                "rounded-md border px-2.5 py-1.5 text-xs text-start transition-colors cursor-pointer",
                 preset === id
                   ? "border-accent bg-accent/10 font-medium text-accent"
                   : "border-border bg-surface text-foreground hover:bg-surface-2"

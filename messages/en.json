@@ -3538,7 +3538,8 @@
     "loading": "Loading preview...",
     "cannotRender": "This file format cannot be rendered directly in the preview.",
     "downloadOrOpen": "Download / Open File",
-    "openInNewTab": "Open in new tab"
+    "openInNewTab": "Open in new tab",
+    "viewTitle": "View {name} {size}"
   },
   "CookieNotice": {
     "label": "Cookie notice",

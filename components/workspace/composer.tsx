@@ -3,7 +3,8 @@
 import type { GenerationSSEHandlers } from "@/lib/api/sse";
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { useFormatter, useTranslations } from "next-intl";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { formatFileSize } from "@/lib/format/file-size";
 import Link from "next/link";
 import {
   AlertCircle,
@@ -65,7 +66,6 @@ import {
 const MAX_PROMPT_LENGTH = 20_000;
 const COUNTER_THRESHOLD = 18_000; // 90% of max
 
-const formatFileSizeKb = (bytes: number) => `(${Math.max(1, Math.round(bytes / 1024))} KB)`;
 const formatProgressPercent = (p: number) => `${p}%`;
 const formatAttachmentColon = (name: string) => `${name}:`;
 const formatCreditHint = (hint: string) => `(${hint})`;
@@ -147,6 +147,7 @@ export function Composer({
   const tErrors = useTranslations();
   const tPlans = useTranslations();
   const format = useFormatter();
+  const locale = useLocale();
   const router = useRouter();
   const queryClient = React.useContext(QueryClientContext);
   const targetWorkspaceIdRef = React.useRef<string | null>(null);
@@ -975,7 +976,7 @@ export function Composer({
               )}
               <span className="max-w-[120px] truncate font-medium">{att.name}</span>
               <span className="text-[10px] text-muted">
-                {formatFileSizeKb(att.size)}
+                ({formatFileSize(att.size, locale)})
               </span>
 
               {att.status === "uploading" && (
@@ -1226,7 +1227,7 @@ export function Composer({
                     setAttachMenuOpen(false);
                     fileInputRef.current?.click();
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-fg hover:bg-surface-2 transition-colors cursor-pointer"
+                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-start text-xs font-medium text-fg hover:bg-surface-2 transition-colors cursor-pointer"
                 >
                   <Paperclip className="h-3.5 w-3.5 text-muted shrink-0" />
                   <span>{tDocs("attachToMessage")}</span>
@@ -1239,7 +1240,7 @@ export function Composer({
                     setAttachMenuOpen(false);
                     docFileInputRef.current?.click();
                   }}
-                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-fg hover:bg-surface-2 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-start text-xs font-medium text-fg hover:bg-surface-2 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <FileText className="h-3.5 w-3.5 text-info shrink-0" />
                   <span>{tDocs("addToWorkspace")}</span>
@@ -1293,7 +1294,7 @@ export function Composer({
                         }
                       }}
                       className={cn(
-                        "w-full flex items-center justify-between rounded-md px-2 py-1.5 text-xs text-left cursor-pointer transition-colors",
+                        "w-full flex items-center justify-between rounded-md px-2 py-1.5 text-xs text-start cursor-pointer transition-colors",
                         selectedModel === m.key
                           ? "bg-accent-soft text-accent font-medium"
                           : "hover:bg-surface-2 text-fg",
@@ -1315,7 +1316,7 @@ export function Composer({
         </div>
 
         {/* Right Action Group: Counter + Submit/Stop */}
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-2 ms-auto">
           {showCharCounter && (
             <span
               id="composer-char-count"

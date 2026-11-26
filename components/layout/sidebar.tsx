@@ -226,7 +226,7 @@ export function Sidebar({
         key={ws.id}
         className={cn(
           "group flex items-center justify-between gap-1 rounded-lg px-2 py-1.5 text-xs transition-colors sm:text-sm",
-          nested && "pl-6",
+          nested && "ps-6",
           isActive
             ? "bg-accent-soft text-accent border-border border font-medium"
             : "text-muted hover:bg-surface-2 hover:text-fg"
@@ -334,7 +334,7 @@ export function Sidebar({
         aria-label={t("sidebarNavigation")}
         data-collapsed={isCollapsedRail ? "true" : "false"}
         className={cn(
-          "border-border bg-surface text-fg flex h-full flex-col border-r transition-[width] duration-200 ease-in-out select-none",
+          "border-border bg-surface text-fg flex h-full flex-col border-e transition-[width] duration-200 ease-in-out select-none",
           isCollapsedRail ? "w-16" : "w-70"
         )}
       >
@@ -385,7 +385,7 @@ export function Sidebar({
               <TooltipContent side="right">
                 <span>
                   {toggleLabel}{" "}
-                  <kbd className="bg-surface-3 ml-1 rounded px-1 py-0.5 font-mono text-[10px]">
+                  <kbd className="bg-surface-3 ms-1 rounded px-1 py-0.5 font-mono text-[10px]">
                     [
                   </kbd>
                 </span>
@@ -435,7 +435,7 @@ export function Sidebar({
                 <TooltipContent side="right">
                   <span>
                     {t("search")}{" "}
-                    <kbd className="bg-surface-3 ml-1 rounded px-1 py-0.5 font-mono text-[10px]">
+                    <kbd className="bg-surface-3 ms-1 rounded px-1 py-0.5 font-mono text-[10px]">
                       ⌘K
                     </kbd>
                   </span>
@@ -581,7 +581,7 @@ export function Sidebar({
                                   isActiveProject ? "page" : undefined
                                 }
                                 className={cn(
-                                  "focus-visible:ring-ring flex min-w-0 flex-1 items-center gap-2 truncate rounded-sm text-left focus-visible:ring-2 focus-visible:outline-none",
+                                  "focus-visible:ring-ring flex min-w-0 flex-1 items-center gap-2 truncate rounded-sm text-start focus-visible:ring-2 focus-visible:outline-none",
                                   isActiveProject
                                     ? "text-fg font-semibold"
                                     : "text-muted hover:text-fg"
@@ -688,7 +688,7 @@ export function Sidebar({
                     ) : (
                       <ChevronRight className="h-3 w-3" strokeWidth={1.5} />
                     )}
-                    <Users className="mr-0.5 h-3 w-3" strokeWidth={1.5} />
+                    <Users className="me-0.5 h-3 w-3" strokeWidth={1.5} />
                     <span>{t("sharedWithMe")}</span>
                   </button>
 
@@ -784,7 +784,7 @@ export function Sidebar({
               ) : (
                 <button
                   type="button"
-                  className="hover:bg-surface-2 focus-visible:ring-ring flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-2 py-1.5 text-left focus-visible:ring-2 focus-visible:outline-none"
+                  className="hover:bg-surface-2 focus-visible:ring-ring flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-2 py-1.5 text-start focus-visible:ring-2 focus-visible:outline-none"
                 >
                   <UserAvatar
                     avatarUrl={user.image}

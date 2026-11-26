@@ -3538,7 +3538,8 @@
     "loading": "Cargando vista previa...",
     "cannotRender": "Este formato de archivo no se puede renderizar directamente en la vista previa.",
     "downloadOrOpen": "Descargar / Abrir archivo",
-    "openInNewTab": "Abrir en nueva pestaña"
+    "openInNewTab": "Abrir en nueva pestaña",
+    "viewTitle": "Ver {name} {size}"
   },
   "CookieNotice": {
     "label": "Aviso de cookies",

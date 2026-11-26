@@ -187,7 +187,7 @@ export function DocumentDraftBar({
               data-testid="conflict-reload-btn"
               className="h-7 text-xs"
             >
-              <RotateCcw className="h-3 w-3 mr-1" />
+              <RotateCcw className="h-3 w-3 me-1" />
               {t("reloadAndReapply")}
             </Button>
             <Button

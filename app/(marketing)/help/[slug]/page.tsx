@@ -96,7 +96,7 @@ export default async function HelpArticlePage({ params }: HelpArticlePageProps) 
 
         {/* Footer Support CTA */}
         <div className="rounded-2xl border border-border/80 bg-surface-2/40 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="space-y-1 text-center sm:text-left">
+          <div className="space-y-1 text-center sm:text-start">
             <h4 className="text-sm font-bold text-fg">{t("helpfulQuestion")}</h4>
             <p className="text-xs text-fg-muted">{t("helpfulDesc")}</p>
           </div>

@@ -173,7 +173,7 @@ export function ReadAloudDock({ className }: { className?: string }) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button type="button" variant="ghost" size="sm" className="h-8 min-h-8 rounded-full px-1.5 text-[11px] max-sm:h-11 max-sm:min-h-11" aria-label={t("speedLabel", { speed })} title={t("speed")}>
-              <Gauge className="mr-1 h-3.5 w-3.5" aria-hidden />
+              <Gauge className="me-1 h-3.5 w-3.5" aria-hidden />
               {t("speedValue", { speed })}
             </Button>
           </DropdownMenuTrigger>

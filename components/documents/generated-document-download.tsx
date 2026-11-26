@@ -86,7 +86,7 @@ export function GeneratedDocumentDownload({
           variant="outline"
           disabled={Boolean(ownReason)}
           data-testid="doc-download-btn"
-          className={cn(h, "gap-1.5 rounded-r-none px-2.5 text-xs font-medium")}
+          className={cn(h, "gap-1.5 rounded-e-none px-2.5 text-xs font-medium")}
         >
           {ownReason ? (
             <span>
@@ -111,7 +111,7 @@ export function GeneratedDocumentDownload({
             data-testid="doc-download-menu-trigger"
             aria-label={t("downloadAs")}
             title={t("downloadAs")}
-            className={cn(h, "rounded-l-none border-l-0 px-1.5")}
+            className={cn(h, "rounded-s-none border-s-0 px-1.5")}
           >
             <ChevronDown className="h-3.5 w-3.5" />
           </Button>

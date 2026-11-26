@@ -261,7 +261,7 @@ function createMarkdownComponents(
     blockquote: ({ children, className, ...props }: React.BlockquoteHTMLAttributes<HTMLQuoteElement>) => (
       <blockquote
         className={cn(
-          "my-3 pl-4 border-l-3 border-accent/70 italic text-fg-muted bg-surface-2/40 py-1.5 rounded-r-lg",
+          "my-3 ps-4 border-s-3 border-accent/70 italic text-fg-muted bg-surface-2/40 py-1.5 rounded-e-lg",
           className
         )}
         {...props}
@@ -270,12 +270,12 @@ function createMarkdownComponents(
       </blockquote>
     ),
     ul: ({ children, className, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
-      <ul className={cn("my-2.5 pl-6 list-disc space-y-1.5 leading-relaxed text-fg", className)} {...props}>
+      <ul className={cn("my-2.5 ps-6 list-disc space-y-1.5 leading-relaxed text-fg", className)} {...props}>
         {children}
       </ul>
     ),
     ol: ({ children, className, ...props }: React.OlHTMLAttributes<HTMLOListElement>) => (
-      <ol className={cn("my-2.5 pl-6 list-decimal space-y-1.5 leading-relaxed text-fg", className)} {...props}>
+      <ol className={cn("my-2.5 ps-6 list-decimal space-y-1.5 leading-relaxed text-fg", className)} {...props}>
         {children}
       </ol>
     ),
@@ -292,7 +292,7 @@ function createMarkdownComponents(
             checked={checked}
             disabled={true}
             readOnly
-            className="mr-2 h-3.5 w-3.5 rounded border-border text-accent focus:ring-accent align-middle"
+            className="me-2 h-3.5 w-3.5 rounded border-border text-accent focus:ring-accent align-middle"
             {...props}
           />
         );

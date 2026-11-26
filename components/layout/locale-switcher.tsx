@@ -54,7 +54,7 @@ export const LocaleSwitcher: React.FC<LocaleSwitcherProps> = ({
         value={currentLocale}
         onChange={(e) => handleLocaleChange(e.target.value as Locale)}
         disabled={isPending}
-        className="bg-transparent text-xs font-semibold text-fg focus:outline-none cursor-pointer pr-1"
+        className="bg-transparent text-xs font-semibold text-fg focus:outline-none cursor-pointer pe-1"
       >
         {locales.map((loc) => (
           <option key={loc} value={loc} className="bg-surface text-fg">

@@ -163,7 +163,7 @@ export default async function PublicSharePage({
                 className="space-y-4"
               >
                 {res.kind === "DOCUMENT" ? (
-                  <div className="rounded-2xl border border-border border-l-4 border-l-info bg-surface p-4 sm:p-6 text-sm sm:text-base text-fg shadow-2xs space-y-4">
+                  <div className="rounded-2xl border border-border border-s-4 border-s-info bg-surface p-4 sm:p-6 text-sm sm:text-base text-fg shadow-2xs space-y-4">
                     <div className="flex flex-wrap items-center gap-2 border-b border-border/60 pb-3">
                       <FileText className="h-4 w-4 text-info shrink-0" />
                       <span className="inline-flex items-center rounded-md bg-info/10 px-2 py-0.5 text-xs font-medium text-info">
@@ -270,7 +270,7 @@ export default async function PublicSharePage({
                             <span className="max-w-56 truncate">
                               {doc.originalName}
                             </span>
-                            <span className="text-accent underline ml-1">
+                            <span className="text-accent underline ms-1">
                               {t("download")}
                             </span>
                           </a>

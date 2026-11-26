@@ -24,7 +24,7 @@ export default async function CookiesPage() {
       extras={{
         list: (
           <div className="overflow-x-auto rounded-xl border border-border/60">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-start text-sm">
               <thead className="bg-surface-2/60 text-xs text-fg-subtle">
                 <tr>
                   <th className="px-4 py-2.5 font-semibold">{t("table.name")}</th>

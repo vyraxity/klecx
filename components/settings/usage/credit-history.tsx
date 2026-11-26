@@ -77,23 +77,23 @@ export function CreditHistory({ userId }: { userId: string }) {
         <p className="text-xs text-muted">{t("history.empty")}</p>
       ) : (
         <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-          <table className="w-full min-w-[520px] text-left text-xs">
+          <table className="w-full min-w-[520px] text-start text-xs">
             <caption className="sr-only">{t("history.title")}</caption>
             <thead className="text-muted">
               <tr className="border-b border-border">
-                <th scope="col" className="py-2 pr-3 font-medium">{t("history.csv.date")}</th>
-                <th scope="col" className="py-2 pr-3 font-medium">{t("history.csv.description")}</th>
-                <th scope="col" className="py-2 pr-3 text-right font-medium">{t("history.csv.credits")}</th>
-                <th scope="col" className="py-2 text-right font-medium">{t("history.csv.balance")}</th>
+                <th scope="col" className="py-2 pe-3 font-medium">{t("history.csv.date")}</th>
+                <th scope="col" className="py-2 pe-3 font-medium">{t("history.csv.description")}</th>
+                <th scope="col" className="py-2 pe-3 text-end font-medium">{t("history.csv.credits")}</th>
+                <th scope="col" className="py-2 text-end font-medium">{t("history.csv.balance")}</th>
               </tr>
             </thead>
             <tbody>
               {entries.map((e) => (
                 <tr key={e.id} className="border-b border-border/60 align-top last:border-0">
-                  <td className="whitespace-nowrap py-2 pr-3 text-muted tabular-nums">
+                  <td className="whitespace-nowrap py-2 pe-3 text-muted tabular-nums">
                     {format.dateTime(new Date(e.at), { dateStyle: "medium", timeStyle: "short" })}
                   </td>
-                  <td className="py-2 pr-3 text-fg">
+                  <td className="py-2 pe-3 text-fg">
                     {e.type === "usage" && e.workspaceId && e.workspaceTitle ? (
                       <span>
                         {t("kinds." + e.label)} ·{" "}
@@ -115,13 +115,13 @@ export function CreditHistory({ userId }: { userId: string }) {
                   </td>
                   <td
                     className={cn(
-                      "whitespace-nowrap py-2 pr-3 text-right font-semibold tabular-nums",
+                      "whitespace-nowrap py-2 pe-3 text-end font-semibold tabular-nums",
                       e.amount > 0 ? "text-success" : "text-fg"
                     )}
                   >
                     {format.number(e.amount, { signDisplay: "exceptZero" })}
                   </td>
-                  <td className="whitespace-nowrap py-2 text-right text-muted tabular-nums">
+                  <td className="whitespace-nowrap py-2 text-end text-muted tabular-nums">
                     {format.number(e.balanceAfter)}
                   </td>
                 </tr>

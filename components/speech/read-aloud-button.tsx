@@ -48,9 +48,9 @@ export function ReadAloudButton({
       data-testid="read-aloud"
     >
       {reading ? (
-        <AudioLines className={cn("h-3.5 w-3.5 motion-safe:animate-pulse", !compact && "mr-1")} aria-hidden />
+        <AudioLines className={cn("h-3.5 w-3.5 motion-safe:animate-pulse", !compact && "me-1")} aria-hidden />
       ) : (
-        <Volume2 className={cn("h-3.5 w-3.5", !compact && "mr-1")} aria-hidden />
+        <Volume2 className={cn("h-3.5 w-3.5", !compact && "me-1")} aria-hidden />
       )}
       {!compact && <span>{reading ? t("reading") : t("readAloud")}</span>}
     </Button>

@@ -439,13 +439,13 @@ export function ProjectView({
               setRenameWs(ws);
               setRenameWsTitle(ws.title);
             }}
-            icon={<Pencil className="mr-2 h-4 w-4" />}
+            icon={<Pencil className="me-2 h-4 w-4" />}
             label={t("actions.rename")}
           />
           <GatedMenuItem
             reason={wsRename}
             onSelect={() => setMoveWs(ws)}
-            icon={<FolderInput className="mr-2 h-4 w-4" />}
+            icon={<FolderInput className="me-2 h-4 w-4" />}
             label={t("actions.moveToProject")}
           />
           <GatedMenuItem
@@ -458,7 +458,7 @@ export function ProjectView({
                 t("toasts.workspaceMoveFailed"),
               )
             }
-            icon={<FolderMinus className="mr-2 h-4 w-4" />}
+            icon={<FolderMinus className="me-2 h-4 w-4" />}
             label={t("actions.removeFromProject")}
           />
           <GatedMenuItem
@@ -475,9 +475,9 @@ export function ProjectView({
             }
             icon={
               ws.archivedAt ? (
-                <ArchiveRestore className="mr-2 h-4 w-4" />
+                <ArchiveRestore className="me-2 h-4 w-4" />
               ) : (
-                <Archive className="mr-2 h-4 w-4" />
+                <Archive className="me-2 h-4 w-4" />
               )
             }
             label={ws.archivedAt ? t("actions.unarchive") : t("actions.archive")}
@@ -487,7 +487,7 @@ export function ProjectView({
             reason={wsDelete}
             destructive
             onSelect={() => setDeleteWs(ws)}
-            icon={<Trash2 className="mr-2 h-4 w-4" />}
+            icon={<Trash2 className="me-2 h-4 w-4" />}
             label={t("actions.delete")}
           />
         </DropdownMenuContent>
@@ -635,7 +635,7 @@ export function ProjectView({
                 <GatedMenuItem
                   reason={renameGate}
                   onSelect={startRename}
-                  icon={<Pencil className="mr-2 h-4 w-4" />}
+                  icon={<Pencil className="me-2 h-4 w-4" />}
                   label={t("actions.rename")}
                 />
                 <GatedMenuItem
@@ -643,9 +643,9 @@ export function ProjectView({
                   onSelect={() => void toggleArchiveProject()}
                   icon={
                     isArchived ? (
-                      <ArchiveRestore className="mr-2 h-4 w-4" />
+                      <ArchiveRestore className="me-2 h-4 w-4" />
                     ) : (
-                      <Archive className="mr-2 h-4 w-4" />
+                      <Archive className="me-2 h-4 w-4" />
                     )
                   }
                   label={
@@ -655,7 +655,7 @@ export function ProjectView({
                 <GatedMenuItem
                   reason={transferGate}
                   onSelect={() => setShareOpen(true)}
-                  icon={<Crown className="mr-2 h-4 w-4" />}
+                  icon={<Crown className="me-2 h-4 w-4" />}
                   label={t("transferProject")}
                 />
                 <DropdownMenuSeparator />
@@ -663,7 +663,7 @@ export function ProjectView({
                   reason={deleteGate}
                   destructive
                   onSelect={() => setDeleteProjectOpen(true)}
-                  icon={<Trash2 className="mr-2 h-4 w-4" />}
+                  icon={<Trash2 className="me-2 h-4 w-4" />}
                   label={t("deleteProject")}
                 />
               </DropdownMenuContent>
@@ -686,7 +686,7 @@ export function ProjectView({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 maxLength={100}
-                className="bg-surface h-9 pl-8 text-xs"
+                className="bg-surface h-9 ps-8 text-xs"
               />
             </div>
             <Select
@@ -698,7 +698,7 @@ export function ProjectView({
                 aria-label={t("sortBy")}
               >
                 <ArrowUpDown
-                  className="text-muted mr-1 h-3.5 w-3.5"
+                  className="text-muted me-1 h-3.5 w-3.5"
                   aria-hidden="true"
                 />
                 <SelectValue />
@@ -881,7 +881,7 @@ export function ProjectView({
                 placeholder={t("searchWorkspaces")}
                 aria-label={t("searchWorkspaces")}
                 maxLength={100}
-                className="h-9 pl-8 text-xs"
+                className="h-9 ps-8 text-xs"
               />
             </div>
             {movableQuery.isPending ? (
@@ -908,7 +908,7 @@ export function ProjectView({
                     aria-checked={moveInId === w.id}
                     onClick={() => setMoveInId(w.id)}
                     className={cn(
-                      "hover:bg-surface-2 focus-visible:ring-ring flex w-full flex-col items-start px-3 py-2 text-left focus-visible:ring-2 focus-visible:outline-none",
+                      "hover:bg-surface-2 focus-visible:ring-ring flex w-full flex-col items-start px-3 py-2 text-start focus-visible:ring-2 focus-visible:outline-none",
                       moveInId === w.id && "bg-surface-2",
                     )}
                   >
@@ -1133,7 +1133,7 @@ function WorkspaceItem({
             <MessageSquare className="h-3 w-3" aria-hidden="true" />
             {responses}
           </span>
-          <span className="hidden w-28 truncate text-right sm:inline-block">
+          <span className="hidden w-28 truncate text-end sm:inline-block">
             {lastActivity}
           </span>
           {ownerAvatar}

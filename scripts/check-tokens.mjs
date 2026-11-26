@@ -67,6 +67,13 @@ const HEX_REGEX = /(?<!href=["']|url\()#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a
 // Matches raw color functions rgb(...), rgba(...), hsl(...), hsla(...)
 const COLOR_FN_REGEX = /\b(?:rgba?|hsla?)\s*\(/g;
 
+// Step 10.5: logical spacing, alignment, borders and corners (ms-/me-,
+// ps-/pe-, text-start/end, border-s/e, rounded-s/e…), so a right-to-left
+// language only needs `dir` from i18n/locales.ts. Positioning (left-/right-)
+// isn't checked: centring with translate-x depends on it.
+const PHYSICAL_REGEX =
+  /(?<=[\s"'`:!])(?:-?(?:ml|mr|pl|pr)-[\w[.]|text-(?:left|right)(?![\w-])|border-[lr](?![\w])|border-[lr]-|rounded-(?:l|r|tl|tr|bl|br)(?![\w]))/g;
+
 function isAllowedFile(relPath) {
   const normalized = relPath.replace(/\\/g, "/");
   if (normalized === "app/globals.css") return true;
@@ -110,6 +117,17 @@ for (const dir of SCAN_DIRS) {
         });
       }
 
+      if (relPath.endsWith(".tsx")) {
+        for (const match of line.matchAll(PHYSICAL_REGEX)) {
+          violations.push({
+            file: relPath,
+            line: lineNum,
+            kind: "Physical left/right class (use ms-/me-, ps-/pe-, text-start/end, border-s/e, rounded-s/e)",
+            token: match[0],
+          });
+        }
+      }
+
       for (const match of line.matchAll(HEX_REGEX)) {
         violations.push({
           file: relPath,
@@ -138,5 +156,5 @@ if (violations.length > 0) {
   }
   process.exit(1);
 } else {
-  console.log("Design token check passed: 0 raw color or palette class violations.");
+  console.log("Design token check passed: 0 raw color, palette or physical left/right class violations.");
 }

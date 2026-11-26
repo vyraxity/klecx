@@ -199,12 +199,12 @@ export function SessionsList() {
           >
             {isRevokingOthers ? (
               <>
-                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 me-1.5 animate-spin" />
                 {t("signingOut")}
               </>
             ) : (
               <>
-                <LogOut className="w-3.5 h-3.5 mr-1.5" />
+                <LogOut className="w-3.5 h-3.5 me-1.5" />
                 {t("signOutOthers")}
               </>
             )}
@@ -214,7 +214,7 @@ export function SessionsList() {
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12 text-muted">
-          <Loader2 className="w-6 h-6 animate-spin mr-2" />
+          <Loader2 className="w-6 h-6 animate-spin me-2" />
           <span className="text-sm">{t("loading")}</span>
         </div>
       ) : sessions.length === 0 ? (
@@ -371,7 +371,7 @@ export function SessionsList() {
               >
                 {isSubmittingPassword ? (
                   <>
-                    <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                    <Loader2 className="w-3.5 h-3.5 me-1.5 animate-spin" />
                     {t("verifying")}
                   </>
                 ) : (

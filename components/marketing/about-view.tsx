@@ -41,7 +41,7 @@ export function AboutView() {
             <p className="text-fg-muted leading-relaxed">
               {t("threadProblemIntro")}
             </p>
-            <ul className="space-y-2 text-fg-muted list-none pl-0">
+            <ul className="space-y-2 text-fg-muted list-none ps-0">
               <li className="flex items-start gap-2">
                 <span className="text-danger font-bold">•</span>
                 <span>{t("threadBullet1")}</span>

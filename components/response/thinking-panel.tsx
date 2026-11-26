@@ -73,7 +73,7 @@ export function ThinkingPanel({
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-controls={panelId}
-        className="w-full flex items-center justify-between px-3 py-2 text-left hover:bg-surface-2 transition-colors cursor-pointer select-none"
+        className="w-full flex items-center justify-between px-3 py-2 text-start hover:bg-surface-2 transition-colors cursor-pointer select-none"
       >
         <div className="flex items-center gap-2">
           {isStreaming ? (

@@ -256,7 +256,7 @@ export function DocumentColumn({
       <div
         style={{ width }}
         className={cn(
-          "flex flex-col h-full border-r border-border bg-surface items-center justify-center p-6 text-center",
+          "flex flex-col h-full border-e border-border bg-surface items-center justify-center p-6 text-center",
           className
         )}
       >
@@ -297,7 +297,7 @@ export function DocumentColumn({
       style={{ width }}
       data-testid={`document-column-${id}`}
       className={cn(
-        "flex flex-col h-full border-r border-border bg-surface overflow-hidden",
+        "flex flex-col h-full border-e border-border bg-surface overflow-hidden",
         className
       )}
     >
@@ -378,13 +378,13 @@ export function DocumentColumn({
                     data-testid="menu-ask-review"
                     onClick={() => setReviewOpen(true)}
                   >
-                    <Wand2 className="h-3.5 w-3.5 mr-2 text-accent" />
+                    <Wand2 className="h-3.5 w-3.5 me-2 text-accent" />
                     <span>{tReview("askKlecxReview")}</span>
                   </DropdownMenuItem>
                 )}
                 {canEdit && !isEditingTitle && (
                   <DropdownMenuItem onClick={() => setIsEditingTitle(true)}>
-                    <Edit2 className="h-3.5 w-3.5 mr-2 text-muted" />
+                    <Edit2 className="h-3.5 w-3.5 me-2 text-muted" />
                     <span>{t("rename")}</span>
                   </DropdownMenuItem>
                 )}
@@ -554,7 +554,7 @@ export function DocumentColumn({
           data-testid="doc-save-bar"
           className="flex items-center justify-between border-t border-border bg-surface-2 px-3 py-2 shrink-0"
         >
-          <span className="text-xs text-muted truncate mr-2">{t("unsavedChanges")}</span>
+          <span className="text-xs text-muted truncate me-2">{t("unsavedChanges")}</span>
           <div className="flex items-center gap-2">
             <Button
               type="button"

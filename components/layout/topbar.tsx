@@ -222,7 +222,7 @@ export function Topbar({
               type="button"
               onClick={startEditingTitle}
               title={t("editTitleLabel")}
-              className="group inline-flex min-w-0 max-w-md items-center gap-1.5 truncate rounded-md px-1.5 py-1 text-left text-sm sm:text-base font-semibold text-fg hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+              className="group inline-flex min-w-0 max-w-md items-center gap-1.5 truncate rounded-md px-1.5 py-1 text-start text-sm sm:text-base font-semibold text-fg hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
             >
               <span className="truncate">{displayedTitle}</span>
               <Pencil

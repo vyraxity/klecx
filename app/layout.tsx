@@ -15,6 +15,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { OfflineBanner } from "@/components/offline/offline-banner";
 import { CookieNotice } from "@/components/legal/cookie-notice";
 import { NextIntlClientProvider } from "next-intl";
+import { getLocaleDefinition } from "@/i18n/locales";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { getSiteConfig } from "@/server/config/site";
 import { getLocaleDefinition, getAlternateOgLocales } from "@/i18n/locales";
@@ -108,6 +109,9 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
+      // Step 10.5: from the locale registry (all "ltr" today); the UI uses
+      // logical classes (ms-/pe-, text-start…) so an "rtl" language just works.
+      dir={getLocaleDefinition(locale).dir}
       suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable}`}
       data-theme-pref={theme ?? undefined}

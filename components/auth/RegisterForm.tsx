@@ -104,7 +104,7 @@ const RegisterForm = ({ callbackURL = DEFAULT_LOGIN_REDIRECT }: { callbackURL?: 
                   <Input
                     type="email"
                     placeholder={t("emailPlaceholder")}
-                    className="pl-9"
+                    className="ps-9"
                     {...field}
                   />
                 </div>
@@ -128,7 +128,7 @@ const RegisterForm = ({ callbackURL = DEFAULT_LOGIN_REDIRECT }: { callbackURL?: 
                   <Input
                     type="text"
                     placeholder={t("namePlaceholder")}
-                    className="pl-9"
+                    className="ps-9"
                     {...field}
                   />
                 </div>
@@ -152,7 +152,7 @@ const RegisterForm = ({ callbackURL = DEFAULT_LOGIN_REDIRECT }: { callbackURL?: 
                   <Input
                     type="password"
                     placeholder={t("passwordPlaceholder")}
-                    className="pl-9"
+                    className="ps-9"
                     {...field}
                   />
                 </div>
@@ -176,7 +176,7 @@ const RegisterForm = ({ callbackURL = DEFAULT_LOGIN_REDIRECT }: { callbackURL?: 
                   <Input
                     type="password"
                     placeholder={t("confirmPasswordPlaceholder")}
-                    className="pl-9"
+                    className="ps-9"
                     {...field}
                   />
                 </div>

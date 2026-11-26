@@ -642,7 +642,7 @@ export function SelectionToolbar({
               >
                 <MessageSquare className="h-3.5 w-3.5" />
                 <span>{t("comment")}</span>
-                <kbd className="hidden sm:inline-block ml-1 text-[10px] text-fg-muted font-mono opacity-60">
+                <kbd className="hidden sm:inline-block ms-1 text-[10px] text-fg-muted font-mono opacity-60">
                   {formatCommentShortcut(isMac)}
                 </kbd>
               </Button>
@@ -666,7 +666,7 @@ export function SelectionToolbar({
               >
                 <HelpCircle className="h-3.5 w-3.5" />
                 <span>{t("ask")}</span>
-                <kbd className="hidden sm:inline-block ml-1 text-[10px] text-fg-muted font-mono opacity-60">
+                <kbd className="hidden sm:inline-block ms-1 text-[10px] text-fg-muted font-mono opacity-60">
                   {formatAskShortcut(isMac)}
                 </kbd>
               </Button>
@@ -797,7 +797,7 @@ export function SelectionToolbar({
                 )}
               >
                 {t("addToQueue")}
-                <kbd className="hidden sm:inline-block ml-1 text-[9px] text-fg-muted font-mono opacity-60">
+                <kbd className="hidden sm:inline-block ms-1 text-[9px] text-fg-muted font-mono opacity-60">
                   {formatQueueShortcut(isMac)}
                 </kbd>
               </Button>
@@ -812,9 +812,9 @@ export function SelectionToolbar({
                   isCoarsePointer && "min-h-[44px]"
                 )}
               >
-                <Send className="h-3 w-3 mr-1" />
+                <Send className="h-3 w-3 me-1" />
                 {t("askNow")}
-                <kbd className="hidden sm:inline-block ml-1 text-[9px] text-accent-fg/80 font-mono">
+                <kbd className="hidden sm:inline-block ms-1 text-[9px] text-accent-fg/80 font-mono">
                   ↵
                 </kbd>
               </Button>

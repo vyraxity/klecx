@@ -112,7 +112,7 @@ const Registered = ({
             value={userEmail}
             onChange={(e) => setUserEmail(e.target.value)}
             readOnly
-            className="bg-surface-2 pl-9 text-muted"
+            className="bg-surface-2 ps-9 text-muted"
           />
         </div>
 

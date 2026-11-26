@@ -309,7 +309,7 @@ export const MentionTextarea = React.forwardRef<
                     }}
                     onMouseEnter={() => setSelectedIndex(idx)}
                     className={cn(
-                      "flex w-full cursor-pointer items-center gap-2.5 rounded-md px-3 py-1.5 text-left text-xs transition-colors",
+                      "flex w-full cursor-pointer items-center gap-2.5 rounded-md px-3 py-1.5 text-start text-xs transition-colors",
                       isSelected
                         ? "bg-surface-2 text-fg"
                         : "text-fg-muted hover:bg-surface-2"

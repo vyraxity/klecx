@@ -182,7 +182,7 @@ export function TwoFactorCard({ initial }: { initial: Status }) {
 
         {step.name === "scan" && (
           <form onSubmit={submitCode} className="flex flex-col gap-4">
-            <ol className="flex list-decimal flex-col gap-1 pl-5 text-xs text-fg">
+            <ol className="flex list-decimal flex-col gap-1 ps-5 text-xs text-fg">
               <li>{t("scanStep1")}</li>
               <li>{t("scanStep2")}</li>
               <li>{t("scanStep3")}</li>

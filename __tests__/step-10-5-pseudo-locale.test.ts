@@ -83,3 +83,14 @@ describe("Step 10.5 — pseudo-locale en-XA", () => {
     }
   });
 });
+
+import { formatFileSize } from "@/lib/format/file-size";
+
+describe("Step 10.5 — file sizes through Intl", () => {
+  it("formats in the reader's language", () => {
+    expect(formatFileSize(1536, "en")).toBe("1.5 kB");
+    expect(formatFileSize(1536, "fr")).toMatch(/^1,5\sko$/); // narrow no-break space
+    expect(formatFileSize(5 * 1024 * 1024, "es")).toBe("5 MB");
+    expect(formatFileSize(0, "en")).toBe("");
+  });
+});

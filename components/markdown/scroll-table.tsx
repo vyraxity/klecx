@@ -12,7 +12,7 @@ export function ScrollTable({
     <div className="my-4 w-full overflow-x-auto rounded-xl border border-border shadow-2xs bg-surface">
       <table
         className={cn(
-          "w-full text-left text-xs sm:text-sm border-collapse min-w-[320px]",
+          "w-full text-start text-xs sm:text-sm border-collapse min-w-[320px]",
           className
         )}
         {...props}

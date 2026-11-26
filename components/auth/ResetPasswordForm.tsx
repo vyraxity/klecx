@@ -165,7 +165,7 @@ export function ResetPasswordForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={t("passwordPlaceholder")}
-              className="h-11 pl-10 pr-10 bg-surface-2/40 border-border text-xs"
+              className="h-11 ps-10 pe-10 bg-surface-2/40 border-border text-xs"
             />
             <button
               type="button"
@@ -207,7 +207,7 @@ export function ResetPasswordForm() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder={t("passwordPlaceholder")}
-              className="h-11 pl-10 bg-surface-2/40 border-border text-xs"
+              className="h-11 ps-10 bg-surface-2/40 border-border text-xs"
             />
           </div>
         </div>

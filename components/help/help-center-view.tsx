@@ -75,7 +75,7 @@ export function HelpCenterView({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t("searchPlaceholder")}
-              className="bg-surface border-border focus-visible:ring-accent h-13 rounded-2xl pr-4 pl-12 text-base shadow-sm"
+              className="bg-surface border-border focus-visible:ring-accent h-13 rounded-2xl pe-4 ps-12 text-base shadow-sm"
             />
           </div>
         </div>
@@ -175,7 +175,7 @@ export function HelpCenterView({
 
         {/* Need More Help Banner */}
         <div className="border-border/80 from-accent/10 via-surface to-accent/5 flex flex-col items-center justify-between gap-6 rounded-3xl border bg-linear-to-r p-8 shadow-sm sm:flex-row">
-          <div className="space-y-2 text-center sm:text-left">
+          <div className="space-y-2 text-center sm:text-start">
             <div className="text-accent flex items-center justify-center gap-2 text-sm font-semibold sm:justify-start">
               <MessageSquare className="h-4 w-4" />
               <span>{t("needMoreHelp")}</span>

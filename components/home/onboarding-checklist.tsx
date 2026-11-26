@@ -128,7 +128,7 @@ export function OnboardingChecklist({
               body: JSON.stringify({ onboardingDismissed: true }),
             }).catch(() => undefined);
           }}
-          className="h-7 w-7 text-subtle hover:text-fg -mt-1 -mr-1"
+          className="h-7 w-7 text-subtle hover:text-fg -mt-1 -me-1"
         >
           <X className="h-4 w-4" strokeWidth={1.5} />
         </Button>
@@ -178,7 +178,7 @@ export function OnboardingChecklist({
               </span>
             </div>
 
-            {step.action && <div className="shrink-0 ml-2">{step.action}</div>}
+            {step.action && <div className="shrink-0 ms-2">{step.action}</div>}
           </div>
         ))}
       </div>

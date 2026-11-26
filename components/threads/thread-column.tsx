@@ -734,7 +734,7 @@ export function ThreadColumn({
                                 onClick={() =>
                                   void handlePromote(msgId, "NEW_WORKSPACE", null)
                                 }
-                                className="text-left rounded px-2 py-1 hover:bg-surface text-foreground cursor-pointer"
+                                className="text-start rounded px-2 py-1 hover:bg-surface text-foreground cursor-pointer"
                               >
                                 {t("standaloneWorkspace")}
                               </button>
@@ -758,7 +758,7 @@ export function ThreadColumn({
                                     onClick={() =>
                                       void handlePromote(msgId, "NEW_WORKSPACE", proj.id)
                                     }
-                                    className="w-full text-left rounded px-2 py-1 hover:bg-surface text-foreground truncate cursor-pointer"
+                                    className="w-full text-start rounded px-2 py-1 hover:bg-surface text-foreground truncate cursor-pointer"
                                   >
                                     {proj.name}
                                   </button>
@@ -797,7 +797,7 @@ export function ThreadColumn({
       data-thread-column-index={index}
       data-testid={`thread-column-${id}`}
       className={cn(
-        "flex flex-col h-full min-w-0 bg-background border-r border-border focus-visible:outline-none shrink-0 transition-[width] duration-200 ease-out motion-reduce:transition-none select-text",
+        "flex flex-col h-full min-w-0 bg-background border-e border-border focus-visible:outline-none shrink-0 transition-[width] duration-200 ease-out motion-reduce:transition-none select-text",
         className
       )}
     >
@@ -853,7 +853,7 @@ export function ThreadColumn({
               <DropdownMenuContent align="end" className="w-48 text-xs">
                 {annotation.kind === "COMMENT" && (
                   <DropdownMenuItem onClick={handleToggleResolve} className="cursor-pointer">
-                    <Check className="w-3.5 h-3.5 mr-2" />
+                    <Check className="w-3.5 h-3.5 me-2" />
                     {isResolved ? t("unresolve") : t("resolve")}
                   </DropdownMenuItem>
                 )}
@@ -862,12 +862,12 @@ export function ThreadColumn({
                   <DropdownMenuItem onClick={handleToggleVisibility} className="cursor-pointer">
                     {annotation.visibility === "PRIVATE" ? (
                       <>
-                        <Globe className="w-3.5 h-3.5 mr-2" />
+                        <Globe className="w-3.5 h-3.5 me-2" />
                         {t("makeWorkspaceVisible")}
                       </>
                     ) : (
                       <>
-                        <Lock className="w-3.5 h-3.5 mr-2" />
+                        <Lock className="w-3.5 h-3.5 me-2" />
                         {t("makePrivate")}
                       </>
                     )}
@@ -880,7 +880,7 @@ export function ThreadColumn({
                   onClick={handleDelete}
                   className="text-destructive focus:text-destructive cursor-pointer"
                 >
-                  <Trash2 className="w-3.5 h-3.5 mr-2" />
+                  <Trash2 className="w-3.5 h-3.5 me-2" />
                   {t("delete")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -893,7 +893,7 @@ export function ThreadColumn({
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {isLoading ? (
           <div className="flex items-center justify-center h-48 text-muted">
-            <Loader2 className="w-5 h-5 animate-spin mr-2" />
+            <Loader2 className="w-5 h-5 animate-spin me-2" />
             <span className="text-xs">{t("loading")}</span>
           </div>
         ) : !annotation ? (
@@ -901,7 +901,7 @@ export function ThreadColumn({
         ) : (
           <>
             {/* Quoted passage */}
-            <div className="rounded-lg bg-surface border-l-2 border-accent p-3 text-xs text-foreground/90 space-y-1">
+            <div className="rounded-lg bg-surface border-s-2 border-accent p-3 text-xs text-foreground/90 space-y-1">
               <div className="flex items-center justify-between text-[11px] text-muted">
                 <span className="flex items-center gap-1 font-medium">
                   {isAsk ? (

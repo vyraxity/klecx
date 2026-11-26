@@ -50,9 +50,9 @@ export function MarketingFAQ() {
                   type="button"
                   onClick={() => toggle(idx)}
                   aria-expanded={isOpen}
-                  className="w-full flex items-center justify-between p-4 sm:p-5 text-left text-sm sm:text-base font-semibold text-fg cursor-pointer transition-colors"
+                  className="w-full flex items-center justify-between p-4 sm:p-5 text-start text-sm sm:text-base font-semibold text-fg cursor-pointer transition-colors"
                 >
-                  <span className="pr-4">{t(`items.${key}.q`)}</span>
+                  <span className="pe-4">{t(`items.${key}.q`)}</span>
                   <ChevronDown
                     className={cn(
                       "h-4 w-4 shrink-0 text-fg-muted transition-transform duration-200",

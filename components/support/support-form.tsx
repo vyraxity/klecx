@@ -282,7 +282,7 @@ export function SupportForm({ initialTopic, initialMessage, app = UNKNOWN_APP }:
               {t("diagnosticsCheckbox")}
             </label>
           </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-fg-subtle pl-6">
+          <div className="flex items-center gap-1.5 text-[11px] text-fg-subtle ps-6">
             <Info className="h-3 w-3 shrink-0 text-accent" />
             <span>{t("diagnosticsPrivacy")}</span>
           </div>
