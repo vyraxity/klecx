@@ -29,31 +29,34 @@ export type ListWorkspacesOptions = {
   q?: string;
 };
 
+/** Projects the person owns or is a member of (not deleted): their workspaces are visible to them. */
+async function accessibleProjectIds(userId: string): Promise<string[]> {
+  const [owned, member] = await Promise.all([
+    db.project.findMany({ where: { ownerId: userId, deletedAt: null }, select: { id: true } }),
+    db.projectMember.findMany({ where: { userId, project: { deletedAt: null } }, select: { projectId: true } }),
+  ]);
+  return [...new Set([...owned.map((p) => p.id), ...member.map((m) => m.projectId)])];
+}
+
 export async function listWorkspaces(
   actor: Actor,
   query: ListWorkspacesOptions = {}
 ) {
   const limit = query.limit ?? 20;
 
+  // Step 10.5: the workspaces this person can open, found through small
+  // indexed lookups first (memberships, then projects they own or belong to),
+  // so the list query is a union of index scans instead of a scan of every
+  // workspace (EXPLAIN on 200k workspaces: 124 ms → see docs/performance.md).
+  const [memberships, projectIds] = await Promise.all([
+    db.workspaceMember.findMany({ where: { userId: actor.userId }, select: { workspaceId: true } }),
+    accessibleProjectIds(actor.userId),
+  ]);
   const accessibleCondition = {
     OR: [
       { ownerId: actor.userId },
-      {
-        members: {
-          some: {
-            userId: actor.userId,
-          },
-        },
-      },
-      {
-        project: {
-          deletedAt: null,
-          OR: [
-            { ownerId: actor.userId },
-            { members: { some: { userId: actor.userId } } },
-          ],
-        },
-      },
+      ...(memberships.length ? [{ id: { in: memberships.map((m) => m.workspaceId) } }] : []),
+      ...(projectIds.length ? [{ projectId: { in: projectIds } }] : []),
     ],
   };
 
@@ -68,7 +71,7 @@ export async function listWorkspaces(
     ...accessibleCondition,
   };
 
-  const rows = await db.workspace.findMany({
+  const found = await db.workspace.findMany({
     where,
     take: limit + 1,
     ...(query.cursor
@@ -85,13 +88,20 @@ export async function listWorkspaces(
           name: true,
         },
       },
-      _count: {
-        select: {
-          members: true,
-        },
-      },
     },
   });
+
+  // Member counts for this page only (`_count` in the query above made the
+  // database count the members of every workspace before joining).
+  const counts = found.length
+    ? await db.workspaceMember.groupBy({
+        by: ["workspaceId"],
+        where: { workspaceId: { in: found.map((w) => w.id) } },
+        _count: { _all: true },
+      })
+    : [];
+  const countById = new Map(counts.map((c) => [c.workspaceId, c._count._all]));
+  const rows = found.map((w) => ({ ...w, _count: { members: countById.get(w.id) ?? 0 } }));
 
   return toPage(rows, limit);
 }

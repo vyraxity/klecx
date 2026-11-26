@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && node scripts/migrate-on-build.mjs && next build",
+    "analyze": "next analyze",
     "start": "next start",
     "lint": "eslint .",
     "check:tokens": "node scripts/check-tokens.mjs",
@@ -21,6 +22,7 @@
     "test:coverage": "jest --coverage",
     "e2e:build": "node scripts/e2e-build.mjs",
     "e2e": "playwright test",
+    "lighthouse": "node scripts/lighthouse.mjs",
     "e2e:start": "node scripts/e2e-start.mjs"
   },
   "dependencies": {

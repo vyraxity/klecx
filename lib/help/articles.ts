@@ -188,7 +188,27 @@ export function getHelpSlugs(): string[] {
     .map((f) => f.replace(/\.mdx?$/, ""));
 }
 
+/**
+ * Step 10.5: parsed articles per language, kept for the life of the server in
+ * production (the files and the settings they read — billing on/off, images
+ * on/off, site config — don't change while it runs). Development and tests
+ * read the files every time, so edits show at once.
+ */
+const articleCache = new Map<string, HelpArticle[]>();
+
 export function getArticles(locale?: string): HelpArticle[] {
+  if (process.env.NODE_ENV !== "production") return readArticles(locale);
+  const key = toHelpLocale(locale);
+  let articles = articleCache.get(key);
+  if (!articles) {
+    articles = readArticles(locale);
+    // An empty result can be a read error: try again on the next request.
+    if (articles.length) articleCache.set(key, articles);
+  }
+  return articles;
+}
+
+function readArticles(locale?: string): HelpArticle[] {
   try {
     const baseDir = getBaseHelpDir();
     const targetLocale = toHelpLocale(locale);

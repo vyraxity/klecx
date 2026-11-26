@@ -135,20 +135,19 @@ describe("Markdown Security & Rendering", () => {
   });
 
   describe("Math (KaTeX) Rendering", () => {
-    it("renders inline math using remark-math and rehype-katex", () => {
+    // KaTeX loads on the first formula (Step 10.5), so the result shows a moment later.
+    it("renders inline math using remark-math and rehype-katex", async () => {
       const { container } = render(<Markdown content="Energy formula: $E = mc^2$" />);
 
-      const katexElem = container.querySelector(".katex");
-      expect(katexElem).not.toBeNull();
+      await waitFor(() => expect(container.querySelector(".katex")).not.toBeNull());
     });
 
-    it("renders block math display equation", () => {
+    it("renders block math display equation", async () => {
       const { container } = render(
         <Markdown content={"$$\n\\frac{a}{b} = c\n$$"} />
       );
 
-      const katexDisplay = container.querySelector(".katex-display");
-      expect(katexDisplay).not.toBeNull();
+      await waitFor(() => expect(container.querySelector(".katex-display")).not.toBeNull());
     });
   });
 
@@ -231,5 +230,17 @@ describe("Markdown Security & Rendering", () => {
       expect(screen.getByText(/Now with more tail content!/)).toBeInTheDocument();
       expect(screen.getByText("First paragraph block.")).toBeInTheDocument();
     });
+  });
+});
+
+describe("Step 10.5 — KaTeX loads only for formulas", () => {
+  it("doesn't load KaTeX for text without a formula", async () => {
+    jest.resetModules();
+    const loader = await import("@/lib/markdown/katex-loader");
+    expect(loader.mayContainMath("Plain text, no formula.")).toBe(false);
+    expect(loader.mayContainMath("Costs $5")).toBe(true);
+    expect(loader.getKatexPlugin()).toBeNull();
+    await loader.loadKatex();
+    expect(loader.getKatexPlugin()).not.toBeNull();
   });
 });
