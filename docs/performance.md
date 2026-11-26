@@ -8,7 +8,7 @@
 | Sign-in: performance ≥ 90, accessibility ≥ 95 (no SEO target: the page is `noindex` on purpose) | same | `/auth/login`: 98 / 98 |
 | App: accessibility ≥ 95 | same (signed in through the test inbox) | `/workspaces` 100, `/settings/profile` 98, `/settings/usage` 98 |
 
-Run it locally: `npm run e2e:build`, then `npm run lighthouse` (it starts the build on port 3100 if nothing answers there). Reports: `.lighthouseci/reports/<group>/*.report.html`. In CI they're uploaded as the `lighthouse-reports` artifact. Scores on shared CI machines vary by a few points; a failure just above the line is worth re-running before investigating.
+Run it locally: `npm run e2e:build`, then `npm run lighthouse` (it starts the build on port 3100 if nothing answers there; `npm run dev` isn't needed). **Postgres must be running** (the e2e database, `E2E_DATABASE_URL`): the app pages need a test account. The script checks the database first and says what to do (start Postgres or Docker, or run `npm run e2e:build`). Performance scores on a busy laptop can land a few points lower than on a clean machine: close other programs and run again before investigating. Reports: `.lighthouseci/reports/<group>/*.report.html`. In CI they're uploaded as the `lighthouse-reports` artifact. Scores on shared CI machines vary by a few points; a failure just above the line is worth re-running before investigating.
 
 ## What loads when
 

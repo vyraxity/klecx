@@ -12,7 +12,8 @@
 import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import { E2E_BASE_URL, E2E_ENV, E2E_PORT } from "../e2e/env.mjs";
+import pg from "pg";
+import { E2E_BASE_URL, E2E_DATABASE_URL, E2E_ENV, E2E_PORT } from "../e2e/env.mjs";
 
 export const MARKETING_PATHS = ["/", "/pricing", "/features", "/help"];
 /** Sign-in is `noindex` on purpose, so it isn't held to the SEO target. */
@@ -35,6 +36,35 @@ export const APP_ASSERTIONS = {
 const OUT = path.resolve(".lighthouseci");
 const isWin = process.platform === "win32";
 const log = (msg) => console.log(`[lighthouse] ${msg}`);
+
+/**
+ * The app pages need a test account, saved in the e2e database: check it's
+ * there before spending minutes on the other pages. Returns an explanation
+ * when it isn't, null when it is.
+ */
+export async function databaseProblem(url = E2E_DATABASE_URL) {
+  let where = "the e2e database";
+  try {
+    const u = new URL(url);
+    where = `"${decodeURIComponent(u.pathname.replace(/^\//, ""))}" on ${u.host}`;
+  } catch {
+    return "E2E_DATABASE_URL isn't a valid postgresql:// address (.env / .env.local or the environment).";
+  }
+  const client = new pg.Client({ connectionString: url, connectionTimeoutMillis: 5000 });
+  try {
+    await client.connect();
+    await client.query('select 1 from "users" limit 1');
+    return null;
+  } catch (err) {
+    const code = err?.code ?? "";
+    if (code === "3D000") return `The database ${where} doesn't exist yet: run \`npm run e2e:build\` (it creates it and applies the migrations).`;
+    if (code === "42P01") return `The database ${where} has no tables: run \`npm run e2e:build\` (it applies the migrations).`;
+    if (code === "28P01" || code === "28000") return `Postgres refused the user or password for ${where}: check E2E_DATABASE_URL (.env / .env.local).`;
+    return `Can't reach ${where} (${code || err?.message || err}). Is Postgres running (start Docker if it runs there), and is E2E_DATABASE_URL right (.env / .env.local)?`;
+  } finally {
+    await client.end().catch(() => {});
+  }
+}
 
 async function up() {
   try {
@@ -76,7 +106,12 @@ async function signedInCookie() {
     headers,
     body: JSON.stringify({ email, password: "A-long-lighthouse-passphrase-42", name: "Lighthouse Tester", callbackURL: "/workspaces" }),
   });
-  if (!signUp.ok) throw new Error(`sign-up failed: ${signUp.status}`);
+  if (!signUp.ok) {
+    throw new Error(
+      `signing the test person up failed (HTTP ${signUp.status}). ` +
+        (signUp.status >= 500 ? "Check the database (is Postgres running?) and rebuild with `npm run e2e:build`." : (await signUp.text()).slice(0, 200))
+    );
+  }
   let link;
   for (let i = 0; i < 30 && !link; i++) {
     const res = await fetch(`${E2E_BASE_URL}/api/test/emails?to=${encodeURIComponent(email)}`);
@@ -129,6 +164,11 @@ function runGroup(name, paths, assertions, extraHeaders) {
 }
 
 async function main() {
+  const problem = await databaseProblem();
+  if (problem) {
+    log(problem);
+    process.exit(1);
+  }
   const server = await startServer();
   let failed = 0;
   try {
