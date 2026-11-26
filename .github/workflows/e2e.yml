@@ -3,6 +3,10 @@
 # Creem (signed webhooks), test inbox, mock storage. Never calls Gemini,
 # Resend, Cloudinary or Creem.
 # Runs nightly on dev, on every PR into main, and by hand (Actions → e2e).
+# Step 10.5: the journeys include axe scans and a keyboard walkthrough
+# (e2e/14-accessibility.e2e.ts); Lighthouse then checks the targets
+# (marketing ≥ 90 performance / ≥ 95 accessibility / ≥ 95 SEO, app ≥ 95
+# accessibility) on the same build.
 name: e2e
 
 on:
@@ -51,4 +55,36 @@ jobs:
           path: |
             playwright-report/
             test-results/
+          retention-days: 14
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16.15-alpine # pinned like ci.yml
+        env: { POSTGRES_PASSWORD: postgres, POSTGRES_DB: klecx_e2e }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 10
+    env:
+      CI: "true"
+      E2E_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/klecx_e2e
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/klecx_e2e
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Lighthouse drives Playwright's Chromium (scripts/lighthouse.mjs finds it).
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e:build
+      - run: npm run lighthouse
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/reports/
           retention-days: 14
