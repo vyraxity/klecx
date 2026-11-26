@@ -3,6 +3,7 @@
 import * as React from "react";
 import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import { cn } from "@/lib/utils";
+import { OpenerCapture, useReturnFocus } from "@/lib/a11y/return-focus";
 import { buttonVariants } from "@/components/ui/button";
 
 const AlertDialog = AlertDialogPrimitive.Root;
@@ -28,20 +29,27 @@ AlertDialogOverlay.displayName = AlertDialogPrimitive.Overlay.displayName;
 const AlertDialogContent = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Content>
->(({ className, ...props }, ref) => (
-  <AlertDialogPortal>
-    <AlertDialogOverlay />
-    <AlertDialogPrimitive.Content
-      ref={ref}
-      data-slot="alert-dialog-content"
-      className={cn(
-        "fixed left-1/2 top-1/2 z-50 grid w-[92vw] max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl border border-border bg-surface p-6 text-fg shadow-lg duration-200",
-        className
-      )}
-      {...props}
-    />
-  </AlertDialogPortal>
-));
+>(({ className, children, onCloseAutoFocus, ...props }, ref) => {
+  const returnFocus = useReturnFocus(onCloseAutoFocus);
+  return (
+    <AlertDialogPortal>
+      <AlertDialogOverlay />
+      <AlertDialogPrimitive.Content
+        ref={ref}
+        data-slot="alert-dialog-content"
+        className={cn(
+          "fixed left-1/2 top-1/2 z-50 grid w-[92vw] max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl border border-border bg-surface p-6 text-fg shadow-lg duration-200",
+          className
+        )}
+        {...props}
+        onCloseAutoFocus={returnFocus.onCloseAutoFocus}
+      >
+        <OpenerCapture opener={returnFocus.opener} />
+        {children}
+      </AlertDialogPrimitive.Content>
+    </AlertDialogPortal>
+  );
+});
 AlertDialogContent.displayName = AlertDialogPrimitive.Content.displayName;
 
 const AlertDialogHeader = ({

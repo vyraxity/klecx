@@ -6,6 +6,7 @@ import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { OpenerCapture, useReturnFocus } from "@/lib/a11y/return-focus";
 
 const Sheet = SheetPrimitive.Root;
 const SheetTrigger = SheetPrimitive.Trigger;
@@ -54,7 +55,8 @@ interface SheetContentProps
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
->(({ side = "right", className, children, closeLabel, ...props }, ref) => {
+>(({ side = "right", className, children, closeLabel, onCloseAutoFocus, ...props }, ref) => {
+  const returnFocus = useReturnFocus(onCloseAutoFocus);
   let label = closeLabel;
   try {
     const t = useTranslations("Common");
@@ -71,7 +73,9 @@ const SheetContent = React.forwardRef<
         data-slot="sheet-content"
         className={cn(sheetVariants({ side }), className)}
         {...props}
+        onCloseAutoFocus={returnFocus.onCloseAutoFocus}
       >
+        <OpenerCapture opener={returnFocus.opener} />
         {children}
         <SheetPrimitive.Close
           aria-label={label}

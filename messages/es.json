@@ -106,7 +106,8 @@
     "yesterday": "Ayer",
     "confirm": "Confirmar",
     "copyToClipboard": "Copiar al portapapeles",
-    "copiedShort": "Copiado"
+    "copiedShort": "Copiado",
+    "skipToContent": "Saltar al contenido principal"
   },
   "Header": {
     "features": "Funciones",

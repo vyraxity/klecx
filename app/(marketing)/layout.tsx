@@ -7,6 +7,7 @@ import {
   SoftwareApplicationJsonLd,
 } from "@/components/seo/json-ld";
 import { getLocale } from "next-intl/server";
+import { MAIN_CONTENT_ID, SkipLink } from "@/components/layout/skip-link";
 
 export default async function MarketingLayout({
   children,
@@ -19,8 +20,9 @@ export default async function MarketingLayout({
       <OrganizationJsonLd locale={locale} />
       <WebSiteJsonLd locale={locale} />
       <SoftwareApplicationJsonLd locale={locale} />
+      <SkipLink />
       <MarketingHeader />
-      <main className="flex-1">{children}</main>
+      <main id={MAIN_CONTENT_ID} tabIndex={-1} className="flex-1 focus:outline-none">{children}</main>
       <MarketingFooter />
     </div>
   );
