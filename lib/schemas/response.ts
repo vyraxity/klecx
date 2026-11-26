@@ -2,7 +2,13 @@ import { z } from "zod";
 
 export const regenerateResponseSchema = z.object({
   idempotencyKey: z.string().min(1, "Idempotency key is required").max(255),
-  modelKey: z.string().optional().default("text-economy"),
+  /**
+   * Usually left out: the server regenerates with the model of the version
+   * on screen (the active version), falling back to Fast & Efficient when the
+   * workspace owner's plan no longer includes it. A given model is checked
+   * against the owner's plan like any other request.
+   */
+  modelKey: z.string().optional(),
 });
 
 export type RegenerateResponseInput = z.input<typeof regenerateResponseSchema>;
