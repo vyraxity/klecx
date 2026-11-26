@@ -124,6 +124,16 @@ async function signedInCookie() {
   const cookies = verify.headers.getSetCookie?.() ?? [];
   const cookie = cookies.map((c) => c.split(";")[0]).join("; ");
   if (!cookie) throw new Error("verification didn't sign the person in");
+  // Claim a username, as everyone does on their first visit: otherwise the
+  // "Choose your username" dialog opens over the pages, hides them from
+  // assistive technology (correctly, it's modal) and Lighthouse scores the
+  // dialog instead of the page, more or less depending on timing.
+  const claim = await fetch(`${E2E_BASE_URL}/api/v1/me/username`, {
+    method: "PUT",
+    headers: { ...headers, cookie },
+    body: JSON.stringify({ username: `lighthouse_${Date.now().toString(36)}` }),
+  });
+  if (!claim.ok) throw new Error(`claiming the test person's username failed (HTTP ${claim.status})`);
   return cookie;
 }
 
@@ -132,18 +142,116 @@ function lhci(args) {
   return res.status ?? 1;
 }
 
-function runGroup(name, paths, assertions, extraHeaders) {
+/**
+ * After a failed assertion: for each page and checked category below 100,
+ * the audits that failed, with up to 3 of the elements involved, read from
+ * the representative run's report. So the log says what to fix.
+ */
+export function failedAudits(manifestPath, categories) {
+  let manifest;
+  try {
+    manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  } catch {
+    return [];
+  }
+  const lines = [];
+  for (const run of manifest.filter((r) => r.isRepresentativeRun)) {
+    let report;
+    try {
+      report = JSON.parse(fs.readFileSync(run.jsonPath, "utf8"));
+    } catch {
+      continue;
+    }
+    const page = new URL(run.url).pathname;
+    for (const id of categories) {
+      const category = report.categories?.[id];
+      if (!category || category.score === 1) continue;
+      for (const ref of category.auditRefs.filter((r) => r.weight > 0)) {
+        const audit = report.audits[ref.id];
+        if (!audit || audit.score === null || audit.score >= 0.9) continue;
+        const items = audit.details?.items ?? [];
+        const nodes = items
+          .map((item) => item.node?.snippet ?? item.node?.selector ?? item.url)
+          .filter(Boolean)
+          .slice(0, 3)
+          .map((n) => String(n).replace(/\s+/g, " ").slice(0, 140));
+        lines.push(`${page} · ${id} · ${audit.id}: ${audit.title}${audit.displayValue ? ` (${audit.displayValue})` : ""}`);
+        for (const n of nodes) lines.push(`      ${n}`);
+        if (items.length > nodes.length) lines.push(`      … and ${items.length - nodes.length} more`);
+      }
+    }
+  }
+  return lines;
+}
+
+/**
+ * Signed-in pages: LHCI opens the browser through Puppeteer (puppeteer-core
+ * comes with Lighthouse) and runs this before each page, putting the session
+ * into the browser's own cookie store. Sending it as an extra `Cookie` header
+ * doesn't work: as soon as the page stores any cookie of its own (theme,
+ * language…), Chrome sends its cookie store instead of that header, the
+ * session is gone and the page bounces to sign-in, more or less often
+ * depending on timing.
+ */
+function writeSignInScript(cookie) {
+  const file = path.join(OUT, "sign-in-session.cjs");
+  const cookies = cookie.split("; ").map((pair) => {
+    const i = pair.indexOf("=");
+    return { name: pair.slice(0, i), value: pair.slice(i + 1), url: E2E_BASE_URL, httpOnly: true, sameSite: "Lax" };
+  });
+  fs.mkdirSync(OUT, { recursive: true });
+  fs.writeFileSync(
+    file,
+    `// Written by scripts/lighthouse.mjs for one run (a throw-away test account).\n` +
+      `module.exports = async (browser) => {\n` +
+      `  const page = await browser.newPage();\n` +
+      `  await page.setCookie(...${JSON.stringify(cookies)});\n` +
+      `  await page.close();\n` +
+      `};\n`
+  );
+  // LHCI resolves the script against the working directory.
+  return path.relative(process.cwd(), file);
+}
+
+/** Pages of a group whose run ended somewhere else (e.g. bounced to /auth/login). */
+export function signedOutPages(manifestPath) {
+  try {
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    return manifest
+      .filter((run) => {
+        const report = JSON.parse(fs.readFileSync(run.jsonPath, "utf8"));
+        return new URL(report.finalDisplayedUrl).pathname.startsWith("/auth/");
+      })
+      .map((run) => new URL(run.url).pathname)
+      .filter((p, i, all) => all.indexOf(p) === i);
+  } catch {
+    return [];
+  }
+}
+
+function runGroup(name, paths, assertions, sessionCookie) {
   const dir = path.join(OUT, name);
   fs.rmSync(dir, { recursive: true, force: true });
+  // No stale reports: the explanations below read them.
+  fs.rmSync(path.join(OUT, "reports", name), { recursive: true, force: true });
+  const chrome = chromePath();
+  const flags = ["--headless=new", "--no-sandbox", "--disable-dev-shm-usage"];
   const config = {
     ci: {
       collect: {
         url: paths.map((p) => `${E2E_BASE_URL}${p}`),
         numberOfRuns: 3,
-        chromePath: chromePath(),
+        chromePath: chrome,
+        ...(sessionCookie
+          ? {
+              puppeteerScript: writeSignInScript(sessionCookie),
+              puppeteerLaunchOptions: { executablePath: chrome, headless: true, args: flags.slice(1) },
+            }
+          : {}),
         settings: {
-          chromeFlags: "--headless=new --no-sandbox --disable-dev-shm-usage",
-          ...(extraHeaders ? { extraHeaders: JSON.stringify(extraHeaders) } : {}),
+          chromeFlags: flags.join(" "),
+          // Keep the session cookie between runs (Lighthouse clears the site's storage by default).
+          ...(sessionCookie ? { disableStorageReset: true } : {}),
           // Desktop: the app's main audience; the phone layout is covered by the e2e journeys.
           preset: "desktop",
         },
@@ -160,6 +268,14 @@ function runGroup(name, paths, assertions, extraHeaders) {
   let status = lhci(["collect", `--config=${file}`]);
   if (status === 0) lhci(["upload", `--config=${file}`]);
   if (status === 0) status = lhci(["assert", `--config=${file}`]);
+  if (status !== 0) {
+    const categories = Object.keys(assertions).map((k) => k.replace(/^categories:/, ""));
+    const lines = failedAudits(path.join(OUT, "reports", name, "manifest.json"), categories);
+    if (lines.length) {
+      log(`${name}: what lowered the scores (median run):`);
+      for (const l of lines) console.log(`  ${l}`);
+    }
+  }
   return status;
 }
 
@@ -176,7 +292,13 @@ async function main() {
     failed += runGroup("marketing", MARKETING_PATHS, MARKETING_ASSERTIONS) ? 1 : 0;
     failed += runGroup("sign-in", SIGN_IN_PATHS, SIGN_IN_ASSERTIONS) ? 1 : 0;
     const cookie = await signedInCookie();
-    failed += runGroup("app", APP_PATHS, APP_ASSERTIONS, { Cookie: cookie }) ? 1 : 0;
+    failed += runGroup("app", APP_PATHS, APP_ASSERTIONS, cookie) ? 1 : 0;
+    // A signed-in page that bounced to sign-in would be scored as the sign-in page.
+    const bounced = signedOutPages(path.join(OUT, "reports", "app", "manifest.json"));
+    if (bounced.length) {
+      log(`app: these pages ended on sign-in, so their scores are the sign-in page's: ${bounced.join(", ")}`);
+      failed += 1;
+    }
   } finally {
     server?.kill();
   }

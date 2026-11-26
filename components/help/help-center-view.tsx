@@ -135,10 +135,10 @@ export function HelpCenterView({
                       {t("readMinutes", { count: article.readMinutes })}
                     </span>
                   </div>
-                  <h3 className="text-fg group-hover:text-accent flex items-center justify-between text-base font-bold transition-colors">
+                  <h2 className="text-fg group-hover:text-accent flex items-center justify-between text-base font-bold transition-colors">
                     <span>{article.title}</span>
                     <ChevronRight className="text-fg-subtle group-hover:text-accent h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5" />
-                  </h3>
+                  </h2>
                   <p className="text-fg-muted line-clamp-2 text-xs leading-relaxed">
                     {article.description}
                   </p>
@@ -154,9 +154,9 @@ export function HelpCenterView({
         ) : (
           <div className="border-border bg-surface-2/30 space-y-3 rounded-2xl border border-dashed py-12 text-center">
             <BookOpen className="text-fg-subtle mx-auto h-8 w-8" />
-            <h3 className="text-fg text-base font-semibold">
+            <h2 className="text-fg text-base font-semibold">
               {t("noResultsTitle")}
-            </h3>
+            </h2>
             <p className="text-fg-muted mx-auto max-w-sm text-xs">
               {t("noResultsDesc")}
             </p>
@@ -180,7 +180,7 @@ export function HelpCenterView({
               <MessageSquare className="h-4 w-4" />
               <span>{t("needMoreHelp")}</span>
             </div>
-            <h3 className="text-fg text-xl font-bold">{t("needMoreHelp")}</h3>
+            <h2 className="text-fg text-xl font-bold">{t("needMoreHelp")}</h2>
             <p className="text-fg-muted max-w-lg text-xs sm:text-sm">
               {t("needMoreHelpDesc")}
             </p>

@@ -105,9 +105,9 @@ export function OnboardingChecklist({
             <Sparkles className="h-4 w-4" strokeWidth={1.5} />
           </div>
           <div>
-            <h3 className="text-sm sm:text-base font-bold text-fg">
+            <h2 className="text-sm sm:text-base font-bold text-fg">
               {tHome("onboardingTitle")}
-            </h3>
+            </h2>
             <p className="text-xs text-muted">
               {tHome("onboardingSubtitle")}
             </p>
