@@ -6,7 +6,8 @@ Four layers, from fastest to slowest. None of them calls Gemini, Resend, Cloudin
 | --- | --- | --- | --- |
 | Unit / service (Jest) | business rules, authorization (two-user suite), webhooks, credits, prompts, UI components | `__tests__/` | every push and PR (`ci.yml`), `npm test` |
 | Coverage | at least **80 % of lines in `server/services`** (91.6 % on 2026-11-25) | `jest.config.ts` (`coverageThreshold`) | every push and PR (`npm run test:coverage`) |
-| End-to-end (Playwright) | 13 journeys through the real UI: Chromium, WebKit, and a phone viewport for the `@mobile` ones | `e2e/*.e2e.ts` | nightly on `dev`, every PR into `main`, by hand (`e2e.yml`) |
+| End-to-end (Playwright) | 15 journeys through the real UI: Chromium, WebKit, and a phone viewport for the `@mobile` ones | `e2e/*.e2e.ts` | nightly on `dev`, every PR into `main`, by hand (`e2e.yml`) |
+| Lighthouse | marketing ≥ 90 performance / ≥ 95 accessibility / ≥ 95 SEO, sign-in ≥ 90 / ≥ 95, app ≥ 95 accessibility (Step 10.5, `docs/performance.md`) | `scripts/lighthouse.mjs` | with the journeys (`e2e.yml`, job `lighthouse`), `npm run lighthouse` |
 | Load (k6) | 50 simultaneous answers, 20 sessions on one balance, ledger integrity, API p95 | `load/k6-load.js` | by hand (`load.yml`) |
 
 ## Test mode (`E2E_TEST_MODE=true`)
@@ -23,6 +24,7 @@ End-to-end and load tests run a **production build** of Klecx in test mode (`e2e
 - **Fake Creem** under the real Creem adapter: a checkout's URL is a local page that sends the same **signed** webhooks Creem would (checkout.completed, subscription.paid) to the real webhook route, so the real signature check and state machine run. `POST /api/test/subscribe` puts a person on a plan the same way; `POST /api/test/subscription-event` sends e.g. `subscription.past_due`.
 - **Mock storage** (no Cloudinary keys) and **in-memory rate limits** (no Redis).
 - `GET /api/test/ledger-check?email=` — balances equal their ledger sums and never went below zero.
+- **Pseudo-locale** `en-XA` (Step 10.5, `lib/i18n/pseudo-locale.ts`): set the `NEXT_LOCALE` cookie to `en-XA` to see every text accented and ~30 % longer, e.g. "[Šåṽé ··]". Honoured in development and test mode only, never offered to people. Unaccented English on screen is a string that skips next-intl; text cut off or overflowing is a layout that only fits English.
 
 **Safety:** `server/env.ts` refuses `E2E_TEST_MODE` whenever `VERCEL` is set (every Vercel deployment) and refuses the fake AI in production unless test mode is on. The `/api/test/*` routes answer 404 outside test mode (`__tests__/step-10-4-test-mode.test.ts` checks all of this).
 
@@ -60,6 +62,8 @@ Load test: `npm run e2e:build`, `npm run e2e:start` (keep it running), then `k6 
 | `11-voice` | mocked microphone → Stop puts the transcript in the composer; Send while recording sends it (skipped, with that reason, in a browser without `MediaRecorder`, where the app doesn't offer voice input) |
 | `12-ownership-transfer` | refused while it doesn't fit the recipient's plan → sent once it fits → accepted |
 | `13-plan-gating` | Free: Standard model and inviting disabled with a reason; forged requests refused by the server |
+| `14-accessibility` | axe (WCAG 2.2 AA) on every public page, the auth pages, the workspace list, a conversation and every Settings page, light and dark theme; keyboard walkthrough (skip link, `[`, Ctrl+K, composer, Share dialog focus return, Ctrl+Alt+M) — `docs/accessibility.md` |
+| `15-pseudo-locale` | pseudo-locale `en-XA` (texts ~30 % longer and accented) on public and app pages, desktop and phone: no sideways scroll, no cut-off button or link text |
 
 Shared steps are in `e2e/helpers.ts` (`newUser` signs up through the API and verifies with the emailed link; every test uses fresh people, so tests never depend on each other).
 
