@@ -15,7 +15,6 @@ import { Toaster } from "@/components/ui/sonner";
 import { OfflineBanner } from "@/components/offline/offline-banner";
 import { CookieNotice } from "@/components/legal/cookie-notice";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocaleDefinition } from "@/i18n/locales";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { getSiteConfig } from "@/server/config/site";
 import { getLocaleDefinition, getAlternateOgLocales } from "@/i18n/locales";
