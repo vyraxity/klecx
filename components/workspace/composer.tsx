@@ -976,7 +976,7 @@ export function Composer({
               )}
               <span className="max-w-[120px] truncate font-medium">{att.name}</span>
               <span className="text-[10px] text-muted">
-                ({formatFileSize(att.size, locale)})
+                {`(${formatFileSize(att.size, locale)})`}
               </span>
 
               {att.status === "uploading" && (
