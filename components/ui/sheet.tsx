@@ -75,7 +75,7 @@ const SheetContent = React.forwardRef<
         {...props}
         onCloseAutoFocus={returnFocus.onCloseAutoFocus}
       >
-        <OpenerCapture opener={returnFocus.opener} />
+        <OpenerCapture openerRef={returnFocus.openerRef} />
         {children}
         <SheetPrimitive.Close
           aria-label={label}

@@ -44,7 +44,7 @@ const AlertDialogContent = React.forwardRef<
         {...props}
         onCloseAutoFocus={returnFocus.onCloseAutoFocus}
       >
-        <OpenerCapture opener={returnFocus.opener} />
+        <OpenerCapture openerRef={returnFocus.openerRef} />
         {children}
       </AlertDialogPrimitive.Content>
     </AlertDialogPortal>

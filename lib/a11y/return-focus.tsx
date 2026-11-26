@@ -15,14 +15,14 @@ import * as React from "react";
  * applies.
  */
 export function useReturnFocus(handler?: (event: Event) => void) {
-  const opener = React.useRef<HTMLElement | null>(null);
+  const openerRef = React.useRef<HTMLElement | null>(null);
 
   const onCloseAutoFocus = React.useCallback(
     (event: Event) => {
       handler?.(event);
       if (event.defaultPrevented) return;
-      const el = opener.current;
-      opener.current = null;
+      const el = openerRef.current;
+      openerRef.current = null;
       if (el && el.isConnected) {
         event.preventDefault();
         el.focus({ preventScroll: true });
@@ -31,13 +31,13 @@ export function useReturnFocus(handler?: (event: Event) => void) {
     [handler]
   );
 
-  return { opener, onCloseAutoFocus };
+  return { openerRef, onCloseAutoFocus };
 }
 
-export function OpenerCapture({ opener }: { opener: React.MutableRefObject<HTMLElement | null> }) {
+export function OpenerCapture({ openerRef }: { openerRef: React.MutableRefObject<HTMLElement | null> }) {
   React.useLayoutEffect(() => {
     const active = document.activeElement;
-    opener.current = active instanceof HTMLElement && active !== document.body ? active : null;
-  }, [opener]);
+    openerRef.current = active instanceof HTMLElement && active !== document.body ? active : null;
+  }, [openerRef]);
   return null;
 }
