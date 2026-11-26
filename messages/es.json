@@ -3873,7 +3873,13 @@
     "unsupported": "Este navegador no puede leer texto en voz alta.",
     "truncated": "Este texto es largo: solo se lee la primera parte.",
     "codeOmitted": "Bloque de código omitido",
-    "previewSample": "¡Hola! Así sueno cuando leo en voz alta tus respuestas y documentos."
+    "previewSample": "¡Hola! Así sueno cuando leo en voz alta tus respuestas y documentos.",
+    "partLabel": "Parte {index} de {total}",
+    "speedLabel": "Velocidad: {speed}×",
+    "statusReading": "Leyendo en voz alta",
+    "statusResumed": "Lectura reanudada",
+    "statusPaused": "Lectura en pausa",
+    "statusStopped": "Lectura detenida"
   },
   "AccountRestore": {
     "title": "Restaurar tu cuenta",

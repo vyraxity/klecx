@@ -1,5 +1,6 @@
 "use client";
 
+import { scrollBehavior } from "@/lib/a11y/motion";
 import * as React from "react";
 import Link from "next/link";
 import {
@@ -627,7 +628,7 @@ export function ThreadColumn({
                                   document
                                     .getElementById(`response-${destId}`)
                                     ?.scrollIntoView({
-                                      behavior: "smooth",
+                                      behavior: scrollBehavior(),
                                       block: "center",
                                     });
                                 }, 50);

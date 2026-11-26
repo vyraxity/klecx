@@ -3873,7 +3873,13 @@
     "unsupported": "Ce navigateur ne peut pas lire de texte à voix haute.",
     "truncated": "Ce texte est long : seule la première partie est lue.",
     "codeOmitted": "Bloc de code omis",
-    "previewSample": "Bonjour ! Voici ma voix quand je lis vos réponses et vos documents à voix haute."
+    "previewSample": "Bonjour ! Voici ma voix quand je lis vos réponses et vos documents à voix haute.",
+    "partLabel": "Partie {index} sur {total}",
+    "speedLabel": "Vitesse : {speed}×",
+    "statusReading": "Lecture à voix haute",
+    "statusResumed": "Lecture reprise",
+    "statusPaused": "Lecture en pause",
+    "statusStopped": "Lecture arrêtée"
   },
   "AccountRestore": {
     "title": "Restaurer votre compte",

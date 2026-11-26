@@ -17,7 +17,7 @@ export function MarketingCTA() {
           <div className="absolute top-0 right-0 w-80 h-80 bg-surface/10 rounded-full blur-2xl pointer-events-none" />
 
           <div className="relative z-10 max-w-2xl mx-auto space-y-4">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-fg/15 text-accent-fg text-xs font-semibold backdrop-blur-xs">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-fg/10 text-accent-fg text-xs font-semibold backdrop-blur-xs">
               <Sparkles className="h-3.5 w-3.5" />
               <span>{t("badge")}</span>
             </div>
@@ -46,7 +46,7 @@ export function MarketingCTA() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="w-full sm:w-auto border-accent-fg/30 text-accent-fg hover:bg-accent-fg/10 font-semibold"
+                className="w-full sm:w-auto bg-transparent border-accent-fg/30 text-accent-fg hover:bg-accent-fg/10 font-semibold"
               >
                 <Link href="/pricing">{t("viewPlans")}</Link>
               </Button>

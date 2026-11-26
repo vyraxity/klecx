@@ -1,5 +1,6 @@
 "use client";
 
+import { prefersReducedMotion } from "@/lib/a11y/motion";
 import * as React from "react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
@@ -49,9 +50,7 @@ function subscribeReducedMotion(onChange: () => void) {
 }
 
 function getReducedMotion() {
-  return typeof window !== "undefined" && !!window.matchMedia
-    ? window.matchMedia(REDUCED_MOTION_QUERY).matches
-    : false;
+  return prefersReducedMotion();
 }
 
 function subscribeVisibility(onChange: () => void) {

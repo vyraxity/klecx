@@ -3873,7 +3873,13 @@
     "unsupported": "This browser can't read text aloud.",
     "truncated": "This text is long: only the first part is read aloud.",
     "codeOmitted": "Code block omitted",
-    "previewSample": "Hello! This is how I sound when I read your answers and documents aloud."
+    "previewSample": "Hello! This is how I sound when I read your answers and documents aloud.",
+    "partLabel": "Part {index} of {total}",
+    "speedLabel": "Speed: {speed}×",
+    "statusReading": "Reading aloud",
+    "statusResumed": "Reading resumed",
+    "statusPaused": "Reading paused",
+    "statusStopped": "Reading stopped"
   },
   "AccountRestore": {
     "title": "Restore your account",

@@ -349,7 +349,6 @@ export function Sidebar({
             href="/workspaces"
             onClick={onNavigate}
             className="focus-visible:ring-ring flex items-center rounded-md focus-visible:ring-2 focus-visible:outline-none"
-            aria-label="Klecx"
           >
             <Logo size="icon" collapsed={isCollapsedRail} />
             <AppName />

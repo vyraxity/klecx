@@ -1,5 +1,6 @@
 "use client";
 
+import { scrollBehavior } from "@/lib/a11y/motion";
 import * as React from "react";
 import { useTranslations } from "next-intl";
 import { AlertCircle, RefreshCw } from "lucide-react";
@@ -85,7 +86,7 @@ export function WorkspaceHome({
       nonce: Date.now(),
     });
     try {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: scrollBehavior() });
     } catch {
       // jsdom or unsupported environments
     }
@@ -161,7 +162,7 @@ export function WorkspaceHome({
           onboarding={homeData.onboarding}
           onTryTemplate={() => {
             const starter = document.getElementById("starter-library-section");
-            starter?.scrollIntoView({ behavior: "smooth" });
+            starter?.scrollIntoView({ behavior: scrollBehavior() });
           }}
           onRequestNewProject={() => {
             createProjectForm.reset({ name: "" });

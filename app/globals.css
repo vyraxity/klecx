@@ -12,18 +12,19 @@
   /* text */
   --fg: oklch(0.20 0.02 260);
   --fg-muted: oklch(0.45 0.02 260);
-  --fg-subtle: oklch(0.58 0.02 260);
+  /* ≥ 4.5:1 on every surface, surface-3 included (axe, Step 10.5) */
+  --fg-subtle: oklch(0.52 0.02 260);
   /* brand: restrained indigo — one accent, used sparingly */
   --accent: oklch(0.50 0.17 270);
   --accent-hover: oklch(0.45 0.18 270);
   --accent-fg: oklch(0.99 0 0);
   --accent-soft: oklch(0.95 0.03 270);
   --switch-thumb: oklch(1 0 0);
-  /* status */
-  --success: oklch(0.62 0.15 150);
-  --warning: oklch(0.58 0.16 65);
-  --danger: oklch(0.58 0.2 25);
-  --info: oklch(0.62 0.12 235);
+  /* status: as text, ≥ 4.5:1 on the surfaces and on their own 15 % tint (Step 10.5) */
+  --success: oklch(0.48 0.13 150);
+  --warning: oklch(0.52 0.15 65);
+  --danger: oklch(0.52 0.2 25);
+  --info: oklch(0.50 0.12 235);
   /* focus & overlays */
   --ring: oklch(0.58 0.17 270 / 0.55);
   --overlay: oklch(0.2 0.02 260 / 0.45);
@@ -78,13 +79,16 @@
   --border-strong: oklch(0.42 0.02 260);
   --fg: oklch(0.96 0.005 260);
   --fg-muted: oklch(0.76 0.01 260);
-  --fg-subtle: oklch(0.64 0.012 260);
+  --fg-subtle: oklch(0.68 0.012 260);
   --accent: oklch(0.68 0.16 270);
   --accent-hover: oklch(0.73 0.15 270);
   --accent-fg: oklch(0.15 0.02 270);
   --accent-soft: oklch(0.28 0.06 270);
   --switch-thumb: oklch(0.98 0.005 260);
+  --success: oklch(0.72 0.17 150);
   --warning: oklch(0.78 0.15 75);
+  --danger: oklch(0.70 0.18 25);
+  --info: oklch(0.72 0.12 235);
   --mark-comment: oklch(0.80 0.14 82);
   --mark-question: color-mix(in oklch, var(--accent) 12%, transparent);
   --mark-reply: color-mix(in oklch, var(--accent) 12%, transparent);
@@ -217,6 +221,7 @@
   [data-reduce-motion="true"] ::before,
   [data-reduce-motion="true"] ::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
@@ -229,6 +234,7 @@
     ::before,
     ::after {
       animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
