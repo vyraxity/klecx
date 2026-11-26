@@ -3590,7 +3590,8 @@
       "updateFailed": "Couldn't update your profile picture",
       "reverted": "Reverted to your sign-in provider's picture",
       "removeFailed": "Couldn't remove your picture"
-    }
+    },
+    "deletedUser": "Deleted user"
   },
   "PublicShare": {
     "tooManyRequestsTitle": "Too many requests",

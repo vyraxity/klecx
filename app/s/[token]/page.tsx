@@ -17,6 +17,7 @@ import {
 } from "@/server/services/share";
 import { limit, resolveClientIp } from "@/server/http/rate-limit";
 import { env } from "@/server/env";
+import { DELETED_USER_NAME } from "@/lib/users/deleted-user";
 import { ApiError } from "@/server/http/errors";
 import { Markdown } from "@/components/markdown";
 import { getFormatter, getTranslations } from "next-intl/server";
@@ -63,6 +64,7 @@ export default async function PublicSharePage({
   const t = await getTranslations("PublicShare");
   const format = await getFormatter();
   const tDocs = await getTranslations("Documents");
+  const tUser = await getTranslations("User");
 
   // Same validated IP resolution as the API route (only trusts proxy headers when TRUST_PROXY=true)
   const ip = resolveClientIp({ headers: await headers() }, env.TRUST_PROXY);
@@ -132,7 +134,7 @@ export default async function PublicSharePage({
             {payload.authorName && (
               <span className="inline-flex items-center gap-1.5 font-medium text-fg">
                 <UserIcon className="h-3.5 w-3.5 text-accent" />
-                <span>{t("sharedBy", { name: payload.authorName })}</span>
+                <span>{t("sharedBy", { name: payload.authorName === DELETED_USER_NAME ? tUser("deletedUser") : payload.authorName })}</span>
               </span>
             )}
             <span>

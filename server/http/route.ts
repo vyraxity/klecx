@@ -12,6 +12,7 @@ import {
   isAllowedRequestOrigin,
   sanitizeJsonStrings,
 } from "@/lib/security/input";
+import { DELETED_USER_NAME, localizeDeletedUserNames } from "@/lib/users/deleted-user";
 
 export type Ctx<B, Q, P> = {
   req: NextRequest;
@@ -176,7 +177,10 @@ export function route<
       }
 
       return done(
-        NextResponse.json({ data: out }, { headers: { "x-request-id": requestId } })
+        NextResponse.json(
+          { data: await localizeDeletedUsers(out) },
+          { headers: { "x-request-id": requestId } }
+        )
       );
     } catch (e) {
       const err =
@@ -221,4 +225,27 @@ export function route<
       return done(res);
     }
   };
+}
+
+/**
+ * An erased account's stored name is English ("Deleted user"); show it in
+ * the viewer's language. The locale lookup only runs when the answer
+ * contains that name.
+ */
+async function localizeDeletedUsers<T>(out: T): Promise<T> {
+  if (out === null || typeof out !== "object") return out;
+  let text: string | undefined;
+  try {
+    text = JSON.stringify(out);
+  } catch {
+    return out;
+  }
+  if (!text?.includes(`"${DELETED_USER_NAME}"`)) return out;
+  try {
+    const { getTranslations } = await import("next-intl/server");
+    const t = await getTranslations("User");
+    return localizeDeletedUserNames(out, t("deletedUser"));
+  } catch {
+    return out;
+  }
 }

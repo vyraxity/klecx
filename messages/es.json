@@ -3590,7 +3590,8 @@
       "updateFailed": "No se pudo actualizar tu foto de perfil",
       "reverted": "Se restauró la foto de tu proveedor de inicio de sesión",
       "removeFailed": "No se pudo quitar tu foto"
-    }
+    },
+    "deletedUser": "Usuario eliminado"
   },
   "PublicShare": {
     "tooManyRequestsTitle": "Demasiadas solicitudes",

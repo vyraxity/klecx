@@ -3590,7 +3590,8 @@
       "updateFailed": "Impossible de mettre à jour votre photo de profil",
       "reverted": "Photo de votre fournisseur de connexion rétablie",
       "removeFailed": "Impossible de supprimer votre photo"
-    }
+    },
+    "deletedUser": "Utilisateur supprimé"
   },
   "PublicShare": {
     "tooManyRequestsTitle": "Trop de requêtes",
