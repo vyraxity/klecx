@@ -1159,7 +1159,9 @@ export function Composer({
             }}
             accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/markdown,text/csv,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             className="hidden"
-            aria-hidden="true"
+            // Opened by the Attach menu; named for assistive technology, never a Tab stop.
+            tabIndex={-1}
+            aria-label={t("attachFile")}
             data-testid="composer-attach-input"
           />
 
@@ -1176,7 +1178,8 @@ export function Composer({
             }}
             accept={WORKSPACE_DOCUMENT_ACCEPT}
             className="hidden"
-            aria-hidden="true"
+            tabIndex={-1}
+            aria-label={tDocs("addToWorkspace")}
             data-testid="composer-document-input"
           />
 

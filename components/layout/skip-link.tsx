@@ -11,7 +11,9 @@ export function SkipLink() {
   return (
     <a
       href={`#${MAIN_CONTENT_ID}`}
-      className="sr-only focus:not-sr-only focus:fixed focus:start-3 focus:top-3 focus:z-[100] focus:rounded-lg focus:bg-surface focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-fg focus:shadow-lg focus:outline-2 focus:outline-ring"
+      // Full size but moved above the viewport until focused (a 1 px `sr-only`
+      // link counts as a too-small touch target).
+      className="fixed start-3 top-3 z-[100] -translate-y-[200%] rounded-lg bg-surface px-4 py-2 text-sm font-semibold text-fg shadow-lg focus:translate-y-0 focus:outline-2 focus:outline-ring"
     >
       {t("skipToContent")}
     </a>

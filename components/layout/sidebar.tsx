@@ -757,7 +757,8 @@ export function Sidebar({
               <Link
                 href="/settings/usage"
                 onClick={onNavigate}
-                className="text-accent focus-visible:ring-ring shrink-0 rounded-sm font-medium hover:underline focus-visible:ring-2 focus-visible:outline-none"
+                // ≥ 24 px tall (WCAG 2.2 target size).
+                className="text-accent focus-visible:ring-ring inline-flex min-h-6 shrink-0 items-center rounded-sm font-medium hover:underline focus-visible:ring-2 focus-visible:outline-none"
               >
                 {t("usageLink")}
               </Link>

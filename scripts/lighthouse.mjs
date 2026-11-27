@@ -249,7 +249,8 @@ function runGroup(name, paths, assertions, sessionCookie) {
             }
           : {}),
         settings: {
-          chromeFlags: flags.join(" "),
+          // With the login script, Puppeteer starts Chrome (flags in puppeteerLaunchOptions).
+          ...(sessionCookie ? {} : { chromeFlags: flags.join(" ") }),
           // Keep the session cookie between runs (Lighthouse clears the site's storage by default).
           ...(sessionCookie ? { disableStorageReset: true } : {}),
           // Desktop: the app's main audience; the phone layout is covered by the e2e journeys.

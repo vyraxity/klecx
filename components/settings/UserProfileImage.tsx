@@ -276,6 +276,9 @@ export function UserProfileImage({
           type="file"
           accept="image/png,image/jpeg,image/webp"
           className="hidden"
+          // Opened by "Change picture"; named for assistive technology, never a Tab stop.
+          tabIndex={-1}
+          aria-label={t("changePicture")}
           onChange={handleFileChange}
         />
       </div>
