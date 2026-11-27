@@ -22,6 +22,7 @@ import { ApiError } from "@/server/http/errors";
 import { Markdown } from "@/components/markdown";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
+import { noCookieImageProps } from "@/lib/images/no-cookie-image";
 
 export const dynamic = "force-dynamic";
 
@@ -196,6 +197,7 @@ export default async function PublicSharePage({
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
                                 src={att.signedUrl}
+                                {...noCookieImageProps(att.signedUrl)}
                                 alt={att.originalName}
                                 className="max-h-40 w-auto object-cover"
                               />
@@ -235,6 +237,7 @@ export default async function PublicSharePage({
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={res.imageUrl}
+                          {...noCookieImageProps(res.imageUrl)}
                           alt={res.prompt}
                           className="w-full h-auto object-contain"
                         />

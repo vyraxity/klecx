@@ -65,6 +65,13 @@ const nextConfig = {
             key: "X-Frame-Options",
             value: "DENY",
           },
+          // Cuts the link between Klecx's pages and windows of other sites
+          // (window.opener). Safe: sign-in and checkout are redirects, not
+          // popups, and the one window Klecx opens (Help) is same-origin.
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin",
+          },
           // The Content-Security-Policy is set per request in proxy.ts (it
           // carries a nonce): lib/security/csp.ts (Step 10.1).
         ],

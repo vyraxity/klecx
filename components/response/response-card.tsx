@@ -58,6 +58,7 @@ import { DocumentDraftBar } from "./document-draft-bar";
 import { GeneratedDocumentCard } from "@/components/documents/generated-document-card";
 import { useDocumentDraftsStore } from "@/lib/stores/document-drafts";
 import { ShareAndPeopleDialog } from "@/components/workspace/ShareAndPeopleDialog";
+import { noCookieImageProps } from "@/lib/images/no-cookie-image";
 import { useUiStore } from "@/lib/stores/ui";
 import { openAnnotationThread } from "@/lib/stores/thread-stack";
 import {
@@ -830,6 +831,7 @@ export function ResponseCard({
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={resolvedImageUrl}
+                      {...noCookieImageProps(resolvedImageUrl)}
                       alt={response.prompt}
                       onClick={() => setLightboxOpen(true)}
                       className="h-full w-full cursor-pointer object-cover transition-transform duration-300 group-hover/img:scale-[1.02]"
@@ -891,6 +893,7 @@ export function ResponseCard({
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={resolvedImageUrl}
+                        {...noCookieImageProps(resolvedImageUrl)}
                         alt={response.prompt}
                         className="h-auto max-h-[82vh] w-full rounded-lg object-contain"
                       />
