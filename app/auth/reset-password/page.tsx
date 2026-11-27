@@ -16,10 +16,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function ResetPasswordPage() {
+export default async function ResetPasswordPage() {
+  const tCommon = await getTranslations("Common");
   return (
     <AuthWrapper>
-      <React.Suspense fallback={<div className="text-xs text-fg-subtle">Loading...</div>}>
+      <React.Suspense fallback={<div className="text-xs text-fg-subtle">{tCommon("loading")}</div>}>
         <ResetPasswordForm />
       </React.Suspense>
     </AuthWrapper>
