@@ -121,7 +121,8 @@ describe("Step F3.1 UI — DocumentCard & Composer document upload", () => {
       "Uploaded document"
     );
     expect(screen.getByText("Architecture.pdf")).toBeInTheDocument();
-    expect(screen.getByTestId("document-size")).toHaveTextContent("512.0 KB");
+    // Step 10.5: Intl units in the reader's language.
+    expect(screen.getByTestId("document-size")).toHaveTextContent("512 kB");
     expect(screen.getByTestId("document-pages")).toHaveTextContent("4 pages");
     expect(screen.getByTestId("pdf-layout-note")).toHaveTextContent(
       "PDF layout (columns, tables) may not be preserved."

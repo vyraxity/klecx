@@ -130,7 +130,7 @@ export async function LegalDocument({
                 </p>
               ))}
               {section.bullets && (
-                <ul className="list-disc space-y-1.5 pl-5 text-fg-muted">
+                <ul className="list-disc space-y-1.5 ps-5 text-fg-muted">
                   {section.bullets.map((_, j) => (
                     <li key={j}>{text(`${index}.bullets.${j}`)}</li>
                   ))}

@@ -9,6 +9,7 @@ jest.mock("next-intl", () => ({
   // Used by the annotation preview card inside AnswerBody (F2.6).
   useFormatter: () => ({ relativeTime: () => "" }),
   useNow: () => new Date(),
+  useLocale: () => "en",
   useTranslations: () => (key: string, params?: Record<string, any>) => {
     const messages: Record<string, string> = {
       attachFile: "Attach files",
@@ -158,7 +159,8 @@ describe("Step 5.2 — Composer & ResponseCard Attachments UI", () => {
       );
 
       expect(screen.getByText("financials.pdf")).toBeInTheDocument();
-      expect(screen.getByText("(10 KB)")).toBeInTheDocument();
+      // Step 10.5: sizes come from Intl units ("kB" in English).
+      expect(screen.getByText("(10 kB)")).toBeInTheDocument();
     });
   });
 });

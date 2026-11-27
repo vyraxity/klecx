@@ -51,7 +51,7 @@ export function GreetingSection({
         {greeting}
       </h1>
 
-      <div className="w-full text-left">
+      <div className="w-full text-start">
         <Composer
           size="large"
           prefill={prefill}

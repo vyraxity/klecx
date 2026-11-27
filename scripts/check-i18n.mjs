@@ -283,6 +283,79 @@ if (!helpFailed) {
   logSuccess("Help content parity verified: every live locale has each English article, with matching versions.");
 }
 
+// Check 7 (Step 10.5): unused keys. Keys are often built at run time
+// (t(`providers.${p}`)), so this is a heuristic and only warns: a key counts
+// as used when, for some split "<namespace>.<rest>", the namespace appears as a
+// string in the code (useTranslations("Settings.voice")) and the rest — or a
+// parent of it, or the static start of a template literal — appears too.
+// An unused key fails the check; `I18N_UNUSED=warn` only warns, `=list`
+// lists them all. A key reached only through a namespace held in a variable
+// can look unused: name the namespace as a string literal somewhere.
+{
+  const unusedMode = process.env.I18N_UNUSED ?? "error";
+  const literals = new Set();
+  const templatePrefixes = [];
+  const SRC_DIRS = ["app", "components", "lib", "server", "i18n", "hooks", "emails"];
+  const walk = (dir) => {
+    if (!fs.existsSync(dir)) return;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name === "node_modules" || entry.name === "generated") continue;
+        walk(full);
+      } else if (/\.(tsx?|jsx?|mjs)$/.test(entry.name)) {
+        // Comments out first: backticks in them would pair up with real template literals.
+        const src = fs
+          .readFileSync(full, "utf8")
+          .replace(/\/\*[\s\S]*?\*\//g, "")
+          .replace(/(^|[^:"'`\\])\/\/.*$/gm, "$1");
+        for (const m of src.matchAll(/"((?:[^"\\\n]|\\.)*)"|'((?:[^'\\\n]|\\.)*)'/g)) literals.add(m[1] ?? m[2]);
+        // Dynamic keys anywhere, nested template literals included: `kinds.${kind}`.
+        for (const m of src.matchAll(/([A-Za-z_][\w-]*(?:\.[\w-]+)*\.)\$\{/g)) templatePrefixes.push(m[1]);
+        for (const m of src.matchAll(/`([^`]*)`/g)) {
+          const parts = m[1].split(/\$\{[^}]*\}/);
+          literals.add(parts[0]);
+          if (parts.length > 1) templatePrefixes.push(parts[0]);
+          // Static pieces of a template ("Settings.voice" in `Settings.voice.${x}`) can name a namespace too.
+          for (const piece of parts) if (piece) literals.add(piece.replace(/^\.|\.$/g, ""));
+        }
+      }
+    }
+  };
+  for (const d of SRC_DIRS) walk(path.join(rootDir, d));
+
+  const used = (key) => {
+    if (literals.has(key)) return true;
+    const segs = key.split(".");
+    for (let i = 0; i < segs.length; i++) {
+      const ns = segs.slice(0, i).join(".");
+      if (i > 0 && !literals.has(ns)) continue;
+      const rest = segs.slice(i);
+      // The rest itself, or a parent of it read whole (t.raw("sections"), arrays of items).
+      // (Without a namespace, a top-level name alone is just useTranslations("Ns"): not a read.)
+      for (let j = rest.length; j > (i === 0 ? 1 : 0); j--) if (literals.has(rest.slice(0, j).join("."))) return true;
+      const restStr = rest.join(".");
+      if (templatePrefixes.some((p) => p && restStr.startsWith(p))) return true;
+    }
+    return false;
+  };
+
+  const enKeys = Object.keys(flat.en).map((k) => k.replace(/\.\d+(\..*)?$/, "")); // array items: their array
+  // A partial copy of the repository (tests) has no UI code to look in.
+  const hasSource = fs.existsSync(path.join(rootDir, "components"));
+  const unused = hasSource ? [...new Set(enKeys)].filter((k) => !used(k)).sort() : [];
+  if (!hasSource) {
+    logWarning("No source files found: unused-key check skipped.");
+  } else if (unused.length === 0) {
+    logSuccess("No unused message keys found.");
+  } else if (unusedMode === "error") {
+    for (const k of unused) logError(`Unused key in 'en': ${k}`);
+  } else {
+    logWarning(`${unused.length} message keys look unused (heuristic). ${unusedMode === "list" ? "" : "Run with I18N_UNUSED=list to see them all."}`);
+    for (const k of unusedMode === "list" ? unused : unused.slice(0, 15)) console.warn(`   · ${k}`);
+  }
+}
+
 if (hasErrors) {
   console.error("\n❌ [check:i18n] Validation failed with errors above.\n");
   process.exit(1);

@@ -134,7 +134,7 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
   };
 
   return (
-    <div className="my-4 rounded-xl border border-border bg-surface-2 overflow-hidden shadow-2xs group/code text-left">
+    <div className="my-4 rounded-xl border border-border bg-surface-2 overflow-hidden shadow-2xs group/code text-start">
       {/* Code Header Bar */}
       <div data-annot-ignore="true" className="flex items-center justify-between px-3.5 py-1.5 border-b border-border/70 bg-surface text-xs font-mono text-fg-muted select-none">
         <span className="font-semibold text-fg/80 capitalize">{language}</span>
@@ -152,7 +152,7 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
               isWrapped && "text-accent bg-accent-soft"
             )}
           >
-            <WrapText className="h-3 w-3 mr-1" />
+            <WrapText className="h-3 w-3 me-1" />
             <span className="hidden sm:inline">{isWrapped ? t("unwrap") : t("wrap")}</span>
           </Button>
 
@@ -167,12 +167,12 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
           >
             {copied ? (
               <>
-                <Check className="h-3 w-3 mr-1 text-accent" />
+                <Check className="h-3 w-3 me-1 text-accent" />
                 <span className="text-accent font-medium">{t("copied")}</span>
               </>
             ) : (
               <>
-                <Copy className="h-3 w-3 mr-1" />
+                <Copy className="h-3 w-3 me-1" />
                 <span>{t("copy")}</span>
               </>
             )}

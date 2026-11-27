@@ -198,7 +198,7 @@ export function ClaimUsernameDialog({
                     setSubmitError(null);
                   }}
                   placeholder={t("placeholder")}
-                  className="pl-8 pr-10 font-mono text-sm"
+                  className="ps-8 pe-10 font-mono text-sm"
                   maxLength={30}
                   autoFocus
                 />

@@ -1,4 +1,5 @@
 import "server-only";
+import { DELETED_USER_EMAIL_DOMAIN, DELETED_USER_NAME } from "@/lib/users/deleted-user";
 import { log, errInfo } from "@/server/log";
 
 import { createHash, randomBytes } from "node:crypto";
@@ -46,10 +47,10 @@ import { getStorageProvider, type StorageResourceType } from "@/server/storage";
 export const ACCOUNT_DELETION_GRACE_DAYS = 30;
 const DAY_MS = 24 * 60 * 60 * 1000;
 export const DELETED_MEMBERSHIP_REASON = "account_deleted";
-export const DELETED_USER_NAME = "Deleted user";
+export { DELETED_USER_NAME };
 
 export function deletedUserEmail(userId: string): string {
-  return `deleted+${userId}@deleted.invalid`;
+  return `deleted+${userId}${DELETED_USER_EMAIL_DOMAIN}`;
 }
 
 function hashToken(token: string): string {

@@ -94,7 +94,7 @@ export function CitationMarkerPopover({
           <span className="text-fg-muted truncate font-mono text-[11px]">
             {hostname}
           </span>
-          <span className="bg-surface-2 text-fg-muted ml-auto rounded px-1.5 py-0.5 font-mono text-[10px]">
+          <span className="bg-surface-2 text-fg-muted ms-auto rounded px-1.5 py-0.5 font-mono text-[10px]">
             {formatCitationIndex(citation.index)}
           </span>
         </div>
@@ -220,7 +220,7 @@ export function SourcesAccordion({
                       <span className="text-fg-muted shrink-0 font-mono text-[10px]">
                         {formatSourceHost(hostname)}
                       </span>
-                      <ExternalLink className="text-fg-muted group-hover/src:text-accent ml-auto h-3 w-3 shrink-0" />
+                      <ExternalLink className="text-fg-muted group-hover/src:text-accent ms-auto h-3 w-3 shrink-0" />
                     </div>
 
                     {sourceSnippet(cit) && (

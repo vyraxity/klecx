@@ -16,8 +16,11 @@ import {
 import { useReadAloud } from "@/lib/speech/player-store";
 import { getReadAloudOrigin, takeFocusRequest } from "@/lib/speech/player-origin";
 import { cn } from "@/lib/utils";
+import { scrollBehavior } from "@/lib/a11y/motion";
 
 const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2] as const;
+/** 32 px on larger screens, 44 px touch targets on phones. */
+const ICON_BUTTON = "h-8 w-8 min-h-8 rounded-full max-sm:h-11 max-sm:w-11 max-sm:min-h-11";
 
 /**
  * Step 9.4: the floating read-aloud player (owner, 2026-11-23). Mounted once
@@ -29,6 +32,12 @@ const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2] as const;
  * Focus (keyboard users): pressing Read aloud moves focus to Pause; when
  * reading stops or ends while focus is in the player, it goes back to the
  * Read aloud button that started it. Escape in the player stops reading.
+ *
+ * Screen readers (Step 10.5): the player is a labelled group; a polite status
+ * region (kept mounted while idle, so "stopped" is heard) says when reading
+ * starts, pauses, resumes and stops, once per change and never per part, so it
+ * doesn't talk over the reading. The part counter reads "Part 2 of 5". Phones
+ * get 44 px targets.
  */
 export function ReadAloudDock({ className }: { className?: string }) {
   const t = useTranslations("Speech");
@@ -71,16 +80,40 @@ export function ReadAloudDock({ className }: { className?: string }) {
     else if (truncated) toast.info(t("truncated"));
   }, [targetKey, fallback, error, truncated, t]);
 
-  if (!shown) return null;
+  // What the status region says: only on a change of state (set while
+  // rendering, React's pattern for state derived from a change).
+  const [announcement, setAnnouncement] = React.useState("");
+  const [prevStatus, setPrevStatus] = React.useState(status);
+  if (prevStatus !== status) {
+    setPrevStatus(status);
+    // Parts load one after another (loading → playing): only the start,
+    // pause, resume and stop are announced.
+    if (prevStatus === "idle") setAnnouncement(t("statusReading"));
+    else if (status === "idle") setAnnouncement(t("statusStopped"));
+    else if (status === "paused") setAnnouncement(t("statusPaused"));
+    else if (prevStatus === "paused") setAnnouncement(t("statusResumed"));
+  }
+
+  const statusRegion = (
+    <span role="status" aria-live="polite" className="sr-only" data-testid="read-aloud-status">
+      {announcement}
+    </span>
+  );
+
+  if (!shown) return statusRegion;
 
   const playing = status === "playing";
+  const partTotal = Math.max(total, 1);
+  const partNumber = Math.min(index + 1, partTotal);
   const showText = () => {
     const el = getReadAloudOrigin();
     if (!el) return;
-    el.scrollIntoView({ block: "center", behavior: "smooth" });
+    el.scrollIntoView({ block: "center", behavior: scrollBehavior() });
   };
 
   return (
+    <>
+    {statusRegion}
     <div className={cn("pointer-events-none absolute inset-x-0 top-3 z-30 flex justify-center px-4", className)}>
       <div
         ref={groupRef}
@@ -106,10 +139,10 @@ export function ReadAloudDock({ className }: { className?: string }) {
         data-testid="read-aloud-player"
         data-annot-ignore="true"
       >
-        <Button type="button" variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={showText} aria-label={t("showText")} title={t("showText")}>
+        <Button type="button" variant="ghost" size="icon" className={ICON_BUTTON} onClick={showText} aria-label={t("showText")} title={t("showText")}>
           <LocateFixed className="h-3.5 w-3.5" aria-hidden />
         </Button>
-        <Button type="button" variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => skip(-1)} disabled={index === 0} aria-label={t("previous")} title={t("previous")}>
+        <Button type="button" variant="ghost" size="icon" className={ICON_BUTTON} onClick={() => skip(-1)} disabled={index === 0} aria-label={t("previous")} title={t("previous")}>
           <SkipBack className="h-3.5 w-3.5" aria-hidden />
         </Button>
         <Button
@@ -117,7 +150,7 @@ export function ReadAloudDock({ className }: { className?: string }) {
           type="button"
           variant="ghost"
           size="icon"
-          className="h-8 w-8 rounded-full"
+          className={ICON_BUTTON}
           onClick={() => (playing ? pause() : status === "paused" ? resume() : undefined)}
           aria-label={playing ? t("pause") : t("resume")}
           title={playing ? t("pause") : t("resume")}
@@ -130,16 +163,17 @@ export function ReadAloudDock({ className }: { className?: string }) {
             <Play className="h-3.5 w-3.5" aria-hidden />
           )}
         </Button>
-        <Button type="button" variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={() => skip(1)} disabled={index >= total - 1} aria-label={t("next")} title={t("next")}>
+        <Button type="button" variant="ghost" size="icon" className={ICON_BUTTON} onClick={() => skip(1)} disabled={index >= total - 1} aria-label={t("next")} title={t("next")}>
           <SkipForward className="h-3.5 w-3.5" aria-hidden />
         </Button>
-        <span className="px-1 text-[11px] text-muted tabular-nums" aria-live="polite">
-          {t("part", { index: Math.min(index + 1, Math.max(total, 1)), total: Math.max(total, 1) })}
+        <span className="px-1 text-[11px] text-muted tabular-nums">
+          <span aria-hidden>{t("part", { index: partNumber, total: partTotal })}</span>
+          <span className="sr-only">{t("partLabel", { index: partNumber, total: partTotal })}</span>
         </span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button type="button" variant="ghost" size="sm" className="h-8 rounded-full px-1.5 text-[11px]" aria-label={t("speed")} title={t("speed")}>
-              <Gauge className="mr-1 h-3.5 w-3.5" aria-hidden />
+            <Button type="button" variant="ghost" size="sm" className="h-8 min-h-8 rounded-full px-1.5 text-[11px] max-sm:h-11 max-sm:min-h-11" aria-label={t("speedLabel", { speed })} title={t("speed")}>
+              <Gauge className="me-1 h-3.5 w-3.5" aria-hidden />
               {t("speedValue", { speed })}
             </Button>
           </DropdownMenuTrigger>
@@ -153,7 +187,7 @@ export function ReadAloudDock({ className }: { className?: string }) {
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button type="button" variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={stop} aria-label={t("stop")} title={t("stop")}>
+        <Button type="button" variant="ghost" size="icon" className={ICON_BUTTON} onClick={stop} aria-label={t("stop")} title={t("stop")}>
           <Square className="h-3.5 w-3.5" aria-hidden />
         </Button>
         <Link href="/settings/voice" className="sr-only focus:not-sr-only focus:px-1 focus:text-[11px]">
@@ -161,5 +195,6 @@ export function ReadAloudDock({ className }: { className?: string }) {
         </Link>
       </div>
     </div>
+    </>
   );
 }

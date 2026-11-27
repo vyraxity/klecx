@@ -189,9 +189,9 @@ export function AnswerBody({
             className="text-muted hover:text-foreground h-7 px-2 text-xs"
           >
             {copied ? (
-              <Check className="text-accent mr-1 h-3.5 w-3.5" />
+              <Check className="text-accent me-1 h-3.5 w-3.5" />
             ) : (
-              <Copy className="mr-1 h-3.5 w-3.5" />
+              <Copy className="me-1 h-3.5 w-3.5" />
             )}
             <span>{copied ? t("copied") : t("copy")}</span>
           </Button>

@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { formatFileSize } from "@/lib/format/file-size";
 import {
   FileText,
   FileSpreadsheet,
@@ -67,14 +68,6 @@ export interface DocumentCardProps {
 const COLLAPSE_CHAR_THRESHOLD = 1800;
 const COLLAPSE_LINE_THRESHOLD = 30;
 
-function formatFileSize(bytes?: number | null): string {
-  if (!bytes || bytes <= 0) return "";
-  if (bytes < 1024) return `${bytes} B`;
-  const kb = bytes / 1024;
-  if (kb < 1024) return `${kb.toFixed(1)} KB`;
-  const mb = kb / 1024;
-  return `${mb.toFixed(1)} MB`;
-}
 
 /** File-type icon. Declared outside the card so it isn't re-created on each render. */
 function DocumentIcon({
@@ -113,6 +106,7 @@ export function DocumentCard({
   const tReview = useTranslations("Review");
   const tGates = useTranslations("Documents.caps");
   const format = useFormatter();
+  const locale = useLocale();
   // Download formats come from the workspace owner's plan (decided 2026-11-14).
   const { data: workspace } = useWorkspace(userId, workspaceId);
   const [annotations, setAnnotations] = React.useState<AnnotationItem[]>([]);
@@ -231,7 +225,7 @@ export function DocumentCard({
     [activeVersionId, baseRevision, savedContent, updateDraftContent]
   );
 
-  const sizeLabel = formatFileSize(docBytes);
+  const sizeLabel = formatFileSize(docBytes, locale);
   const formattedDate = React.useMemo(() => {
     if (!response.createdAt) return null;
     const d =
@@ -249,7 +243,7 @@ export function DocumentCard({
       data-response-kind="DOCUMENT"
       data-testid={`document-card-${response.id}`}
       className={cn(
-        "group relative rounded-2xl border border-border border-l-4 border-l-info bg-surface p-4 sm:p-6 shadow-2xs transition-colors",
+        "group relative rounded-2xl border border-border border-s-4 border-s-info bg-surface p-4 sm:p-6 shadow-2xs transition-colors",
         className
       )}
     >

@@ -49,6 +49,7 @@ import { ClaimUsernameDialog } from "@/components/user/claim-username-dialog";
 import { ClaimUsernameBanner } from "@/components/user/claim-username-banner";
 import { UpgradeDialogHost } from "@/components/billing/upgrade-dialog";
 import { ReadAloudDock } from "@/components/speech/read-aloud-dock";
+import { MAIN_CONTENT_ID, SkipLink } from "./skip-link";
 import type {
   AppShellUser,
   SidebarProjectItem,
@@ -500,6 +501,7 @@ export function AppShell({
       style={{ "--sidebar-w": sidebarWidthVar } as React.CSSProperties}
       className="bg-bg text-fg grid h-dvh w-full grid-cols-1 overflow-hidden pb-[env(safe-area-inset-bottom)] md:grid-cols-[var(--sidebar-w)_minmax(0,1fr)_auto]"
     >
+      <SkipLink />
       {/* Desktop Sidebar Column */}
       <div
         ref={railRef}
@@ -551,7 +553,7 @@ export function AppShell({
       >
         <SheetContent
           side="left"
-          className="border-border bg-surface w-70 border-r p-0 md:hidden"
+          className="border-border bg-surface w-70 border-e p-0 md:hidden"
         >
           <SheetTitle className="sr-only">{t("openNavigation")}</SheetTitle>
           <SheetDescription className="sr-only">
@@ -607,7 +609,7 @@ export function AppShell({
           onClaimClick={() => setClaimUsernameOpen(true)}
         />
 
-        <main className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+        <main id={MAIN_CONTENT_ID} tabIndex={-1} className="relative flex min-h-0 flex-1 flex-col overflow-hidden focus:outline-none">
           {children}
           {/* Step 9.4: the floating read-aloud player (shown only while reading). */}
           <ReadAloudDock />

@@ -221,7 +221,7 @@ function DeleteSection({ userId }: { userId: string }) {
         <Skeleton className="h-24 w-full rounded-xl" />
       ) : (
         <>
-          <ul className="list-disc space-y-1 pl-5 text-sm text-muted">
+          <ul className="list-disc space-y-1 ps-5 text-sm text-muted">
             <li>{t("whatHappens.signOut")}</li>
             <li>{t("whatHappens.restore", { days: data.graceDays })}</li>
             <li>{t("whatHappens.erase")}</li>

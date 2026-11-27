@@ -1125,7 +1125,7 @@ export function AnnotationLayer({
                     {truncateText(replyPromptText, 140)}
                   </p>
                   {replyAssistantMsg && (
-                    <p className="text-[11px] text-fg-subtle line-clamp-2 italic select-text border-l-2 border-accent/40 pl-2">
+                    <p className="text-[11px] text-fg-subtle line-clamp-2 italic select-text border-s-2 border-accent/40 ps-2">
                       {truncateText(replyAssistantMsg.content, 100)}
                     </p>
                   )}
@@ -1142,7 +1142,7 @@ export function AnnotationLayer({
                           <li key={q.id} className="text-xs truncate">
                             <span>{truncateText(qMsg, 60)}</span>
                             {q.questionState && (
-                              <span className="ml-1 text-[9px] uppercase px-1 py-0.2 bg-surface-2 rounded text-fg-subtle">
+                              <span className="ms-1 text-[9px] uppercase px-1 py-0.2 bg-surface-2 rounded text-fg-subtle">
                                 {stateLabel(q.questionState)}
                               </span>
                             )}

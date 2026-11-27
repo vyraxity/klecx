@@ -6,6 +6,7 @@ import * as SheetPrimitive from "@radix-ui/react-dialog";
 import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { OpenerCapture, useReturnFocus } from "@/lib/a11y/return-focus";
 
 const Sheet = SheetPrimitive.Root;
 const SheetTrigger = SheetPrimitive.Trigger;
@@ -35,8 +36,8 @@ const sheetVariants = cva(
       side: {
         top: "inset-x-0 top-0 border-b border-border",
         bottom: "inset-x-0 bottom-0 border-t border-border",
-        left: "inset-y-0 left-0 h-full w-3/4 border-r border-border sm:max-w-sm",
-        right: "inset-y-0 right-0 h-full w-3/4 border-l border-border sm:max-w-sm",
+        left: "inset-y-0 left-0 h-full w-3/4 border-e border-border sm:max-w-sm",
+        right: "inset-y-0 right-0 h-full w-3/4 border-s border-border sm:max-w-sm",
       },
     },
     defaultVariants: {
@@ -54,7 +55,8 @@ interface SheetContentProps
 const SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
->(({ side = "right", className, children, closeLabel, ...props }, ref) => {
+>(({ side = "right", className, children, closeLabel, onCloseAutoFocus, ...props }, ref) => {
+  const returnFocus = useReturnFocus(onCloseAutoFocus);
   let label = closeLabel;
   try {
     const t = useTranslations("Common");
@@ -71,7 +73,9 @@ const SheetContent = React.forwardRef<
         data-slot="sheet-content"
         className={cn(sheetVariants({ side }), className)}
         {...props}
+        onCloseAutoFocus={returnFocus.onCloseAutoFocus}
       >
+        <OpenerCapture openerRef={returnFocus.openerRef} />
         {children}
         <SheetPrimitive.Close
           aria-label={label}
@@ -91,7 +95,7 @@ const SheetHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     data-slot="sheet-header"
-    className={cn("flex flex-col space-y-2 text-left", className)}
+    className={cn("flex flex-col space-y-2 text-start", className)}
     {...props}
   />
 );

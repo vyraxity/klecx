@@ -4,11 +4,10 @@ import * as React from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
-import type { PluggableList } from "unified";
-import "katex/dist/katex.min.css";
+import type { Pluggable, PluggableList } from "unified";
+import { getKatexPlugin, loadKatex, mayContainMath, subscribeKatex } from "@/lib/markdown/katex-loader";
 import { cn } from "@/lib/utils";
 import { SafeLink } from "./safe-link";
 import { SafeImage } from "./safe-image";
@@ -39,7 +38,6 @@ export interface MarkdownProps {
 
 export type MarkdownVariant = "answer" | "document";
 
-const ANSWER_REHYPE_PLUGINS: PluggableList = [rehypeKatex];
 
 /**
  * Raw HTML is parsed, then cleaned with the GitHub allow-list (no scripts,
@@ -61,11 +59,32 @@ const DOCUMENT_REHYPE_PLUGINS: PluggableList = [
       },
     },
   ],
-  rehypeKatex,
 ];
 
-function rehypePluginsFor(variant: MarkdownVariant): PluggableList {
-  return variant === "document" ? DOCUMENT_REHYPE_PLUGINS : ANSWER_REHYPE_PLUGINS;
+const NO_PLUGINS: PluggableList = [];
+const REMARK_PLUGINS: PluggableList = [remarkGfm, remarkMath];
+const pluginCache = new Map<string, PluggableList>();
+
+/** The variant's plugins, plus KaTeX once it has loaded (stable arrays, so memoized blocks keep their identity). */
+function rehypePluginsFor(variant: MarkdownVariant, katex: Pluggable | null): PluggableList {
+  const key = `${variant}:${katex ? 1 : 0}`;
+  let list = pluginCache.get(key);
+  if (!list) {
+    const base = variant === "document" ? DOCUMENT_REHYPE_PLUGINS : NO_PLUGINS;
+    list = katex ? [...base, katex] : base;
+    pluginCache.set(key, list);
+  }
+  return list;
+}
+
+/** KaTeX's rehype plugin when this text has a formula and it has loaded (loads it on first need). */
+function useKatex(content: string): Pluggable | null {
+  const needed = mayContainMath(content);
+  const plugin = React.useSyncExternalStore(subscribeKatex, getKatexPlugin, () => null);
+  React.useEffect(() => {
+    if (needed && !plugin) void loadKatex();
+  }, [needed, plugin]);
+  return needed ? plugin : null;
 }
 
 function slugify(text: string): string {
@@ -242,7 +261,7 @@ function createMarkdownComponents(
     blockquote: ({ children, className, ...props }: React.BlockquoteHTMLAttributes<HTMLQuoteElement>) => (
       <blockquote
         className={cn(
-          "my-3 pl-4 border-l-3 border-accent/70 italic text-fg-muted bg-surface-2/40 py-1.5 rounded-r-lg",
+          "my-3 ps-4 border-s-3 border-accent/70 italic text-fg-muted bg-surface-2/40 py-1.5 rounded-e-lg",
           className
         )}
         {...props}
@@ -251,12 +270,12 @@ function createMarkdownComponents(
       </blockquote>
     ),
     ul: ({ children, className, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
-      <ul className={cn("my-2.5 pl-6 list-disc space-y-1.5 leading-relaxed text-fg", className)} {...props}>
+      <ul className={cn("my-2.5 ps-6 list-disc space-y-1.5 leading-relaxed text-fg", className)} {...props}>
         {children}
       </ul>
     ),
     ol: ({ children, className, ...props }: React.OlHTMLAttributes<HTMLOListElement>) => (
-      <ol className={cn("my-2.5 pl-6 list-decimal space-y-1.5 leading-relaxed text-fg", className)} {...props}>
+      <ol className={cn("my-2.5 ps-6 list-decimal space-y-1.5 leading-relaxed text-fg", className)} {...props}>
         {children}
       </ol>
     ),
@@ -273,7 +292,7 @@ function createMarkdownComponents(
             checked={checked}
             disabled={true}
             readOnly
-            className="mr-2 h-3.5 w-3.5 rounded border-border text-accent focus:ring-accent align-middle"
+            className="me-2 h-3.5 w-3.5 rounded border-border text-accent focus:ring-accent align-middle"
             {...props}
           />
         );
@@ -305,7 +324,7 @@ function createMarkdownComponents(
 interface MemoizedBlockProps {
   blockText: string;
   components: ReturnType<typeof createMarkdownComponents>;
-  variant: MarkdownVariant;
+  rehypePlugins: PluggableList;
 }
 
 function safeUrlTransform(url: string): string {
@@ -316,11 +335,11 @@ function safeUrlTransform(url: string): string {
 }
 
 const MemoizedMarkdownBlock = React.memo(
-  function MemoizedMarkdownBlock({ blockText, components, variant }: MemoizedBlockProps) {
+  function MemoizedMarkdownBlock({ blockText, components, rehypePlugins }: MemoizedBlockProps) {
     return (
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMath]}
-        rehypePlugins={rehypePluginsFor(variant)}
+        remarkPlugins={REMARK_PLUGINS}
+        rehypePlugins={rehypePlugins}
         urlTransform={safeUrlTransform}
         components={components}
       >
@@ -331,7 +350,7 @@ const MemoizedMarkdownBlock = React.memo(
   (prev, next) =>
     prev.blockText === next.blockText &&
     prev.components === next.components &&
-    prev.variant === next.variant
+    prev.rehypePlugins === next.rehypePlugins
 );
 
 export function Markdown({
@@ -355,14 +374,15 @@ export function Markdown({
     () => createMarkdownComponents(citationsByIndex, variant),
     [citationsByIndex, variant]
   );
+  const rehypePlugins = rehypePluginsFor(variant, useKatex(content));
 
   // If not streaming or short text, render single pass
   if (!isStreaming || content.length < 500) {
     return (
       <div className={cn("text-sm sm:text-base leading-relaxed text-fg space-y-2 select-text", className)}>
         <ReactMarkdown
-          remarkPlugins={[remarkGfm, remarkMath]}
-          rehypePlugins={rehypePluginsFor(variant)}
+          remarkPlugins={REMARK_PLUGINS}
+          rehypePlugins={rehypePlugins}
           urlTransform={safeUrlTransform}
           components={components}
         >
@@ -383,7 +403,7 @@ export function Markdown({
           key={idx}
           blockText={block}
           components={components}
-          variant={variant}
+          rehypePlugins={rehypePlugins}
         />
       ))}
     </div>

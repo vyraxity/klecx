@@ -298,7 +298,7 @@ export function ResponseList({
 
               {/* Streaming Output / Thinking Panel */}
               {(isStreaming || stream.text || stream.thought) && (
-                <div className="animate-fade-in flex gap-3 text-left">
+                <div className="animate-fade-in flex gap-3 text-start">
                   <div className="bg-accent text-accent-fg flex h-8 w-8 shrink-0 items-center justify-center rounded-xl shadow-2xs">
                     <Sparkles className="animate-spin-slow h-4 w-4" />
                   </div>
@@ -333,7 +333,7 @@ export function ResponseList({
                         {isStreaming && (
                           <span
                             aria-hidden="true"
-                            className="bg-accent rounded-2xs ml-0.5 inline-block h-4 w-2 animate-pulse align-middle"
+                            className="bg-accent rounded-2xs ms-0.5 inline-block h-4 w-2 animate-pulse align-middle"
                           />
                         )}
                       </div>
@@ -406,7 +406,7 @@ export function ResponseList({
                         onClick={handleRetry}
                         className="border-danger/40 text-danger hover:bg-danger/10 text-xs"
                       >
-                        <RotateCcw className="mr-1 h-3.5 w-3.5" />
+                        <RotateCcw className="me-1 h-3.5 w-3.5" />
                         <span>{t("tryAgain")}</span>
                       </Button>
                     </div>

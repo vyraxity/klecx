@@ -175,7 +175,7 @@ const LoginForm = (): React.JSX.Element => {
                   <Input
                     type="email"
                     placeholder={t("emailPlaceholder")}
-                    className="pl-9"
+                    className="ps-9"
                     {...field}
                   />
                 </div>
@@ -199,7 +199,7 @@ const LoginForm = (): React.JSX.Element => {
                   <Input
                     type="password"
                     placeholder={t("passwordPlaceholder")}
-                    className="pl-9"
+                    className="ps-9"
                     {...field}
                   />
                 </div>

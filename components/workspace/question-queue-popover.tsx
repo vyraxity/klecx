@@ -283,12 +283,12 @@ function QuestionQueuePopoverInner({
             className
           )}
         >
-          <Layers className="h-3.5 w-3.5 mr-1" strokeWidth={1.5} />
+          <Layers className="h-3.5 w-3.5 me-1" strokeWidth={1.5} />
           <span>{tQueue("buttonLabel")}</span>
           {queuedCount > 0 && (
             <span
               data-testid="composer-queue-badge"
-              className="ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-fg shadow-xs"
+              className="ms-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-fg shadow-xs"
             >
               {queuedCount}
             </span>
@@ -325,7 +325,7 @@ function QuestionQueuePopoverInner({
         <div className="flex-1 overflow-y-auto p-3 space-y-2.5 max-h-[260px]">
           {isLoading ? (
             <div className="py-6 flex items-center justify-center text-xs text-muted">
-              <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
+              <Loader2 className="h-4 w-4 animate-spin me-1.5" />
               <span>{tQueue("loading")}</span>
             </div>
           ) : queuedCount === 0 ? (
@@ -355,7 +355,7 @@ function QuestionQueuePopoverInner({
                   className="rounded-lg border border-border/80 bg-surface-2/40 p-2.5 text-xs space-y-1.5 group cursor-pointer hover:border-accent/50 transition-colors"
                 >
                   {/* Quoted passage snippet */}
-                  <div className="border-l-2 border-accent/60 pl-2 text-[11px] italic text-subtle line-clamp-2">
+                  <div className="border-s-2 border-accent/60 ps-2 text-[11px] italic text-subtle line-clamp-2">
                     {formatQuote(q.anchorExact)}
                   </div>
 
@@ -473,7 +473,7 @@ export function QuestionQueuePopover(props: QuestionQueuePopoverProps) {
           props.className
         )}
       >
-        <Layers className="h-3.5 w-3.5 mr-1" strokeWidth={1.5} />
+        <Layers className="h-3.5 w-3.5 me-1" strokeWidth={1.5} />
         <span>{tQueue("buttonLabel")}</span>
       </button>
     );

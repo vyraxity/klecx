@@ -44,7 +44,7 @@ function docWidthMax(): number {
 const SINGLE_COLUMN_QUERY = "(max-width: 1023px)";
 
 const spineClass =
-  "w-[44px] h-full flex flex-col items-center py-4 bg-surface/80 border-r border-border hover:bg-surface text-muted hover:text-foreground transition-colors shrink-0 group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent";
+  "w-[44px] h-full flex flex-col items-center py-4 bg-surface/80 border-e border-border hover:bg-surface text-muted hover:text-foreground transition-colors shrink-0 group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent";
 
 function formatPlusCount(count?: number) {
   return `+${count ?? 0}`;
@@ -290,7 +290,7 @@ export function ThreadStackLayout({
               workspaceId={workspaceId}
               onBack={back}
               onCloseAll={closeAll}
-              className="!w-full flex-1 border-r-0"
+              className="!w-full flex-1 border-e-0"
             />
           ) : activeEntry.kind === "document" ? (
             <DocumentColumn
@@ -304,7 +304,7 @@ export function ThreadStackLayout({
               canEdit={columnProps.canEditResponse}
               canComment={columnProps.canComment}
               canAsk={columnProps.canAsk}
-              className="!w-full flex-1 border-r-0"
+              className="!w-full flex-1 border-e-0"
             />
           ) : (
             <ThreadColumn
@@ -313,7 +313,7 @@ export function ThreadStackLayout({
               index={stack.length}
               width={containerWidth}
               {...columnProps}
-              className="!w-full flex-1 border-r-0"
+              className="!w-full flex-1 border-e-0"
             />
           ))}
       </div>
@@ -348,7 +348,7 @@ export function ThreadStackLayout({
         className={cn(
           "h-full flex-col overflow-hidden transition-[width] duration-200 ease-out motion-reduce:transition-none",
           mainIsFull ? "flex" : "hidden",
-          hasColumns ? "shrink-0 border-r border-border" : "min-w-0 flex-1"
+          hasColumns ? "shrink-0 border-e border-border" : "min-w-0 flex-1"
         )}
         aria-hidden={mainIsFull ? undefined : true}
       >

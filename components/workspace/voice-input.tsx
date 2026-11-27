@@ -378,7 +378,7 @@ export function VoiceInput({
             onClick={handleDiscard}
             aria-label={t("discard")}
             title={t("discard")}
-            className="ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded text-muted hover:text-fg cursor-pointer"
+            className="ms-0.5 inline-flex h-4 w-4 items-center justify-center rounded text-muted hover:text-fg cursor-pointer"
             data-testid="voice-discard-btn"
           >
             <X className="h-3 w-3" />

@@ -8,6 +8,7 @@ import { applySuggestion, toSuggestionTarget } from "@/lib/documents/apply-sugge
 import { resolveAvatarUrl } from "@/lib/avatar";
 import { toPage } from "@/server/http/pagination";
 import { createAndStreamGeneration } from "./generation";
+import { getEntitlements } from "@/server/billing/entitlements";
 import { MAX_ANNOTATION_DEPTH } from "@/lib/annotations/limits";
 import type {
   RegenerateResponseInput,
@@ -535,6 +536,24 @@ export async function setActiveVersion(
 }
 
 /**
+ * The model a regeneration uses (decided 2026-11-18, built in Step 10.5): the
+ * model of the version being regenerated — the active version, the one on
+ * screen — so regenerating a Standard Reasoning answer gives a Standard
+ * Reasoning answer. If the workspace owner's plan no longer includes that
+ * model (they moved to a lower plan), Fast & Efficient.
+ */
+async function regenerationModel(workspaceId: string, activeVersionId: string | null): Promise<string> {
+  if (!activeVersionId) return "text-economy";
+  const [version, workspace] = await Promise.all([
+    db.responseVersion.findUnique({ where: { id: activeVersionId }, select: { modelKey: true } }),
+    db.workspace.findUnique({ where: { id: workspaceId }, select: { ownerId: true } }),
+  ]);
+  if (!version?.modelKey || !workspace) return "text-economy";
+  const entitlements = await getEntitlements(workspace.ownerId);
+  return (entitlements.models as readonly string[]).includes(version.modelKey) ? version.modelKey : "text-economy";
+}
+
+/**
  * Regenerates a response turn (creates version N+1).
  * Uses context up to that response only.
  * Requires workspace.regenerate permission.
@@ -584,7 +603,9 @@ export async function regenerateResponse(
   }
 
   const isImageTurn = targetResponse.kind === "IMAGE";
-  const defaultModelKey = isImageTurn ? "image-standard" : "text-economy";
+  const defaultModelKey = isImageTurn
+    ? "image-standard"
+    : await regenerationModel(targetResponse.workspaceId, targetResponse.activeVersionId);
 
   // Calls generation service with regenerateResponseId
   return createAndStreamGeneration(

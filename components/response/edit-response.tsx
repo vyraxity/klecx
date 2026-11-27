@@ -127,7 +127,7 @@ export function EditResponse({
           disabled={isSaving}
           className="text-xs"
         >
-          <X className="h-3.5 w-3.5 mr-1" />
+          <X className="h-3.5 w-3.5 me-1" />
           {t("cancel")}
         </Button>
 
@@ -139,9 +139,9 @@ export function EditResponse({
           className="text-xs bg-accent text-accent-fg hover:bg-accent/90"
         >
           {isSaving ? (
-            <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+            <Loader2 className="h-3.5 w-3.5 me-1 animate-spin" />
           ) : (
-            <Check className="h-3.5 w-3.5 mr-1" />
+            <Check className="h-3.5 w-3.5 me-1" />
           )}
           {t("saveEdit")}
         </Button>

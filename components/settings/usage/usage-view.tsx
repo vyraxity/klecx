@@ -137,17 +137,17 @@ export function UsageView({ userId }: { userId: string }) {
               {period === "current" && (
                 <dl className="grid grid-cols-2 gap-x-6 gap-y-1 text-xs">
                   <dt className="text-muted">{t("allowance.remaining")}</dt>
-                  <dd className="text-right font-semibold text-fg tabular-nums">{format.number(s.remaining)}</dd>
+                  <dd className="text-end font-semibold text-fg tabular-nums">{format.number(s.remaining)}</dd>
                   {s.topup > 0 && (
                     <>
                       <dt className="text-muted">{t("allowance.topup")}</dt>
-                      <dd className="text-right font-semibold text-fg tabular-nums">{format.number(s.topup)}</dd>
+                      <dd className="text-end font-semibold text-fg tabular-nums">{format.number(s.topup)}</dd>
                     </>
                   )}
                   {s.resetsAt && (
                     <>
                       <dt className="text-muted">{t("allowance.resets")}</dt>
-                      <dd className="text-right text-fg">{date(s.resetsAt)}</dd>
+                      <dd className="text-end text-fg">{date(s.resetsAt)}</dd>
                     </>
                   )}
                 </dl>
@@ -206,12 +206,12 @@ export function UsageView({ userId }: { userId: string }) {
             <details className="mt-3 text-xs">
               <summary className="cursor-pointer text-muted hover:text-fg">{t("chart.asTable")}</summary>
               <div className="mt-2 max-h-64 overflow-y-auto">
-                <table className="w-full text-left">
+                <table className="w-full text-start">
                   <thead className="text-muted">
                     <tr>
                       <th scope="col" className="py-1 font-medium">{t("history.csv.date")}</th>
-                      <th scope="col" className="py-1 text-right font-medium">{t("history.csv.credits")}</th>
-                      <th scope="col" className="py-1 text-right font-medium">{t("chart.callsHeader")}</th>
+                      <th scope="col" className="py-1 text-end font-medium">{t("history.csv.credits")}</th>
+                      <th scope="col" className="py-1 text-end font-medium">{t("chart.callsHeader")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -220,8 +220,8 @@ export function UsageView({ userId }: { userId: string }) {
                         <td className="py-1 text-muted">
                           {format.dateTime(new Date(`${p.day}T00:00:00Z`), { dateStyle: "medium", timeZone: "UTC" })}
                         </td>
-                        <td className="py-1 text-right tabular-nums">{format.number(p.credits)}</td>
-                        <td className="py-1 text-right tabular-nums">{format.number(p.generations)}</td>
+                        <td className="py-1 text-end tabular-nums">{format.number(p.credits)}</td>
+                        <td className="py-1 text-end tabular-nums">{format.number(p.generations)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -258,27 +258,27 @@ export function UsageView({ userId }: { userId: string }) {
       {showMembers && members.data && (
         <SettingsSection title={t("byMember.title")} description={t("byMember.hint")} data-testid="usage-by-member">
           <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-            <table className="w-full min-w-[420px] text-left text-xs">
+            <table className="w-full min-w-[420px] text-start text-xs">
               <thead className="text-muted">
                 <tr className="border-b border-border">
-                  <th scope="col" className="py-2 pr-3 font-medium">{t("byMember.person")}</th>
-                  <th scope="col" className="py-2 pr-3 text-right font-medium">{t("byMember.prompts")}</th>
-                  <th scope="col" className="py-2 pr-3 text-right font-medium">{t("byMember.asks")}</th>
-                  <th scope="col" className="py-2 pr-3 text-right font-medium">{t("byMember.other")}</th>
-                  <th scope="col" className="py-2 text-right font-medium">{t("byMember.total")}</th>
+                  <th scope="col" className="py-2 pe-3 font-medium">{t("byMember.person")}</th>
+                  <th scope="col" className="py-2 pe-3 text-end font-medium">{t("byMember.prompts")}</th>
+                  <th scope="col" className="py-2 pe-3 text-end font-medium">{t("byMember.asks")}</th>
+                  <th scope="col" className="py-2 pe-3 text-end font-medium">{t("byMember.other")}</th>
+                  <th scope="col" className="py-2 text-end font-medium">{t("byMember.total")}</th>
                 </tr>
               </thead>
               <tbody>
                 {members.data.map((m) => (
                   <tr key={m.userId} className="border-b border-border/60 last:border-0">
-                    <td className="py-2 pr-3 text-fg">
+                    <td className="py-2 pe-3 text-fg">
                       {m.isYou ? t("byMember.you") : (m.name ?? t("byMember.deleted"))}
-                      {m.username && !m.isYou && <span className="ml-1 text-muted">@{m.username}</span>}
+                      {m.username && !m.isYou && <span className="ms-1 text-muted">@{m.username}</span>}
                     </td>
-                    <td className="py-2 pr-3 text-right tabular-nums">{format.number(m.prompts)}</td>
-                    <td className="py-2 pr-3 text-right tabular-nums">{format.number(m.asks)}</td>
-                    <td className="py-2 pr-3 text-right tabular-nums">{format.number(m.other)}</td>
-                    <td className="py-2 text-right font-semibold tabular-nums">{format.number(m.total)}</td>
+                    <td className="py-2 pe-3 text-end tabular-nums">{format.number(m.prompts)}</td>
+                    <td className="py-2 pe-3 text-end tabular-nums">{format.number(m.asks)}</td>
+                    <td className="py-2 pe-3 text-end tabular-nums">{format.number(m.other)}</td>
+                    <td className="py-2 text-end font-semibold tabular-nums">{format.number(m.total)}</td>
                   </tr>
                 ))}
               </tbody>

@@ -232,7 +232,7 @@ export function CommandPalette({
                   <MessageSquare className="h-4 w-4 text-muted" />
                   <span className="truncate">{ws.title}</span>
                   {ws.projectName && (
-                    <span className="ml-auto text-xs text-subtle truncate max-w-32">
+                    <span className="ms-auto text-xs text-subtle truncate max-w-32">
                       {ws.projectName}
                     </span>
                   )}

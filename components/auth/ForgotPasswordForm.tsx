@@ -108,7 +108,7 @@ export function ForgotPasswordForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t("emailPlaceholder")}
-              className="h-11 pl-10 bg-surface-2/40 border-border text-xs"
+              className="h-11 ps-10 bg-surface-2/40 border-border text-xs"
             />
           </div>
         </div>

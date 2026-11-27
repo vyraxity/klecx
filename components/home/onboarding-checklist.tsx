@@ -105,9 +105,9 @@ export function OnboardingChecklist({
             <Sparkles className="h-4 w-4" strokeWidth={1.5} />
           </div>
           <div>
-            <h3 className="text-sm sm:text-base font-bold text-fg">
+            <h2 className="text-sm sm:text-base font-bold text-fg">
               {tHome("onboardingTitle")}
-            </h3>
+            </h2>
             <p className="text-xs text-muted">
               {tHome("onboardingSubtitle")}
             </p>
@@ -128,7 +128,7 @@ export function OnboardingChecklist({
               body: JSON.stringify({ onboardingDismissed: true }),
             }).catch(() => undefined);
           }}
-          className="h-7 w-7 text-subtle hover:text-fg -mt-1 -mr-1"
+          className="h-7 w-7 text-subtle hover:text-fg -mt-1 -me-1"
         >
           <X className="h-4 w-4" strokeWidth={1.5} />
         </Button>
@@ -178,7 +178,7 @@ export function OnboardingChecklist({
               </span>
             </div>
 
-            {step.action && <div className="shrink-0 ml-2">{step.action}</div>}
+            {step.action && <div className="shrink-0 ms-2">{step.action}</div>}
           </div>
         ))}
       </div>

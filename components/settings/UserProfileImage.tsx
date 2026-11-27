@@ -3,7 +3,13 @@
 import * as React from "react";
 import { SessionProps } from "@/types/user";
 import { UserAvatar } from "@/components/user/user-avatar";
-import { AvatarCropDialog } from "@/components/user/avatar-crop-dialog";
+import dynamic from "next/dynamic";
+
+// Step 10.5: the cropper (react-easy-crop) loads only when a picture is chosen.
+const AvatarCropDialog = dynamic(
+  () => import("@/components/user/avatar-crop-dialog").then((m) => m.AvatarCropDialog),
+  { ssr: false }
+);
 import { Button } from "@/components/ui/button";
 import { Camera, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -32,6 +38,9 @@ export function UserProfileImage({
   );
   const [isCustom, setIsCustom] = React.useState(initialIsCustom);
   const [cropDialogOpen, setCropDialogOpen] = React.useState(false);
+  // Mounted from the first open on (the chunk loads then), so it can animate closed and give focus back.
+  const [cropperUsed, setCropperUsed] = React.useState(false);
+  if (cropDialogOpen && !cropperUsed) setCropperUsed(true);
   const [selectedImageSrc, setSelectedImageSrc] = React.useState<string | null>(null);
   const [isUploading, setIsUploading] = React.useState(false);
 
@@ -225,7 +234,7 @@ export function UserProfileImage({
         </button>
       </div>
 
-      <div className="flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
+      <div className="flex flex-col gap-2 items-center sm:items-start text-center sm:text-start">
         <div className="flex flex-wrap gap-2">
           <Button
             type="button"
@@ -267,16 +276,21 @@ export function UserProfileImage({
           type="file"
           accept="image/png,image/jpeg,image/webp"
           className="hidden"
+          // Opened by "Change picture"; named for assistive technology, never a Tab stop.
+          tabIndex={-1}
+          aria-label={t("changePicture")}
           onChange={handleFileChange}
         />
       </div>
 
+      {cropperUsed && (
       <AvatarCropDialog
         open={cropDialogOpen}
         onOpenChange={setCropDialogOpen}
         imageSrc={selectedImageSrc}
         onCropComplete={handleCropComplete}
       />
+      )}
     </div>
   );
 }

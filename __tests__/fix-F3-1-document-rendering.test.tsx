@@ -1,5 +1,5 @@
 import * as React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { Markdown } from "@/components/markdown";
 import en from "@/messages/en.json";
@@ -79,13 +79,14 @@ describe("Step F3.1 — rendering an uploaded document", () => {
     expect(container.querySelector("img")).toBeNull();
   });
 
-  it("still renders formulas and tables in a document", () => {
+  it("still renders formulas and tables in a document", async () => {
     const { container } = renderMarkdown(
       "Energy: $E = mc^2$\n\n$$\n\\frac{a}{b}\n$$\n\n| A | B |\n| --- | --- |\n| 1<br>2 | 3 |",
       "document"
     );
 
-    expect(container.querySelectorAll(".katex").length).toBe(2);
+    // KaTeX loads on the first formula (Step 10.5).
+    await waitFor(() => expect(container.querySelectorAll(".katex").length).toBe(2));
     expect(container.querySelector(".katex-display")).not.toBeNull();
     expect(container.querySelector("td br")).not.toBeNull();
   });

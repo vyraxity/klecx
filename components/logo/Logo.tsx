@@ -37,8 +37,8 @@ const Logo = ({
         className={clsx(
           "inline-block overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out select-none",
           collapsed
-            ? "pointer-events-none mr-0 max-w-0 -translate-x-2 opacity-0"
-            : clsx(maxTextWidthClass(size), "mr-1 translate-x-0 opacity-100")
+            ? "pointer-events-none me-0 max-w-0 -translate-x-2 opacity-0"
+            : clsx(maxTextWidthClass(size), "me-1 translate-x-0 opacity-100")
         )}
       >
         Kl
@@ -74,8 +74,8 @@ const Logo = ({
         className={clsx(
           "inline-block overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out select-none",
           collapsed
-            ? "pointer-events-none ml-0 max-w-0 translate-x-2 opacity-0"
-            : clsx(maxTextWidthClass(size), "ml-1 translate-x-0 opacity-100")
+            ? "pointer-events-none ms-0 max-w-0 translate-x-2 opacity-0"
+            : clsx(maxTextWidthClass(size), "ms-1 translate-x-0 opacity-100")
         )}
       >
         cx

@@ -79,7 +79,7 @@ export default async function NotFoundPage() {
                     type="search"
                     name="q"
                     placeholder={t("notFound.searchPlaceholder")}
-                    className="w-full rounded-xl border border-border bg-surface-2/60 pl-9 pr-4 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-hidden focus:ring-2 focus:ring-accent transition-all"
+                    className="w-full rounded-xl border border-border bg-surface-2/60 ps-9 pe-4 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-hidden focus:ring-2 focus:ring-accent transition-all"
                   />
                 </div>
                 <Button type="submit" size="sm" className="rounded-xl">

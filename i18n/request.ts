@@ -6,6 +6,9 @@ import { db } from "@/server/db/client";
 import { IntlErrorCode, type IntlError } from "next-intl";
 // English fills any key a (beta) locale lacks.
 import { messagesFor } from "./messages";
+import { PSEUDO_LOCALE, isPseudoLocaleAllowed, pseudoLocalizeMessages } from "@/lib/i18n/pseudo-locale";
+
+let pseudoMessages: ReturnType<typeof messagesFor> | null = null;
 
 function isValidLocale(val: string | undefined): val is Locale {
   return Boolean(val && locales.includes(val as Locale));
@@ -28,6 +31,12 @@ export default getRequestConfig(async () => {
   let locale: Locale = defaultLocale;
 
   try {
+    // 0) Step 10.5: the pseudo-locale, outside production only (never offered).
+    if (isPseudoLocaleAllowed() && (await cookies()).get(LOCALE_COOKIE)?.value === PSEUDO_LOCALE) {
+      pseudoMessages ??= pseudoLocalizeMessages(messagesFor("en"));
+      return { locale: "en", messages: pseudoMessages, ...fallbackOptions };
+    }
+
     // 1) Saved preference (if signed in)
     const actor = await getActor().catch(() => null);
     if (actor?.userId) {

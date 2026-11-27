@@ -16,10 +16,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function VerifyEmailPage() {
+export default async function VerifyEmailPage() {
+  const tAuth = await getTranslations("Auth");
   return (
     <AuthWrapper>
-      <React.Suspense fallback={<div className="text-xs text-fg-subtle">Verifying email...</div>}>
+      <React.Suspense fallback={<div className="text-xs text-fg-subtle">{tAuth("verifyingTitle")}</div>}>
         <VerificationForm />
       </React.Suspense>
     </AuthWrapper>

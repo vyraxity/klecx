@@ -176,7 +176,7 @@ export function AllAnnotationsDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-md p-0 flex flex-col bg-background border-l border-border h-full shadow-2xl"
+        className="w-full sm:max-w-md p-0 flex flex-col bg-background border-s border-border h-full shadow-2xl"
       >
         <SheetHeader className="p-4 border-b border-border space-y-0 shrink-0">
           <SheetTitle className="text-sm font-semibold flex items-center gap-2">
@@ -209,7 +209,7 @@ export function AllAnnotationsDrawer({
           <div className="flex-1 overflow-y-auto p-4">
             {isLoading && annotations.length === 0 ? (
               <div className="flex items-center justify-center py-16 text-muted text-xs">
-                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                <Loader2 className="w-4 h-4 animate-spin me-2" />
                 <span>{t("loading")}</span>
               </div>
             ) : loadFailed ? (
@@ -226,7 +226,7 @@ export function AllAnnotationsDrawer({
                         type="button"
                         onClick={() => handleOpenItem(item)}
                         data-testid={`drawer-item-${item.id}`}
-                        className="group block w-full text-left p-3 rounded-lg border border-border bg-surface/40 hover:bg-surface/80 hover:border-accent/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent cursor-pointer transition-all space-y-2 text-xs"
+                        className="group block w-full text-start p-3 rounded-lg border border-border bg-surface/40 hover:bg-surface/80 hover:border-accent/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent cursor-pointer transition-all space-y-2 text-xs"
                       >
                         <span className="flex items-center justify-between text-[11px] text-muted">
                           <span className="flex items-center gap-1.5 font-medium text-foreground">
@@ -249,7 +249,7 @@ export function AllAnnotationsDrawer({
                             <ChevronRight className="w-3 h-3" />
                           </span>
                         </span>
-                        <span className="block italic line-clamp-2 text-muted/90 border-l-2 border-accent/40 pl-2">
+                        <span className="block italic line-clamp-2 text-muted/90 border-s-2 border-accent/40 ps-2">
                           «{item.anchorExact}»
                         </span>
                         <span className="block text-foreground/90 line-clamp-2">

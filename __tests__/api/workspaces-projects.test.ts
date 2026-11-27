@@ -48,6 +48,12 @@ jest.mock("../../server/db/client", () => ({
     },
     projectMember: {
       findUnique: (...args: unknown[]) => mockProjectMemberFindUnique(...args),
+      // Step 10.5: the workspace list looks up memberships first.
+      findMany: () => Promise.resolve([]),
+    },
+    workspaceMember: {
+      findMany: () => Promise.resolve([]),
+      groupBy: () => Promise.resolve([]),
     },
     response: {
       findMany: (...args: unknown[]) => mockResponseFindMany(...args),
@@ -222,6 +228,7 @@ describe("Workspaces and Projects API & Service Tests (Step 1.6)", () => {
         },
       ];
       mockWorkspaceFindMany.mockResolvedValue(mockRows);
+      mockProjectFindMany.mockResolvedValue([]);
 
       const page = await listWorkspaces(alice, { limit: 20 });
       expect(page.items).toHaveLength(2);
@@ -587,6 +594,7 @@ describe("Workspaces and Projects API & Service Tests (Step 1.6)", () => {
   describe("API Route Handlers", () => {
     it("GET /api/v1/workspaces returns 200 with list data envelope", async () => {
       mockWorkspaceFindMany.mockResolvedValue([]);
+      mockProjectFindMany.mockResolvedValue([]);
 
       const req = new NextRequest("http://localhost:3000/api/v1/workspaces?limit=10");
       const res = await getWorkspacesRoute(req);

@@ -140,7 +140,14 @@ export function VoiceSettings({ userId }: { userId: string }) {
                   data.provider === p ? "border-accent bg-accent/5" : "border-border hover:bg-surface-2"
                 )}
               >
-                <RadioGroupItem id={`voice-provider-${p}`} value={p} disabled={disabled} className="mt-0.5" />
+                <RadioGroupItem
+                  id={`voice-provider-${p}`}
+                  value={p}
+                  disabled={disabled}
+                  // Screen readers say why the natural voices can't be chosen.
+                  aria-describedby={disabled ? "voice-natural-plan" : undefined}
+                  className="mt-0.5"
+                />
                 <span className="min-w-0">
                   <span className="block font-medium text-fg">{t(`providers.${p}`)}</span>
                   <span className="block text-xs text-muted">{t(`providers.${p}Hint`)}</span>
@@ -150,7 +157,7 @@ export function VoiceSettings({ userId }: { userId: string }) {
           })}
         </RadioGroup>
         {!data.naturalAllowed && (
-          <p className="text-xs text-muted">
+          <p id="voice-natural-plan" className="text-xs text-muted">
             {t("naturalPlan")}{" "}
             {billingEnabled && (
               <Link href={PLAN_MANAGE_HREF} className="font-medium text-accent underline-offset-2 hover:underline">
@@ -191,7 +198,7 @@ export function VoiceSettings({ userId }: { userId: string }) {
                   type="button"
                   size="icon"
                   variant="ghost"
-                  className="h-8 w-8"
+                  className="h-8 w-8 min-h-8 max-sm:h-11 max-sm:w-11 max-sm:min-h-11"
                   onClick={() => void previewNatural(v.id)}
                   disabled={previewing !== null}
                   aria-label={t("preview", { name: t("voiceName", { number: v.number }) })}
@@ -239,12 +246,13 @@ export function VoiceSettings({ userId }: { userId: string }) {
             step={0.25}
             value={shownSpeed}
             aria-label={t("speedTitle")}
+            aria-valuetext={tSpeech("speedValue", { speed: shownSpeed })}
             onChange={(e) => setSpeedState(Number(e.target.value))}
             onPointerUp={() => speed !== null && save({ voiceSpeed: speed })}
             onKeyUp={() => speed !== null && save({ voiceSpeed: speed })}
             className="w-full max-w-xs accent-accent"
           />
-          <span className="w-12 text-sm font-semibold text-fg tabular-nums">{tSpeech("speedValue", { speed: shownSpeed })}</span>
+          <span className="w-12 text-sm font-semibold text-fg tabular-nums" aria-hidden>{tSpeech("speedValue", { speed: shownSpeed })}</span>
         </div>
       </SettingsSection>
     </>

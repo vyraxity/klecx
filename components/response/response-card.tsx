@@ -506,7 +506,7 @@ export function ResponseCard({
         >
           {response.quote && (
             <div
-              className="mb-2.5 rounded-lg border-l-2 border-accent bg-surface-3/80 p-2.5 text-xs text-fg-muted"
+              className="mb-2.5 rounded-lg border-s-2 border-accent bg-surface-3/80 p-2.5 text-xs text-fg-muted"
               data-testid="promoted-quote"
             >
               <p className="line-clamp-3 italic">“{response.quote}”</p>
@@ -656,7 +656,7 @@ export function ResponseCard({
       </div>
 
       {/* 2. Assistant Answer Card */}
-      <div className="flex gap-3 text-left">
+      <div className="flex gap-3 text-start">
         {/* Left Author / Brand Avatar */}
         <div className="shrink-0 pt-0.5">
           {memberCount > 1 && response.author ? (
@@ -777,7 +777,7 @@ export function ResponseCard({
                     onClick={() =>
                       setViewMode(viewMode === "edited" ? "original" : "edited")
                     }
-                    className="text-fg-muted hover:text-fg ml-1 flex cursor-pointer items-center gap-1 text-[11px] font-medium hover:underline"
+                    className="text-fg-muted hover:text-fg ms-1 flex cursor-pointer items-center gap-1 text-[11px] font-medium hover:underline"
                   >
                     {viewMode === "edited" ? (
                       <>
@@ -842,7 +842,7 @@ export function ResponseCard({
                         onClick={() => setLightboxOpen(true)}
                         className="h-8 text-xs"
                       >
-                        <Maximize2 className="mr-1 h-3.5 w-3.5" />
+                        <Maximize2 className="me-1 h-3.5 w-3.5" />
                         {t("preview")}
                       </Button>
                       <Button
@@ -857,7 +857,7 @@ export function ResponseCard({
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <Download className="mr-1 h-3.5 w-3.5" />
+                          <Download className="me-1 h-3.5 w-3.5" />
                           {t("downloadImage")}
                         </a>
                       </Button>
@@ -867,7 +867,7 @@ export function ResponseCard({
                   {/* Lightbox Dialog */}
                   <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
                     <DialogContent className="bg-bg/95 max-w-4xl p-3 backdrop-blur-md">
-                      <DialogHeader className="flex flex-row items-center justify-between pr-6">
+                      <DialogHeader className="flex flex-row items-center justify-between pe-6">
                         <DialogTitle className="text-fg truncate text-sm font-medium">
                           {response.prompt}
                         </DialogTitle>
@@ -883,7 +883,7 @@ export function ResponseCard({
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <Download className="mr-1 h-3.5 w-3.5" />
+                            <Download className="me-1 h-3.5 w-3.5" />
                             {t("downloadImage")}
                           </a>
                         </Button>
@@ -932,7 +932,7 @@ export function ResponseCard({
                       >
                         <RotateCcw
                           className={cn(
-                            "mr-1.5 h-3.5 w-3.5",
+                            "me-1.5 h-3.5 w-3.5",
                             isRegenerating && "animate-spin"
                           )}
                         />
@@ -976,7 +976,7 @@ export function ResponseCard({
                         <span className="max-w-[220px] truncate">
                           {doc.originalName}
                         </span>
-                        <span className="text-accent ml-1 underline">
+                        <span className="text-accent ms-1 underline">
                           {tCommon("download")}
                         </span>
                       </a>
@@ -1027,9 +1027,9 @@ export function ResponseCard({
                     className="text-fg-muted hover:text-fg h-8 px-2.5 text-xs"
                   >
                     {copied ? (
-                      <Check className="text-accent mr-1 h-3.5 w-3.5" />
+                      <Check className="text-accent me-1 h-3.5 w-3.5" />
                     ) : (
-                      <Copy className="mr-1 h-3.5 w-3.5" />
+                      <Copy className="me-1 h-3.5 w-3.5" />
                     )}
                     <span>{copied ? t("copied") : t("copy")}</span>
                   </Button>
@@ -1051,7 +1051,7 @@ export function ResponseCard({
                       >
                         <RotateCcw
                           className={cn(
-                            "mr-1 h-3.5 w-3.5",
+                            "me-1 h-3.5 w-3.5",
                             isRegenerating && "animate-spin"
                           )}
                         />
@@ -1069,7 +1069,7 @@ export function ResponseCard({
                       onClick={() => setIsEditing(true)}
                       className="text-fg-muted hover:text-fg h-8 px-2.5 text-xs"
                     >
-                      <Edit2 className="mr-1 h-3.5 w-3.5" />
+                      <Edit2 className="me-1 h-3.5 w-3.5" />
                       <span>{t("edit")}</span>
                     </Button>
                   )}
@@ -1088,7 +1088,7 @@ export function ResponseCard({
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <Download className="mr-1 h-3.5 w-3.5" />
+                        <Download className="me-1 h-3.5 w-3.5" />
                         <span>{t("downloadImage")}</span>
                       </a>
                     </Button>
@@ -1108,7 +1108,7 @@ export function ResponseCard({
                       onClick={() => setShareDialogOpen(true)}
                       className="text-fg-muted hover:text-fg hidden h-8 px-2.5 text-xs md:inline-flex"
                     >
-                      <Share2 className="mr-1 h-3.5 w-3.5" />
+                      <Share2 className="me-1 h-3.5 w-3.5" />
                       <span>{t("share")}</span>
                     </Button>
                   ) : (
@@ -1123,7 +1123,7 @@ export function ResponseCard({
                             disabled
                             className="text-fg-muted/50 h-8 cursor-not-allowed px-2 text-xs"
                           >
-                            <Share2 className="mr-1 h-3.5 w-3.5" />
+                            <Share2 className="me-1 h-3.5 w-3.5" />
                             <span>{t("share")}</span>
                           </Button>
                         </span>
@@ -1144,7 +1144,7 @@ export function ResponseCard({
                           size="sm"
                           className="text-fg-muted hover:text-fg h-8 px-2.5 text-xs"
                         >
-                          <FileDown className="mr-1 h-3.5 w-3.5" />
+                          <FileDown className="me-1 h-3.5 w-3.5" />
                           <span>{t("export")}</span>
                         </Button>
                       </DropdownMenuTrigger>
@@ -1187,7 +1187,7 @@ export function ResponseCard({
                         disabled
                         className="text-fg-muted/50 hidden h-8 cursor-not-allowed px-2 text-xs md:inline-flex"
                       >
-                        <FileDown className="mr-1 h-3.5 w-3.5" />
+                        <FileDown className="me-1 h-3.5 w-3.5" />
                         <span>{t("export")}</span>
                       </Button>
                     </TooltipTrigger>
@@ -1222,7 +1222,7 @@ export function ResponseCard({
                         onClick={handleCopyLink}
                         className="cursor-pointer"
                       >
-                        <LinkIcon className="mr-2 h-4 w-4" />
+                        <LinkIcon className="me-2 h-4 w-4" />
                         <span>{t("copyLink")}</span>
                       </DropdownMenuItem>
 
@@ -1232,7 +1232,7 @@ export function ResponseCard({
                           className="cursor-pointer"
                           data-testid="menu-ask-klecx-review"
                         >
-                          <Sparkles className="mr-2 h-4 w-4 text-accent" />
+                          <Sparkles className="me-2 h-4 w-4 text-accent" />
                           <span>{tReview("askKlecxReview")}</span>
                         </DropdownMenuItem>
                       )}
@@ -1244,7 +1244,7 @@ export function ResponseCard({
                             onClick={() => onDelete(response.id)}
                             className="text-danger focus:text-danger focus:bg-danger/10 cursor-pointer"
                           >
-                            <Trash2 className="mr-2 h-4 w-4" />
+                            <Trash2 className="me-2 h-4 w-4" />
                             <span>{t("delete")}</span>
                           </DropdownMenuItem>
                         </>

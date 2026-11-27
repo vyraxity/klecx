@@ -225,10 +225,11 @@ export function SupportForm({ initialTopic, initialMessage, app = UNKNOWN_APP }:
 
         {/* Topic */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-fg">
+          <label htmlFor="support-topic" className="text-xs font-semibold text-fg">
             {t("topicLabel")} <span className="text-danger">*</span>
           </label>
           <select
+            id="support-topic"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             className="flex h-11 w-full rounded-md border border-border bg-surface-2/40 px-3 py-2 text-xs text-fg focus-visible:outline-2 focus-visible:outline-ring"
@@ -281,7 +282,7 @@ export function SupportForm({ initialTopic, initialMessage, app = UNKNOWN_APP }:
               {t("diagnosticsCheckbox")}
             </label>
           </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-fg-subtle pl-6">
+          <div className="flex items-center gap-1.5 text-[11px] text-fg-subtle ps-6">
             <Info className="h-3 w-3 shrink-0 text-accent" />
             <span>{t("diagnosticsPrivacy")}</span>
           </div>

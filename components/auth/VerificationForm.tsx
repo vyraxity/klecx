@@ -150,7 +150,7 @@ const VerificationForm = (): React.JSX.Element => {
               name="email"
               value={userEmail}
               onChange={(e) => setUserEmail(e.target.value)}
-              className="pl-9"
+              className="ps-9"
             />
           </div>
 

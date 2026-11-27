@@ -931,7 +931,7 @@ export function ShareAndPeopleDialog({
             id="inviteInput"
             type="text"
             placeholder={tShare("invite.placeholder")}
-            className="pl-9 h-9 bg-surface text-sm"
+            className="ps-9 h-9 bg-surface text-sm"
             value={emailOrUsername}
             onChange={(e) => setEmailOrUsername(e.target.value)}
             required
@@ -980,7 +980,7 @@ export function ShareAndPeopleDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden bg-surface border-border">
           <DialogHeader className="p-6 pb-4 border-b border-border">
-            <div className="flex items-center justify-between gap-3 pr-6">
+            <div className="flex items-center justify-between gap-3 pe-6">
               <div className="min-w-0">
                 <DialogTitle className="text-xl font-bold flex items-center gap-2 text-fg">
                   <Users className="h-5 w-5 text-accent shrink-0" />
@@ -1032,7 +1032,7 @@ export function ShareAndPeopleDialog({
                     {pendingInvites.length > 0 && (
                       <Badge
                         variant="secondary"
-                        className="ml-1 text-[10px] px-1.5 py-0"
+                        className="ms-1 text-[10px] px-1.5 py-0"
                       >
                         {pendingInvites.length}
                       </Badge>
@@ -1049,7 +1049,7 @@ export function ShareAndPeopleDialog({
                     {activeShareCount > 0 && (
                       <Badge
                         variant="secondary"
-                        className="ml-1 text-[10px] px-1.5 py-0"
+                        className="ms-1 text-[10px] px-1.5 py-0"
                       >
                         {activeShareCount}
                       </Badge>
@@ -1551,7 +1551,7 @@ export function ShareAndPeopleDialog({
                                     <Tooltip>
                                       <TooltipTrigger asChild>
                                         <span
-                                          className="inline-flex items-center justify-center p-0.5 -mr-0.5 rounded text-muted hover:text-fg cursor-help"
+                                          className="inline-flex items-center justify-center p-0.5 -me-0.5 rounded text-muted hover:text-fg cursor-help"
                                           aria-label={tMembers("capabilities.askHint")}
                                         >
                                           <HelpCircle className="h-3.5 w-3.5" />

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { OpenerCapture, useReturnFocus } from "@/lib/a11y/return-focus";
 
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
@@ -30,7 +31,8 @@ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { closeLabel?: string }
->(({ className, children, closeLabel, ...props }, ref) => {
+>(({ className, children, closeLabel, onCloseAutoFocus, ...props }, ref) => {
+  const returnFocus = useReturnFocus(onCloseAutoFocus);
   let label = closeLabel;
   try {
     const t = useTranslations("Common");
@@ -50,7 +52,9 @@ const DialogContent = React.forwardRef<
           className
         )}
         {...props}
+        onCloseAutoFocus={returnFocus.onCloseAutoFocus}
       >
+        <OpenerCapture openerRef={returnFocus.openerRef} />
         {children}
         <DialogPrimitive.Close
           aria-label={label}
@@ -70,7 +74,7 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     data-slot="dialog-header"
-    className={cn("flex flex-col space-y-1.5 text-left", className)}
+    className={cn("flex flex-col space-y-1.5 text-start", className)}
     {...props}
   />
 );
