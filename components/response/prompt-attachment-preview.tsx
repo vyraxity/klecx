@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { formatFileSize } from "@/lib/format/file-size";
+import { noCookieImageProps } from "@/lib/images/no-cookie-image";
 import {
   FileText,
   Sparkles,
@@ -101,6 +102,7 @@ export function PromptAttachmentPreview({
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={url}
+                {...noCookieImageProps(url)}
                 alt={attachment.originalName}
                 className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
                 loading="lazy"
@@ -156,6 +158,7 @@ export function PromptAttachmentPreview({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={url}
+                  {...noCookieImageProps(url)}
                   alt={attachment.originalName}
                   className="max-h-[70vh] w-auto max-w-full rounded-lg object-contain shadow-xs"
                 />

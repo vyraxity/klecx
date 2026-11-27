@@ -3,6 +3,7 @@
 import * as React from "react";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import { cn } from "@/lib/utils";
+import { noCookieImageProps } from "@/lib/images/no-cookie-image";
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
@@ -28,6 +29,8 @@ const AvatarImage = React.forwardRef<
     ref={ref}
     data-slot="avatar-image"
     className={cn("aspect-square h-full w-full object-cover", className)}
+    // Cloudinary avatars load without cookies (lib/images/no-cookie-image.ts).
+    {...noCookieImageProps(props.src)}
     {...props}
   />
 ));

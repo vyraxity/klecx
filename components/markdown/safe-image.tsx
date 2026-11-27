@@ -1,5 +1,6 @@
 "use client";
 
+import { noCookieImageProps } from "@/lib/images/no-cookie-image";
 import * as React from "react";
 import { useTranslations } from "next-intl";
 import { ImageIcon, ShieldAlert } from "lucide-react";
@@ -66,6 +67,7 @@ export function SafeImage({ src, alt, className, ...props }: SafeImageProps) {
         src={srcString}
         alt={alt || t("imageOutput")}
         loading="lazy"
+        {...noCookieImageProps(srcString)}
         className={cn(
           "max-w-full h-auto object-contain rounded-xl transition-all duration-200",
           className

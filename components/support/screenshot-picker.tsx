@@ -13,6 +13,7 @@ import {
   isSupportScreenshotMime,
 } from "@/lib/support/screenshots";
 import { shrinkScreenshot } from "@/lib/support/shrink-image";
+import { noCookieImageProps } from "@/lib/images/no-cookie-image";
 
 export interface PickedScreenshot {
   id: string;
@@ -184,6 +185,7 @@ export function ScreenshotPicker({ value, onChange, disabled }: ScreenshotPicker
                 {/* eslint-disable-next-line @next/next/no-img-element -- local object URL preview */}
                 <img
                   src={shot.url}
+                  {...noCookieImageProps(shot.url)}
                   alt={t("previewAlt", { index: index + 1, name: shot.file.name })}
                   className="h-full w-full object-cover"
                 />
