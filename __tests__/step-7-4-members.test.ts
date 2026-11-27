@@ -202,14 +202,16 @@ describe("Step 7.4 — Members and invitations", () => {
       expect(sentEmails.at(-1)?.to).toBe(email("stranger"));
     });
 
-    it("unknown username responds generically without sending email", async () => {
-      const res = await createInvitation(actorFor("owner"), {
-        workspaceId,
-        emailOrUsername: "@nobody_here_zz",
-        role: "VIEWER",
-      });
-      expect(res).toEqual({ success: true, message: "Invitation sent" });
+    it("unknown username is refused with user_not_found and sends nothing", async () => {
+      await expect(
+        createInvitation(actorFor("owner"), {
+          workspaceId,
+          emailOrUsername: "@nobody_here_zz",
+          role: "VIEWER",
+        })
+      ).rejects.toMatchObject({ status: 404, code: "user_not_found" });
       expect(sentEmails).toHaveLength(0);
+      expect(await db.invitation.count({ where: { workspaceId, status: "PENDING", email: { contains: "nobody_here_zz" } } })).toBe(0);
     });
 
     it("re-inviting revokes the previous pending invitation", async () => {
@@ -468,22 +470,48 @@ describe("Step 7.4 — Members and invitations", () => {
       expect(logs).toHaveLength(0);
     });
 
-    it("inviting someone who already has access sends nothing", async () => {
+    it("inviting the owner or yourself is refused with a clear code", async () => {
+      await expect(
+        createInvitation(actorFor("admin"), { workspaceId: hWs, emailOrUsername: email("owner"), role: "VIEWER" })
+      ).rejects.toMatchObject({ status: 400, code: "cannot_invite_owner" });
+      await expect(
+        createInvitation(actorFor("admin"), { workspaceId: hWs, emailOrUsername: email("admin"), role: "VIEWER" })
+      ).rejects.toMatchObject({ status: 400, code: "cannot_invite_self" });
+      await expect(
+        createInvitation(actorFor("owner"), { workspaceId: hWs, emailOrUsername: email("owner"), role: "VIEWER" })
+      ).rejects.toMatchObject({ status: 400, code: "cannot_invite_self" });
+      expect(sentEmails).toHaveLength(0);
+    });
+
+    it("an email address without an account still gets a sign-up invitation", async () => {
       const res = await createInvitation(actorFor("owner"), {
         workspaceId: hWs,
-        emailOrUsername: email("admin"),
+        emailOrUsername: `newcomer_${sfx}@example.com`,
         role: "VIEWER",
       });
       expect(res).toEqual({ success: true, message: "Invitation sent" });
+      expect(sentEmails.at(-1)?.to).toBe(`newcomer_${sfx}@example.com`);
+    });
+
+    it("inviting someone who already has access is refused with already_member", async () => {
+      await expect(
+        createInvitation(actorFor("owner"), {
+          workspaceId: hWs,
+          emailOrUsername: email("admin"),
+          role: "VIEWER",
+        })
+      ).rejects.toMatchObject({ status: 409, code: "already_member" });
       expect(sentEmails).toHaveLength(0);
       expect(await db.invitation.count({ where: { workspaceId: hWs, email: email("admin") } })).toBe(0);
 
       // Inherited project access counts as access too
-      await createInvitation(actorFor("owner"), {
-        workspaceId: hProjWs,
-        emailOrUsername: email("editor"),
-        role: "VIEWER",
-      });
+      await expect(
+        createInvitation(actorFor("owner"), {
+          workspaceId: hProjWs,
+          emailOrUsername: email("editor"),
+          role: "VIEWER",
+        })
+      ).rejects.toMatchObject({ status: 409, code: "already_member" });
       expect(sentEmails).toHaveLength(0);
     });
 

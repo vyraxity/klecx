@@ -24,6 +24,39 @@ export const HELP_CATEGORY_KEYS = [
 
 export type HelpCategoryKey = (typeof HELP_CATEGORY_KEYS)[number];
 
+/** Longest search kept from the URL (`/help?q=`). */
+export const HELP_QUERY_MAX_LENGTH = 200;
+
+/** The `q` URL parameter as a search string (first value, trimmed, capped). */
+export function helpQueryParam(value: string | string[] | null | undefined): string {
+  const raw = Array.isArray(value) ? value[0] : value;
+  return (raw ?? "").trim().slice(0, HELP_QUERY_MAX_LENGTH);
+}
+
+/** The `category` URL parameter when it names a known category, else null. */
+export function helpCategoryParam(
+  value: string | string[] | null | undefined
+): HelpCategoryKey | null {
+  const raw = Array.isArray(value) ? value[0] : value;
+  return (HELP_CATEGORY_KEYS as readonly string[]).includes(raw ?? "")
+    ? (raw as HelpCategoryKey)
+    : null;
+}
+
+/**
+ * The help center's query string for a search and a category: "", "?q=…",
+ * "?category=…" or both. Used to keep the address bar in step with the
+ * filters, so a filtered list can be bookmarked or shared.
+ */
+export function helpSearchQueryString(query: string, category: string | null): string {
+  const params = new URLSearchParams();
+  const q = query.trim();
+  if (q) params.set("q", q.slice(0, HELP_QUERY_MAX_LENGTH));
+  if (category) params.set("category", category);
+  const qs = params.toString();
+  return qs ? `?${qs}` : "";
+}
+
 /** Lower-cases and strips accents so "creditos" matches "créditos". */
 export function foldText(value: string): string {
   return value

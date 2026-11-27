@@ -32,6 +32,9 @@ export const STORAGE_ITEMS: StorageItem[] = [
     purpose: "session",
     duration: "sessionRolling",
   },
+  // Pre-10.6 fix: "1" while signed in, so public pages can show "Go to your
+  // workspaces" (lib/auth/signed-in-hint-cookie.ts, set by proxy.ts).
+  { names: ["klecx_signed_in"], kind: "cookie", category: "essential", purpose: "signedInHint", duration: "sessionRolling" },
   // F5.6: set by Accept on the cookie notice (lib/cookie-notice.ts).
   { names: ["klecx_cookie_notice"], kind: "cookie", category: "essential", purpose: "cookieNotice", duration: "oneYear" },
   { names: ["NEXT_LOCALE"], kind: "cookie", category: "preference", purpose: "locale", duration: "oneYear" },

@@ -3,11 +3,14 @@
 import * as React from "react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { useSignedInHint } from "@/lib/auth/signed-in-hint";
+import { DEFAULT_LOGIN_REDIRECT } from "@/utils/routes";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function MarketingCTA() {
   const t = useTranslations("Marketing.cta");
+  const signedIn = useSignedInHint();
 
   return (
     <section className="py-12 md:py-20">
@@ -36,8 +39,11 @@ export function MarketingCTA() {
                 size="lg"
                 className="w-full sm:w-auto bg-surface text-fg hover:bg-surface-2 font-semibold shadow-xs"
               >
-                <Link href="/auth/register" className="flex items-center gap-2">
-                  <span>{t("button")}</span>
+                <Link
+                  href={signedIn ? DEFAULT_LOGIN_REDIRECT : "/auth/register"}
+                  className="flex items-center gap-2"
+                >
+                  <span>{signedIn ? t("goToWorkspaces") : t("button")}</span>
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>

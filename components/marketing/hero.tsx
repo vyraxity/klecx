@@ -4,6 +4,8 @@ import { prefersReducedMotion } from "@/lib/a11y/motion";
 import * as React from "react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { useSignedInHint } from "@/lib/auth/signed-in-hint";
+import { DEFAULT_LOGIN_REDIRECT } from "@/utils/routes";
 import {
   ArrowRight,
   FolderKanban,
@@ -77,6 +79,7 @@ function useTabHidden() {
 
 export function MarketingHero() {
   const t = useTranslations("Marketing.hero");
+  const signedIn = useSignedInHint();
 
   const [activeScene, setActiveScene] = React.useState<HeroSceneKey>(
     HERO_SCENES[0]
@@ -154,8 +157,11 @@ export function MarketingHero() {
             size="lg"
             className="bg-accent text-accent-fg hover:bg-accent-hover h-11 w-full px-6 text-sm font-semibold shadow-sm sm:w-auto"
           >
-            <Link href="/auth/register" className="flex items-center gap-2">
-              <span>{t("startFree")}</span>
+            <Link
+              href={signedIn ? DEFAULT_LOGIN_REDIRECT : "/auth/register"}
+              className="flex items-center gap-2"
+            >
+              <span>{signedIn ? t("goToWorkspaces") : t("startFree")}</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>

@@ -10,10 +10,13 @@ import Logo from "@/components/logo/Logo";
 import AppName from "@/components/logo/AppName";
 import { Button } from "@/components/ui/button";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
+import { useSignedInHint } from "@/lib/auth/signed-in-hint";
+import { DEFAULT_LOGIN_REDIRECT } from "@/utils/routes";
 
 export function MarketingHeader() {
   const pathname = usePathname();
   const t = useTranslations("Marketing.nav");
+  const signedIn = useSignedInHint();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -85,16 +88,27 @@ export function MarketingHeader() {
             </Button>
           )}
 
-          <Button asChild variant="ghost" size="sm" className="text-fg-muted hover:text-fg">
-            <Link href="/auth/login">{t("signIn")}</Link>
-          </Button>
+          {signedIn ? (
+            <Button asChild size="sm" className="bg-accent text-accent-fg hover:bg-accent-hover shadow-2xs">
+              <Link href={DEFAULT_LOGIN_REDIRECT} className="flex items-center gap-1.5">
+                <span>{t("goToWorkspaces")}</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </Button>
+          ) : (
+            <>
+              <Button asChild variant="ghost" size="sm" className="text-fg-muted hover:text-fg">
+                <Link href="/auth/login">{t("signIn")}</Link>
+              </Button>
 
-          <Button asChild size="sm" className="bg-accent text-accent-fg hover:bg-accent-hover shadow-2xs">
-            <Link href="/auth/register" className="flex items-center gap-1.5">
-              <span>{t("startFree")}</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </Button>
+              <Button asChild size="sm" className="bg-accent text-accent-fg hover:bg-accent-hover shadow-2xs">
+                <Link href="/auth/register" className="flex items-center gap-1.5">
+                  <span>{t("startFree")}</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Toggle Button */}
@@ -155,18 +169,28 @@ export function MarketingHeader() {
                 <LocaleSwitcher />
               </div>
 
-              <div className="grid grid-cols-2 gap-2 pt-2">
-                <Button asChild variant="outline" size="sm" className="w-full">
-                  <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
-                    {t("signIn")}
-                  </Link>
-                </Button>
-                <Button asChild size="sm" className="w-full bg-accent text-accent-fg hover:bg-accent-hover">
-                  <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
-                    {t("startFree")}
-                  </Link>
-                </Button>
-              </div>
+              {signedIn ? (
+                <div className="pt-2">
+                  <Button asChild size="sm" className="w-full bg-accent text-accent-fg hover:bg-accent-hover">
+                    <Link href={DEFAULT_LOGIN_REDIRECT} onClick={() => setMobileMenuOpen(false)}>
+                      {t("goToWorkspaces")}
+                    </Link>
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2 pt-2">
+                  <Button asChild variant="outline" size="sm" className="w-full">
+                    <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
+                      {t("signIn")}
+                    </Link>
+                  </Button>
+                  <Button asChild size="sm" className="w-full bg-accent text-accent-fg hover:bg-accent-hover">
+                    <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
+                      {t("startFree")}
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </nav>
         </div>
