@@ -49,7 +49,8 @@ export interface UiState extends PersistedUiSlice {
   profileDialogIsOpen: boolean;
   codeTheme: "light" | "dark";
   currentPageTitle: string;
-  currentPageId: string | null;
+  /** Pre-10.6 fix: the page Settings' "Back to …" link returns to (not persisted). */
+  settingsReturnTo: { href: string; title: string } | null;
   currentProjectId: string | null;
   currentProjectName: string | null;
   chatMode: "text" | "image";
@@ -66,7 +67,7 @@ export interface UiState extends PersistedUiSlice {
   toggleProfileDialogOpen: (open: boolean) => void;
   setCodeTheme: (theme: "light" | "dark") => void;
   setCurrentPageTitle: (title: string) => void;
-  setCurrentPageId: (id: string | null) => void;
+  setSettingsReturnTo: (target: { href: string; title: string } | null) => void;
   setCurrentProject: (project: {
     id: string | null;
     name: string | null;
@@ -90,7 +91,7 @@ const initialTransientState = {
   profileDialogIsOpen: false,
   codeTheme: "light" as const,
   currentPageTitle: "",
-  currentPageId: null as string | null,
+  settingsReturnTo: null as { href: string; title: string } | null,
   currentProjectId: null as string | null,
   currentProjectName: null as string | null,
   chatMode: "text" as const,
@@ -179,7 +180,7 @@ export const useUiStore = create<UiState>()(
         set({ profileDialogIsOpen }),
       setCodeTheme: (codeTheme) => set({ codeTheme }),
       setCurrentPageTitle: (currentPageTitle) => set({ currentPageTitle }),
-      setCurrentPageId: (currentPageId) => set({ currentPageId }),
+      setSettingsReturnTo: (settingsReturnTo) => set({ settingsReturnTo }),
       setCurrentProject: ({ id, name }) =>
         set({ currentProjectId: id, currentProjectName: name }),
       setChatMode: (chatMode) => set({ chatMode }),

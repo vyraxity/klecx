@@ -988,7 +988,6 @@
     "signOut": "Sign out",
     "workspaceOptions": "Workspace options",
     "editTitleLabel": "Edit workspace title",
-    "shareComingSoon": "Sharing links and member invites will be available soon.",
     "archivedSuccess": "Workspace archived",
     "movedSuccess": "Workspace moved",
     "projectCreated": "Project created",
@@ -997,7 +996,9 @@
     "openSettings": "Open settings",
     "expandProject": "Show workspaces in {name}",
     "collapseProject": "Hide workspaces in {name}",
-    "usernameClaimed": "Username claimed: @{username}"
+    "usernameClaimed": "Username claimed: @{username}",
+    "backTo": "Back to {title}",
+    "countOverflow": "{max}+"
   },
   "Home": {
     "greetingMorning": "Good morning, {name}",
@@ -2685,24 +2686,22 @@
       }
     },
     "panel": {
-      "title": "All annotations",
+      "title": "Comments & Asks",
       "tabComments": "Comments",
       "tabAsks": "Asks",
-      "tabQueue": "Queue",
       "filterThisResponse": "This response",
       "filterEntireWorkspace": "Entire workspace",
       "noComments": "No comments yet",
       "noAsks": "No asks yet",
-      "noQueued": "No queued questions",
       "resolved": "Resolved",
-      "description": "Comments, asks and queued questions in this workspace. Choose one to open it next to the conversation.",
+      "description": "Comments and answered Asks in this workspace. Choose one to open it next to the conversation. Questions waiting in the queue are under the queue button by the message box.",
       "loading": "Loading…",
-      "loadFailed": "Annotations could not be loaded.",
+      "loadFailed": "Comments and Asks could not be loaded.",
       "member": "Member",
       "level": "Level {level}",
-      "queued": "Queued",
       "failed": "Not answered",
-      "open": "Open"
+      "open": "Open",
+      "queuedHint": "{count, plural, one {# question is} other {# questions are}} waiting in the queue (the queue button by the message box)."
     }
   },
   "Notifications": {
@@ -2960,7 +2959,7 @@
     "level": "Level {level}",
     "levelWithQuote": "Level {level}: «{quote}»",
     "resize": "Resize column",
-    "allAnnotations": "All annotations",
+    "allAnnotations": "Comments & Asks",
     "moreSpines": "{count, plural, one {# more level} other {# more levels}}",
     "hiddenLevels": "Hidden levels",
     "loading": "Loading thread…",
@@ -3046,7 +3045,8 @@
       "removeFailed": "Failed to remove question",
       "updatedSuccess": "Question updated",
       "updateFailed": "Failed to update question"
-    }
+    },
+    "allAnnotationsCount": "Comments & Asks ({count})"
   },
   "Documents": {
     "uploadedBadge": "Uploaded document",

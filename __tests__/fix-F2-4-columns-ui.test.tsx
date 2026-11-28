@@ -335,7 +335,7 @@ describe("F2.4 — layout and drawer", () => {
     expect(new URL(window.location.href).searchParams.get("thread")).toBe("a:ask_1");
   });
 
-  it("lists answered threads (asked now, answered from the queue, migrated replies) under Asks, and only waiting questions under Queue", async () => {
+  it("lists answered threads under Asks; waiting questions stay in the queue popover (pre-10.6 fix)", async () => {
     const answer = { id: "m_a", role: "ASSISTANT", content: "An answer" };
     const question = (content: string) => ({ id: `q_${content}`, role: "USER", content });
     apiMock.mockResolvedValue([
@@ -343,18 +343,25 @@ describe("F2.4 — layout and drawer", () => {
       // Old REPLY rows were migrated to ASK + ANSWERED (F2.1).
       ask({ id: "migrated", questionState: "ANSWERED", messages: [question("migrated reply"), answer] }),
       ask({ id: "waiting", questionState: "QUEUED", messages: [question("still queued")] }),
+      ask({ id: "removed", questionState: "CANCELLED", messages: [question("removed from queue")] }),
+      ask({ id: "failed", questionState: "FAILED", messages: [question("could not answer")] }),
       ask({ id: "comment", kind: "COMMENT", messages: [question("a comment")] }),
     ]);
     render(<AllAnnotationsDrawer workspaceId="ws_1" open onOpenChange={jest.fn()} />);
 
-    fireEvent.mouseDown(await screen.findByRole("tab", { name: /tabAsks/ }));
+    // Two tabs only; the header counts what they list (1 comment + 3 asks).
+    expect(await screen.findAllByRole("tab")).toHaveLength(2);
+    expect(screen.queryByRole("tab", { name: /tabQueue/ })).not.toBeInTheDocument();
+    expect(await screen.findByText("(4)")).toBeInTheDocument();
+    expect(screen.getByTestId("drawer-queued-hint")).toBeInTheDocument();
+
+    fireEvent.mouseDown(screen.getByRole("tab", { name: /tabAsks/ }));
     expect(await screen.findByText("asked now")).toBeInTheDocument();
     expect(screen.getByText("migrated reply")).toBeInTheDocument();
+    expect(screen.getByText("could not answer")).toBeInTheDocument();
+    expect(screen.getByText("failed")).toBeInTheDocument();
     expect(screen.queryByText("still queued")).not.toBeInTheDocument();
-
-    fireEvent.mouseDown(screen.getByRole("tab", { name: /tabQueue/ }));
-    expect(await screen.findByText("still queued")).toBeInTheDocument();
-    expect(screen.queryByText("migrated reply")).not.toBeInTheDocument();
+    expect(screen.queryByText("removed from queue")).not.toBeInTheDocument();
   });
 
   it("opens the item's column from the drawer and closes the drawer", async () => {

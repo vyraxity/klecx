@@ -988,7 +988,6 @@
     "signOut": "Cerrar sesión",
     "workspaceOptions": "Opciones del espacio",
     "editTitleLabel": "Editar título del espacio",
-    "shareComingSoon": "Los enlaces compartidos e invitaciones estarán disponibles pronto.",
     "archivedSuccess": "Espacio archivado",
     "movedSuccess": "Espacio movido",
     "projectCreated": "Proyecto creado",
@@ -997,7 +996,9 @@
     "openSettings": "Abrir configuración",
     "expandProject": "Mostrar los espacios de trabajo de {name}",
     "collapseProject": "Ocultar los espacios de trabajo de {name}",
-    "usernameClaimed": "Nombre de usuario reservado: @{username}"
+    "usernameClaimed": "Nombre de usuario reservado: @{username}",
+    "backTo": "Volver a {title}",
+    "countOverflow": "{max}+"
   },
   "Home": {
     "greetingMorning": "Buenos días, {name}",
@@ -2685,24 +2686,22 @@
       }
     },
     "panel": {
-      "title": "Todas las anotaciones",
+      "title": "Comentarios y preguntas",
       "tabComments": "Comentarios",
       "tabAsks": "Preguntas",
-      "tabQueue": "Cola",
       "filterThisResponse": "Esta respuesta",
       "filterEntireWorkspace": "Todo el espacio",
       "noComments": "Aún no hay comentarios",
       "noAsks": "Aún no hay preguntas",
-      "noQueued": "No hay preguntas en cola",
       "resolved": "Resuelto",
-      "description": "Comentarios, preguntas y preguntas en cola de este espacio de trabajo. Elige uno para abrirlo junto a la conversación.",
+      "description": "Comentarios y preguntas respondidas de este espacio de trabajo. Elige uno para abrirlo junto a la conversación. Las preguntas en cola están en el botón de la cola, junto al cuadro de mensaje.",
       "loading": "Cargando…",
-      "loadFailed": "No se pudieron cargar las anotaciones.",
+      "loadFailed": "No se pudieron cargar los comentarios y las preguntas.",
       "member": "Miembro",
       "level": "Nivel {level}",
-      "queued": "En cola",
       "failed": "Sin respuesta",
-      "open": "Abrir"
+      "open": "Abrir",
+      "queuedHint": "{count, plural, one {# pregunta espera} other {# preguntas esperan}} en la cola (el botón de la cola, junto al cuadro de mensaje)."
     }
   },
   "Notifications": {
@@ -2960,7 +2959,7 @@
     "level": "Nivel {level}",
     "levelWithQuote": "Nivel {level}: «{quote}»",
     "resize": "Cambiar el ancho de la columna",
-    "allAnnotations": "Todas las anotaciones",
+    "allAnnotations": "Comentarios y preguntas",
     "moreSpines": "{count, plural, one {# nivel más} other {# niveles más}}",
     "hiddenLevels": "Niveles ocultos",
     "loading": "Cargando el hilo…",
@@ -3046,7 +3045,8 @@
       "removeFailed": "Error al eliminar la pregunta",
       "updatedSuccess": "Pregunta actualizada",
       "updateFailed": "Error al actualizar la pregunta"
-    }
+    },
+    "allAnnotationsCount": "Comentarios y preguntas ({count})"
   },
   "Documents": {
     "uploadedBadge": "Documento subido",

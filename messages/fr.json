@@ -988,7 +988,6 @@
     "signOut": "Se déconnecter",
     "workspaceOptions": "Options de l'espace",
     "editTitleLabel": "Modifier le titre de l'espace",
-    "shareComingSoon": "Les liens de partage et les invitations seront bientôt disponibles.",
     "archivedSuccess": "Espace archivé",
     "movedSuccess": "Espace déplacé",
     "projectCreated": "Projet créé",
@@ -997,7 +996,9 @@
     "openSettings": "Ouvrir les paramètres",
     "expandProject": "Afficher les espaces de travail de {name}",
     "collapseProject": "Masquer les espaces de travail de {name}",
-    "usernameClaimed": "Nom d'utilisateur réservé : @{username}"
+    "usernameClaimed": "Nom d'utilisateur réservé : @{username}",
+    "backTo": "Retour à {title}",
+    "countOverflow": "{max}+"
   },
   "Home": {
     "greetingMorning": "Bonjour, {name}",
@@ -2685,24 +2686,22 @@
       }
     },
     "panel": {
-      "title": "Toutes les annotations",
+      "title": "Commentaires et questions",
       "tabComments": "Commentaires",
       "tabAsks": "Questions",
-      "tabQueue": "File d'attente",
       "filterThisResponse": "Cette réponse",
       "filterEntireWorkspace": "Tout l'espace",
       "noComments": "Aucun commentaire pour l'instant",
       "noAsks": "Aucune question pour l'instant",
-      "noQueued": "Aucune question en file d'attente",
       "resolved": "Résolu",
-      "description": "Commentaires, questions et questions en file de cet espace de travail. Choisissez-en un pour l'ouvrir à côté de la conversation.",
+      "description": "Commentaires et questions ayant reçu une réponse dans cet espace de travail. Choisissez-en un pour l'ouvrir à côté de la conversation. Les questions en file d'attente se trouvent sous le bouton de la file, près de la zone de message.",
       "loading": "Chargement…",
-      "loadFailed": "Les annotations n'ont pas pu être chargées.",
+      "loadFailed": "Les commentaires et les questions n'ont pas pu être chargés.",
       "member": "Membre",
       "level": "Niveau {level}",
-      "queued": "En file",
       "failed": "Sans réponse",
-      "open": "Ouvrir"
+      "open": "Ouvrir",
+      "queuedHint": "{count, plural, one {# question attend} other {# questions attendent}} dans la file (le bouton de la file, près de la zone de message)."
     }
   },
   "Notifications": {
@@ -2960,7 +2959,7 @@
     "level": "Niveau {level}",
     "levelWithQuote": "Niveau {level} : « {quote} »",
     "resize": "Redimensionner la colonne",
-    "allAnnotations": "Toutes les annotations",
+    "allAnnotations": "Commentaires et questions",
     "moreSpines": "{count, plural, one {# niveau de plus} other {# niveaux de plus}}",
     "hiddenLevels": "Niveaux masqués",
     "loading": "Chargement du fil…",
@@ -3046,7 +3045,8 @@
       "removeFailed": "Échec de la suppression de la question",
       "updatedSuccess": "Question mise à jour",
       "updateFailed": "Échec de la mise à jour de la question"
-    }
+    },
+    "allAnnotationsCount": "Commentaires et questions ({count})"
   },
   "Documents": {
     "uploadedBadge": "Document importé",
