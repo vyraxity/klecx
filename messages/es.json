@@ -255,12 +255,12 @@
     "noSearchResults": "No se encontraron mensajes ni conversaciones coincidentes.",
     "renameChat": "Renombrar conversación",
     "renamePlaceholder": "Introduce el título de la conversación...",
-    "deleteConfirmTitle": "¿Eliminar conversación?",
-    "deleteConfirmDescription": "Esto eliminará permanentemente \"{title}\" y todos sus mensajes. Esta acción no se puede deshacer.",
-    "confirmDelete": "Eliminar permanentemente",
+    "deleteConfirmTitle": "¿Eliminar el espacio de trabajo?",
+    "deleteConfirmDescription": "«{title}» pasa a Eliminados recientemente: puedes restaurarlo durante 30 días; después se borra con sus respuestas, comentarios y archivos. Sus miembros pierden el acceso.",
+    "confirmDelete": "Eliminar",
     "renameSuccess": "Conversación renombrada",
     "renameError": "Error al renombrar la conversación",
-    "deleteSuccess": "Conversación eliminada",
+    "deleteSuccess": "Espacio de trabajo eliminado",
     "deleteError": "Error al eliminar la conversación",
     "downloadImage": "Descargar imagen",
     "settings": "Configuración",
@@ -289,7 +289,11 @@
     "charCount": "{current} / {max}",
     "useModel": "Usar {model}",
     "notEnoughCreditsForMessage": "Este mensaje necesita unos {needed} créditos y tienes {balance}.",
-    "ownerNotEnoughCredits": "El propietario del espacio de trabajo no tiene créditos suficientes para este mensaje."
+    "ownerNotEnoughCredits": "El propietario del espacio de trabajo no tiene créditos suficientes para este mensaje.",
+    "deleteUndoHint": "Puedes restaurarlo durante 30 días desde Configuración → Eliminados recientemente.",
+    "undo": "Deshacer",
+    "restoreSuccess": "Espacio de trabajo restaurado",
+    "restoreError": "No se pudo restaurar el espacio de trabajo."
   },
   "Settings": {
     "ai": {
@@ -361,7 +365,8 @@
       "data": "Tus datos",
       "support": "Soporte",
       "usage": "Uso",
-      "voice": "Voz"
+      "voice": "Voz",
+      "deleted": "Eliminados recientemente"
     },
     "errors": {
       "pageTitle": "No se pudo cargar esta página",
@@ -649,7 +654,34 @@
       "stillBlocked": "Aún hay espacios de trabajo o proyectos compartidos que transferir o eliminar.",
       "deleteError": "No se pudo eliminar tu cuenta. Inténtalo de nuevo.",
       "cancel": "Cancelar",
-      "confirmButton": "Eliminar mi cuenta"
+      "confirmButton": "Eliminar mi cuenta",
+      "recentlyDeletedTitle": "Eliminados recientemente",
+      "recentlyDeletedHint": "Los espacios de trabajo y proyectos que eliminas se pueden restaurar durante 30 días.",
+      "recentlyDeletedOpen": "Ver eliminados recientemente"
+    },
+    "deleted": {
+      "title": "Eliminados recientemente",
+      "description": "Los espacios de trabajo y proyectos que eliminas se quedan aquí {days} días y después se borran para siempre. Solo tú los ves y puedes restaurarlos hasta entonces.",
+      "workspacesTitle": "Espacios de trabajo",
+      "projectsTitle": "Proyectos",
+      "projectsHint": "Eliminar un proyecto no elimina sus espacios de trabajo: siguen en tu barra lateral. Al restaurar el proyecto vuelven a él.",
+      "noWorkspaces": "No hay espacios de trabajo eliminados.",
+      "noProjects": "No hay proyectos eliminados.",
+      "loading": "Cargando…",
+      "loadError": "No se pudo cargar lo que eliminaste. Recarga la página para intentarlo de nuevo.",
+      "untitled": "Espacio de trabajo sin título",
+      "deletedOn": "Eliminado el {date}",
+      "daysLeft": "{count, plural, one {Queda # día (se borra el {date})} other {Quedan # días (se borra el {date})}}",
+      "lastDay": "Se borra en menos de un día",
+      "projectAlsoDeleted": "Su proyecto «{project}» también está eliminado: vuelve sin proyecto.",
+      "restore": "Restaurar",
+      "restoreNamed": "Restaurar {name}",
+      "restoredWorkspace": "«{name}» restaurado",
+      "restoredProject": "Proyecto «{name}» restaurado",
+      "open": "Abrir",
+      "restoreError": "No se pudo restaurar. Inténtalo de nuevo.",
+      "footnote": "Los miembros pierden el acceso mientras está eliminado y lo recuperan al restaurarlo. Pasados {days} días, los archivos, respuestas, comentarios y notas se borran y no se pueden recuperar.",
+      "privacyLink": "Política de privacidad"
     }
   },
   "Email": {
@@ -1025,7 +1057,8 @@
     "collapseProject": "Ocultar los espacios de trabajo de {name}",
     "usernameClaimed": "Nombre de usuario reservado: @{username}",
     "backTo": "Volver a {title}",
-    "countOverflow": "{max}+"
+    "countOverflow": "{max}+",
+    "recentlyDeleted": "Eliminados recientemente"
   },
   "Home": {
     "greetingMorning": "Buenos días, {name}",
@@ -2438,7 +2471,8 @@
       "already_has_password": "Esta cuenta ya tiene contraseña.",
       "code_expired": "El código ha caducado. Pide uno nuevo.",
       "code_attempts_exceeded": "Demasiados códigos incorrectos. Pide uno nuevo.",
-      "invalid_email_code": "Ese código no es correcto. Revisa el correo e inténtalo de nuevo."
+      "invalid_email_code": "Ese código no es correcto. Revisa el correo e inténtalo de nuevo.",
+      "restore_expired": "Se eliminó hace más de 30 días y no se puede restaurar."
     }
   },
   "Gates": {
@@ -2594,7 +2628,7 @@
     "renameWorkspaceTitle": "Renombrar espacio de trabajo",
     "workspaceName": "Nombre del espacio de trabajo",
     "deleteWorkspaceTitle": "Eliminar espacio de trabajo",
-    "deleteWorkspaceConfirm": "¿Eliminar «{title}»? Tú y sus miembros perderéis el acceso.",
+    "deleteWorkspaceConfirm": "¿Eliminar «{title}»? Pasa a Eliminados recientemente, donde puedes restaurarlo durante 30 días. Tú y sus miembros perdéis el acceso hasta entonces.",
     "searchWorkspaces": "Buscar espacios de trabajo…",
     "sortBy": "Ordenar por",
     "sortLastActivity": "Última actividad",
@@ -2607,7 +2641,7 @@
     "unarchiveProject": "Desarchivar proyecto",
     "transferProject": "Transferir propiedad",
     "deleteProject": "Eliminar proyecto",
-    "deleteProjectConfirm": "¿Eliminar este proyecto? Sus espacios de trabajo no se eliminan.",
+    "deleteProjectConfirm": "¿Eliminar este proyecto? Sus espacios de trabajo no se eliminan: siguen en tu barra lateral. Puedes restaurar el proyecto durante 30 días desde Configuración → Eliminados recientemente.",
     "shareAndPeople": "Compartir y personas",
     "projectOptions": "Opciones del proyecto",
     "workspaceOptions": "Opciones de {title}",
@@ -2662,7 +2696,11 @@
       "workspaceRestored": "Espacio de trabajo restaurado",
       "workspaceUpdateFailed": "No se pudo actualizar el espacio de trabajo",
       "workspaceDeleted": "Espacio de trabajo eliminado",
-      "workspaceDeleteFailed": "No se pudo eliminar el espacio de trabajo"
+      "workspaceDeleteFailed": "No se pudo eliminar el espacio de trabajo",
+      "deleteUndoHint": "Puedes restaurarlo durante 30 días desde Configuración → Eliminados recientemente.",
+      "undo": "Deshacer",
+      "restored": "Restaurado",
+      "restoreFailed": "No se pudo restaurar."
     },
     "currentlyIn": "Ahora en {name}",
     "moveSearchHint": "Se muestran tus espacios de trabajo más recientes. Busca para encontrar otros."
@@ -3422,8 +3460,8 @@
         "workspace_renamed": "cambió el nombre del espacio de trabajo a «{title}»",
         "workspace_archived": "archivó el espacio de trabajo",
         "workspace_unarchived": "sacó el espacio de trabajo del archivo",
-        "workspace_deleted": "movió el espacio de trabajo a la papelera",
-        "workspace_restored": "restauró el espacio de trabajo desde la papelera",
+        "workspace_deleted": "eliminó el espacio de trabajo",
+        "workspace_restored": "restauró el espacio de trabajo",
         "project_created": "creó el proyecto «{name}»",
         "project_renamed": "cambió el nombre del proyecto a «{name}»",
         "project_archived": "archivó el proyecto",
@@ -3450,7 +3488,8 @@
         "note_archived": "archivó una nota de Klecx",
         "note_restored": "restauró una nota de Klecx",
         "note_deleted": "eliminó una nota de Klecx",
-        "other": "hizo un cambio"
+        "other": "hizo un cambio",
+        "project_restored": "restauró el proyecto"
       }
     },
     "toasts": {

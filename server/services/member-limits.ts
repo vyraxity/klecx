@@ -413,6 +413,22 @@ export async function applyMemberLimitForPlanChange(
 }
 
 /**
+ * Pre-10.6 fix: restoring a deleted workspace or project brings its members
+ * back into the count. If that puts the owner over their plan's limit, the
+ * usual 14-day grace starts (nothing is suspended at once).
+ */
+export async function startGraceIfOverLimit(ownerId: string): Promise<void> {
+  const limit = (await getEntitlements(ownerId)).limits.members;
+  const [collaborators, grace] = await Promise.all([
+    getOwnerCollaborators(ownerId),
+    db.memberLimitGrace.findUnique({ where: { ownerId }, select: { limit: true, enforcedAt: true } }),
+  ]);
+  if (collaborators.keys.size > limit && (!grace || grace.enforcedAt || grace.limit > limit)) {
+    await startOverLimitGrace(ownerId, limit);
+  }
+}
+
+/**
  * Runs `enforceMemberLimit` once for an owner whose grace period has ended
  * (Step 8.4). The grace row is claimed first (`enforcedAt`), so concurrent
  * callers never suspend or notify twice. Returns whether it ran.

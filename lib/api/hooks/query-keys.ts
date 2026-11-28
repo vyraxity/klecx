@@ -76,6 +76,7 @@ export const queryKeys = {
     profile: (userId: string) => userQueryKey(userId, "me", "profile"),
     preferences: (userId: string) => userQueryKey(userId, "me", "preferences"),
     credits: (userId: string) => userQueryKey(userId, "me", "credits"),
+    recentlyDeleted: (userId: string) => userQueryKey(userId, "me", "recently-deleted"),
     subscription: (userId: string) => userQueryKey(userId, "me", "subscription"),
     linkedAccounts: (userId: string) => userQueryKey(userId, "me", "linked-accounts"),
     supportTickets: (userId: string) => userQueryKey(userId, "me", "support-tickets"),

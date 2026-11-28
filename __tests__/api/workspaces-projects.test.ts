@@ -30,6 +30,14 @@ const mockProjectUpdate = jest.fn();
 const mockProjectMemberFindUnique = jest.fn();
 const mockResponseFindMany = jest.fn();
 
+// Pre-10.6 fix: restoring re-checks the owner's collaborator limit; that
+// reads tables this mocked database doesn't have (covered with a real
+// database in fix-recently-deleted-workspaces.test.ts).
+jest.mock("../../server/services/member-limits", () => ({
+  ...jest.requireActual("../../server/services/member-limits"),
+  startGraceIfOverLimit: jest.fn(async () => undefined),
+}));
+
 jest.mock("../../server/db/client", () => ({
   db: {
     workspace: {

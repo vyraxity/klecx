@@ -122,6 +122,7 @@ const ROWS: Row[] = [
   { route: "projects/[id]", method: "GET", params: () => ({ id: ID.project }) },
   { route: "projects/[id]", method: "PATCH", params: () => ({ id: ID.project }), body: () => ({ name: "Hijacked" }) },
   { route: "projects/[id]", method: "DELETE", params: () => ({ id: ID.project }) },
+  { route: "projects/[id]/restore", method: "POST", params: () => ({ id: ID.project }) },
   { route: "projects/[id]/activity", method: "GET", params: () => ({ id: ID.project }) },
   { route: "projects/[id]/invitations", method: "GET", params: () => ({ id: ID.project }) },
   { route: "projects/[id]/invitations", method: "POST", params: () => ({ id: ID.project }), body: () => ({ emailOrUsername: B.email, role: "EDITOR" }) },

@@ -255,12 +255,12 @@
     "noSearchResults": "Aucun message ou discussion correspondant trouvé.",
     "renameChat": "Renommer la discussion",
     "renamePlaceholder": "Entrez le titre de la discussion...",
-    "deleteConfirmTitle": "Supprimer la discussion ?",
-    "deleteConfirmDescription": "Cela supprimera définitivement « {title} » et tous ses messages. Cette action est irréversible.",
-    "confirmDelete": "Supprimer définitivement",
+    "deleteConfirmTitle": "Supprimer l'espace de travail ?",
+    "deleteConfirmDescription": "« {title} » passe dans Supprimés récemment : vous pouvez le restaurer pendant 30 jours, puis il est effacé avec ses réponses, commentaires et fichiers. Ses membres perdent l'accès.",
+    "confirmDelete": "Supprimer",
     "renameSuccess": "Discussion renommée",
     "renameError": "Échec du renommage de la discussion",
-    "deleteSuccess": "Discussion supprimée",
+    "deleteSuccess": "Espace de travail supprimé",
     "deleteError": "Échec de la suppression de la discussion",
     "downloadImage": "Télécharger l'image",
     "settings": "Paramètres",
@@ -289,7 +289,11 @@
     "charCount": "{current} / {max}",
     "useModel": "Utiliser {model}",
     "notEnoughCreditsForMessage": "Ce message demande environ {needed} crédits, et il vous en reste {balance}.",
-    "ownerNotEnoughCredits": "Le propriétaire de l'espace de travail n'a pas assez de crédits pour ce message."
+    "ownerNotEnoughCredits": "Le propriétaire de l'espace de travail n'a pas assez de crédits pour ce message.",
+    "deleteUndoHint": "Vous pouvez le restaurer pendant 30 jours depuis Paramètres → Supprimés récemment.",
+    "undo": "Annuler",
+    "restoreSuccess": "Espace de travail restauré",
+    "restoreError": "Impossible de restaurer l'espace de travail."
   },
   "Settings": {
     "ai": {
@@ -361,7 +365,8 @@
       "data": "Vos données",
       "support": "Assistance",
       "usage": "Utilisation",
-      "voice": "Voix"
+      "voice": "Voix",
+      "deleted": "Supprimés récemment"
     },
     "errors": {
       "pageTitle": "Impossible de charger cette page",
@@ -649,7 +654,34 @@
       "stillBlocked": "Des espaces de travail ou projets partagés doivent encore être transférés ou supprimés.",
       "deleteError": "Impossible de supprimer votre compte. Réessayez.",
       "cancel": "Annuler",
-      "confirmButton": "Supprimer mon compte"
+      "confirmButton": "Supprimer mon compte",
+      "recentlyDeletedTitle": "Supprimés récemment",
+      "recentlyDeletedHint": "Les espaces de travail et projets que vous supprimez peuvent être restaurés pendant 30 jours.",
+      "recentlyDeletedOpen": "Voir les éléments supprimés"
+    },
+    "deleted": {
+      "title": "Supprimés récemment",
+      "description": "Les espaces de travail et projets que vous supprimez restent ici {days} jours, puis sont effacés définitivement. Vous seul les voyez et vous pouvez les restaurer jusque-là.",
+      "workspacesTitle": "Espaces de travail",
+      "projectsTitle": "Projets",
+      "projectsHint": "Supprimer un projet ne supprime pas ses espaces de travail : ils restent dans votre barre latérale. Restaurer le projet les y remet.",
+      "noWorkspaces": "Aucun espace de travail supprimé.",
+      "noProjects": "Aucun projet supprimé.",
+      "loading": "Chargement…",
+      "loadError": "Impossible de charger ce que vous avez supprimé. Rechargez la page pour réessayer.",
+      "untitled": "Espace de travail sans titre",
+      "deletedOn": "Supprimé le {date}",
+      "daysLeft": "{count, plural, one {# jour restant (effacé le {date})} other {# jours restants (effacé le {date})}}",
+      "lastDay": "Effacé dans moins d'un jour",
+      "projectAlsoDeleted": "Son projet « {project} » est aussi supprimé : il revient sans projet.",
+      "restore": "Restaurer",
+      "restoreNamed": "Restaurer {name}",
+      "restoredWorkspace": "« {name} » restauré",
+      "restoredProject": "Projet « {name} » restauré",
+      "open": "Ouvrir",
+      "restoreError": "Impossible de le restaurer. Réessayez.",
+      "footnote": "Les membres perdent l'accès tant qu'il est supprimé et le retrouvent quand vous le restaurez. Après {days} jours, les fichiers, réponses, commentaires et notes sont effacés et ne peuvent pas être récupérés.",
+      "privacyLink": "Politique de confidentialité"
     }
   },
   "Email": {
@@ -1025,7 +1057,8 @@
     "collapseProject": "Masquer les espaces de travail de {name}",
     "usernameClaimed": "Nom d'utilisateur réservé : @{username}",
     "backTo": "Retour à {title}",
-    "countOverflow": "{max}+"
+    "countOverflow": "{max}+",
+    "recentlyDeleted": "Supprimés récemment"
   },
   "Home": {
     "greetingMorning": "Bonjour, {name}",
@@ -2438,7 +2471,8 @@
       "already_has_password": "Ce compte a déjà un mot de passe.",
       "code_expired": "Le code a expiré. Demandez-en un nouveau.",
       "code_attempts_exceeded": "Trop de codes erronés. Demandez-en un nouveau.",
-      "invalid_email_code": "Ce code n'est pas correct. Vérifiez l'e-mail et réessayez."
+      "invalid_email_code": "Ce code n'est pas correct. Vérifiez l'e-mail et réessayez.",
+      "restore_expired": "Il a été supprimé il y a plus de 30 jours et ne peut pas être restauré."
     }
   },
   "Gates": {
@@ -2594,7 +2628,7 @@
     "renameWorkspaceTitle": "Renommer l'espace de travail",
     "workspaceName": "Nom de l'espace de travail",
     "deleteWorkspaceTitle": "Supprimer l'espace de travail",
-    "deleteWorkspaceConfirm": "Supprimer « {title} » ? Vous et ses membres n'y aurez plus accès.",
+    "deleteWorkspaceConfirm": "Supprimer « {title} » ? Il passe dans Supprimés récemment, où vous pouvez le restaurer pendant 30 jours. Vous et ses membres n'y avez plus accès d'ici là.",
     "searchWorkspaces": "Rechercher des espaces de travail…",
     "sortBy": "Trier par",
     "sortLastActivity": "Dernière activité",
@@ -2607,7 +2641,7 @@
     "unarchiveProject": "Désarchiver le projet",
     "transferProject": "Transférer la propriété",
     "deleteProject": "Supprimer le projet",
-    "deleteProjectConfirm": "Supprimer ce projet ? Ses espaces de travail ne sont pas supprimés.",
+    "deleteProjectConfirm": "Supprimer ce projet ? Ses espaces de travail ne sont pas supprimés : ils restent dans votre barre latérale. Vous pouvez restaurer le projet pendant 30 jours depuis Paramètres → Supprimés récemment.",
     "shareAndPeople": "Partage et membres",
     "projectOptions": "Options du projet",
     "workspaceOptions": "Options de {title}",
@@ -2662,7 +2696,11 @@
       "workspaceRestored": "Espace de travail restauré",
       "workspaceUpdateFailed": "Impossible de mettre à jour l'espace de travail",
       "workspaceDeleted": "Espace de travail supprimé",
-      "workspaceDeleteFailed": "Impossible de supprimer l'espace de travail"
+      "workspaceDeleteFailed": "Impossible de supprimer l'espace de travail",
+      "deleteUndoHint": "Vous pouvez le restaurer pendant 30 jours depuis Paramètres → Supprimés récemment.",
+      "undo": "Annuler",
+      "restored": "Restauré",
+      "restoreFailed": "Impossible de le restaurer."
     },
     "currentlyIn": "Actuellement dans {name}",
     "moveSearchHint": "Vos espaces de travail les plus récents sont affichés. Recherchez pour en trouver d'autres."
@@ -3422,8 +3460,8 @@
         "workspace_renamed": "a renommé l'espace de travail en « {title} »",
         "workspace_archived": "a archivé l'espace de travail",
         "workspace_unarchived": "a désarchivé l'espace de travail",
-        "workspace_deleted": "a placé l'espace de travail dans la corbeille",
-        "workspace_restored": "a restauré l'espace de travail depuis la corbeille",
+        "workspace_deleted": "a supprimé l'espace de travail",
+        "workspace_restored": "a restauré l'espace de travail",
         "project_created": "a créé le projet « {name} »",
         "project_renamed": "a renommé le projet en « {name} »",
         "project_archived": "a archivé le projet",
@@ -3450,7 +3488,8 @@
         "note_archived": "a archivé une note Klecx",
         "note_restored": "a restauré une note Klecx",
         "note_deleted": "a supprimé une note Klecx",
-        "other": "a effectué une modification"
+        "other": "a effectué une modification",
+        "project_restored": "a restauré le projet"
       }
     },
     "toasts": {
