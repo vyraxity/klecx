@@ -13,7 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /**
  * Step 9.1: Settings → Language & AI. The app language, the language Klecx
- * answers in (Auto = match my message) and web search (F4.1/F4.2).
+ * answers in (Auto = match my message), web search (F4.1/F4.2) and the
+ * default model for new messages (pre-10.6 fix).
  */
 export default async function LanguageSettingsPage() {
   const actor = await requireActor();
@@ -28,6 +29,7 @@ export default async function LanguageSettingsPage() {
         userId={actor.userId}
         initialWebSearchEnabled={prefs.webSearchEnabled}
         initialAiLanguage={prefs.aiLanguage}
+        initialDefaultModelKey={prefs.defaultModelKey}
       />
     </>
   );

@@ -1,4 +1,6 @@
 import "server-only";
+import { DEFAULT_MODEL_CHOICES } from "@/lib/ai/default-model";
+import { minimumMessageCredits } from "@/lib/ai/model-catalog";
 import { db } from "@/server/db/client";
 import type { Actor } from "@/server/auth/session";
 import { Errors } from "@/server/http/errors";
@@ -293,6 +295,31 @@ export async function getWorkspace(actor: Actor, workspaceId: string) {
     ownerOutOfCredits: ownerAccount
       ? ownerAccount.planBalance + ownerAccount.topupBalance <= 0
       : false,
+    ...composerModelInfo(role, ownerEntitlements.models, ownerAccount),
+  };
+}
+
+/**
+ * Pre-10.6 fix: what the composer needs to pick its default model and warn
+ * before a message is refused for credits. The text models of the owner's
+ * plan (the owner pays, so their plan decides what runs here), whether the
+ * owner's balance covers the smallest message of each (yes/no only), and the
+ * balance itself only for the owner (it's theirs).
+ */
+function composerModelInfo(
+  role: string,
+  ownerModels: readonly string[],
+  ownerAccount: { planBalance: number; topupBalance: number } | null
+) {
+  const textModels = DEFAULT_MODEL_CHOICES.filter((m) => ownerModels.includes(m));
+  // No account yet: the free grant is created on first use, so don't warn.
+  const balance = ownerAccount ? ownerAccount.planBalance + ownerAccount.topupBalance : null;
+  return {
+    ownerTextModels: textModels,
+    ownerCanAfford: Object.fromEntries(
+      textModels.map((m) => [m, balance === null || balance >= minimumMessageCredits(m)])
+    ) as Record<string, boolean>,
+    ownerBalance: role === "OWNER" ? balance : null,
   };
 }
 

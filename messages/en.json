@@ -286,7 +286,10 @@
     "changeInSettings": "Change in Settings",
     "capGenerate": "generate responses",
     "imageWithAttachments": "Image generation can't be combined with file or image attachments.",
-    "charCount": "{current} / {max}"
+    "charCount": "{current} / {max}",
+    "useModel": "Use {model}",
+    "notEnoughCreditsForMessage": "This message needs about {needed} credits, and you have {balance}.",
+    "ownerNotEnoughCredits": "The workspace owner doesn't have enough credits for this message."
   },
   "Settings": {
     "ai": {
@@ -299,7 +302,12 @@
       "searchOnToast": "Web search turned on",
       "searchOffToast": "Web search turned off",
       "languageUpdatedToast": "AI response language updated",
-      "saveError": "Couldn't save your AI preferences. Try again."
+      "saveError": "Couldn't save your AI preferences. Try again.",
+      "defaultModelLabel": "Default model for new messages",
+      "defaultModelAutomatic": "Automatic (recommended)",
+      "defaultModelLocked": "{model} · {plan} plan and above",
+      "defaultModelHint": "Automatic uses Standard Reasoning whenever the plan that pays for the workspace includes it, otherwise Fast & Efficient. In someone else's workspace, their plan decides which models you can use. You can still pick another model for any message, and Regenerate keeps the model of the answer it regenerates.",
+      "defaultModelUpdatedToast": "Default model updated"
     },
     "sessions": {
       "title": "Sessions & Devices",
@@ -696,12 +704,12 @@
       "disclaimer": "You can revoke or modify sharing permissions at any time from your workspace settings."
     },
     "creditsLow": {
-      "subject": "Notice: Your Klecx token balance is running low",
-      "heading": "Token balance low",
+      "subject": "Your Klecx credits are running low",
+      "heading": "Credits running low",
       "greeting": "Hi,",
-      "body": "You have {remainingCredits} tokens remaining in your Klecx account balance. Top up your tokens to ensure uninterrupted AI streaming and generation.",
-      "button": "Top Up Tokens",
-      "disclaimer": "You can manage auto-refill or upgrade your subscription plan anytime in settings."
+      "body": "You have {remainingCredits} credits left for this period. A message that needs more credits than are left can't be sent, in your workspaces and for the people you share them with. Your credits renew when your next period starts.",
+      "button": "See plans",
+      "disclaimer": "Settings → Usage shows what used your credits."
     },
     "paymentFailed": {
       "subject": "Action Required: Payment failed for your Klecx subscription",
@@ -2406,7 +2414,8 @@
       "already_member": "This person already has access.",
       "cannot_invite_owner": "The owner already has access.",
       "cannot_invite_self": "You can't invite yourself.",
-      "invalid_email": "Enter a valid email address."
+      "invalid_email": "Enter a valid email address.",
+      "model_not_in_plan": "This model isn't included in your plan."
     }
   },
   "Gates": {
@@ -2423,7 +2432,9 @@
     "member_credit_cap": "You've used the monthly limit of {cap} credits the workspace owner set for you",
     "daily_voice_limit": "Daily voice input limit reached for your plan",
     "unsupported_browser": "Voice input isn't supported in this browser",
-    "view_only_project": "You have view-only access to this project"
+    "view_only_project": "You have view-only access to this project",
+    "not_enough_credits": "This model needs about {needed} credits per message, and you have {balance}.",
+    "owner_not_enough_credits": "The workspace owner doesn't have enough credits for this model (about {needed} per message)."
   },
   "Models": {
     "text-economy": {

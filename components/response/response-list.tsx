@@ -186,6 +186,8 @@ export function ResponseList({
     tRoot
   );
 
+  const creditsDetails = stream.errorDetails ?? null;
+
   // Detect 402 / insufficient credits error
   const isCreditsError = Boolean(
     stream.error &&
@@ -368,17 +370,29 @@ export function ResponseList({
                     <span>{t("outOfCredits")}</span>
                   </div>
                   <p className="text-fg-muted text-xs sm:text-sm">
-                    {tChat("outOfCreditsReason")}
+                    {/* Pre-10.6 fix: what this message needed, when the server said. */}
+                    {creditsDetails?.ownerPays
+                      ? tChat("ownerNotEnoughCredits")
+                      : typeof creditsDetails?.needed === "number" &&
+                          typeof creditsDetails.balance === "number"
+                        ? tChat("notEnoughCreditsForMessage", {
+                            needed: creditsDetails.needed,
+                            balance: creditsDetails.balance,
+                          })
+                        : tChat("outOfCreditsReason")}
                   </p>
-                  <div className="pt-1">
-                    <Button
-                      size="sm"
-                      asChild
-                      className="bg-accent text-accent-fg hover:bg-accent/90 text-xs"
-                    >
-                      <Link href="/settings/billing">{t("upgradePlan")}</Link>
-                    </Button>
-                  </div>
+                  {/* A member can't top up the owner's account: no upgrade link. */}
+                  {!creditsDetails?.ownerPays && (
+                    <div className="pt-1">
+                      <Button
+                        size="sm"
+                        asChild
+                        className="bg-accent text-accent-fg hover:bg-accent/90 text-xs"
+                      >
+                        <Link href="/settings/billing">{t("upgradePlan")}</Link>
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
 

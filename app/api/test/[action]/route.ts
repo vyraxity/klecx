@@ -27,6 +27,8 @@ import {
  * - `GET  /api/test/ledger-check?email=` — the load test's check: balances
  *   equal the ledger sums and never went negative.
  */
+const setCreditsBody = z.object({ email: z.string().email(), balance: z.number().int().min(0).max(100_000) });
+
 const subscribeBody = z.object({
   email: z.string().email(),
   plan: z.enum(["LITE", "STANDARD", "PRO"]),
@@ -73,6 +75,23 @@ export const POST = route({
     if (action === "subscribe") {
       const body = subscribeBody.parse(raw);
       return subscribeForTest(body.email, body.plan, body.interval ?? "month");
+    }
+    if (action === "set-credits") {
+      // Pre-10.6 fix: a low balance for the low-credits journey, through a
+      // ledger adjustment (so ledger-check stays consistent).
+      const body = setCreditsBody.parse(raw);
+      const account = await db.creditAccount.findFirst({
+        where: { user: { email: { equals: body.email, mode: "insensitive" } } },
+        select: { id: true, planBalance: true, topupBalance: true },
+      });
+      if (!account) throw Errors.notFound("Account");
+      const { adjust } = await import("@/server/services/credits");
+      return adjust(
+        account.id,
+        { plan: body.balance - account.planBalance, topup: -account.topupBalance },
+        "e2e.set_credits",
+        `e2e:set-credits:${account.id}:${Date.now()}`
+      );
     }
     if (action === "subscription-event") {
       const body = eventBody.parse(raw);

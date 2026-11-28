@@ -286,7 +286,10 @@
     "changeInSettings": "Cambiar en Configuración",
     "capGenerate": "generar respuestas",
     "imageWithAttachments": "La generación de imágenes no se puede combinar con archivos o imágenes adjuntos.",
-    "charCount": "{current} / {max}"
+    "charCount": "{current} / {max}",
+    "useModel": "Usar {model}",
+    "notEnoughCreditsForMessage": "Este mensaje necesita unos {needed} créditos y tienes {balance}.",
+    "ownerNotEnoughCredits": "El propietario del espacio de trabajo no tiene créditos suficientes para este mensaje."
   },
   "Settings": {
     "ai": {
@@ -299,7 +302,12 @@
       "searchOnToast": "Búsqueda web activada",
       "searchOffToast": "Búsqueda web desactivada",
       "languageUpdatedToast": "Idioma de IA actualizado",
-      "saveError": "No se pudieron guardar tus preferencias de IA. Inténtalo de nuevo."
+      "saveError": "No se pudieron guardar tus preferencias de IA. Inténtalo de nuevo.",
+      "defaultModelLabel": "Modelo predeterminado para los mensajes nuevos",
+      "defaultModelAutomatic": "Automático (recomendado)",
+      "defaultModelLocked": "{model} · plan {plan} y superiores",
+      "defaultModelHint": "Automático usa Razonamiento Estándar siempre que el plan que paga el espacio de trabajo lo incluya; si no, Rápido y Eficiente. En el espacio de trabajo de otra persona, su plan decide qué modelos puedes usar. Puedes elegir otro modelo para cualquier mensaje, y Regenerar mantiene el modelo de la respuesta que regenera.",
+      "defaultModelUpdatedToast": "Modelo predeterminado actualizado"
     },
     "sessions": {
       "title": "Sesiones y dispositivos",
@@ -696,12 +704,12 @@
       "disclaimer": "Puedes revocar o modificar los permisos de acceso compartido en cualquier momento desde la configuración de tu espacio."
     },
     "creditsLow": {
-      "subject": "Aviso: Tu saldo de tokens en Klecx se está agotando",
-      "heading": "Saldo de tokens bajo",
+      "subject": "Tus créditos de Klecx se están agotando",
+      "heading": "Quedan pocos créditos",
       "greeting": "Hola,",
-      "body": "Te quedan {remainingCredits} tokens en el saldo de tu cuenta de Klecx. Recarga tus tokens para garantizar una generación fluida y sin interrupciones.",
-      "button": "Recargar tokens",
-      "disclaimer": "Puedes configurar la recarga automática o mejorar tu plan de suscripción en cualquier momento desde los ajustes."
+      "body": "Te quedan {remainingCredits} créditos en este periodo. Un mensaje que necesita más créditos de los que quedan no se puede enviar, ni en tus espacios de trabajo ni para las personas con las que los compartes. Tus créditos se renuevan cuando empieza tu siguiente periodo.",
+      "button": "Ver planes",
+      "disclaimer": "Configuración → Uso muestra en qué se usaron tus créditos."
     },
     "paymentFailed": {
       "subject": "Acción requerida: Error en el pago de tu suscripción a Klecx",
@@ -2406,7 +2414,8 @@
       "already_member": "Esta persona ya tiene acceso.",
       "cannot_invite_owner": "El propietario ya tiene acceso.",
       "cannot_invite_self": "No puedes invitarte a ti mismo.",
-      "invalid_email": "Introduce una dirección de correo electrónico válida."
+      "invalid_email": "Introduce una dirección de correo electrónico válida.",
+      "model_not_in_plan": "Este modelo no está incluido en tu plan."
     }
   },
   "Gates": {
@@ -2423,7 +2432,9 @@
     "member_credit_cap": "Has usado el límite mensual de {cap} créditos que el propietario del espacio de trabajo te asignó",
     "daily_voice_limit": "Se ha alcanzado el límite diario de entrada de voz para tu plan",
     "unsupported_browser": "La entrada de voz no es compatible con este navegador",
-    "view_only_project": "Solo tienes acceso de lectura a este proyecto"
+    "view_only_project": "Solo tienes acceso de lectura a este proyecto",
+    "not_enough_credits": "Este modelo necesita unos {needed} créditos por mensaje y tienes {balance}.",
+    "owner_not_enough_credits": "El propietario del espacio de trabajo no tiene créditos suficientes para este modelo (unos {needed} por mensaje)."
   },
   "Models": {
     "text-economy": {

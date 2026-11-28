@@ -6,6 +6,7 @@ import { getEntitlements } from "@/server/billing/entitlements";
 import { isNaturalVoice } from "@/lib/speech/voices";
 import type { UpdatePreferencesInput } from "@/lib/schemas/user-preferences";
 import type { Density, Theme } from "@/lib/theme";
+import { isDefaultModelChoice, type DefaultModelChoice } from "@/lib/ai/default-model";
 
 /**
  * Step 9.2: the full preferences object. No row is written until the person
@@ -26,6 +27,8 @@ export interface UserPreferencesDto {
   voiceSpeed: number;
   onboardingDismissed: boolean;
   density: Density;
+  /** Pre-10.6 fix: the saved default model for new messages; null = Automatic. */
+  defaultModelKey: DefaultModelChoice | null;
   updatedAt: Date | null;
 }
 
@@ -47,6 +50,7 @@ function toDto(pref: UserPreference | null): UserPreferencesDto {
     voiceSpeed: pref?.voiceSpeed ?? 1,
     onboardingDismissed: pref?.onboardingDismissed ?? false,
     density: pref?.density === "COMPACT" ? "compact" : "comfortable",
+    defaultModelKey: isDefaultModelChoice(pref?.defaultModelKey) ? pref.defaultModelKey : null,
     updatedAt: pref?.updatedAt ?? null,
   };
 }
@@ -61,6 +65,7 @@ export async function updateUserPreferences(
   input: UpdatePreferencesInput
 ): Promise<UserPreferencesDto> {
   await assertVoiceChoiceAllowed(userId, input);
+  await assertDefaultModelAllowed(userId, input);
   const data = {
     ...(input.uiLocale !== undefined && { uiLocale: input.uiLocale }),
     ...(input.aiLanguage !== undefined && { aiLanguage: input.aiLanguage }),
@@ -73,6 +78,7 @@ export async function updateUserPreferences(
     ...(input.voiceProvider !== undefined && { voiceProvider: input.voiceProvider }),
     ...(input.voiceId !== undefined && { voiceId: input.voiceId }),
     ...(input.voiceSpeed !== undefined && { voiceSpeed: input.voiceSpeed }),
+    ...(input.defaultModelKey !== undefined && { defaultModelKey: input.defaultModelKey }),
   };
   const updated = await db.userPreference.upsert({
     where: { userId },
@@ -118,4 +124,26 @@ async function assertVoiceChoiceAllowed(userId: string, input: UpdatePreferences
   if (provider === "natural" && input.voiceId && !isNaturalVoice(input.voiceId)) {
     throw Errors.unprocessable("Unknown voice", "unknown_voice");
   }
+}
+
+/**
+ * Pre-10.6 fix: a default model can only be one the person's own plan offers
+ * (Automatic is always allowed). In someone else's workspace the owner's plan
+ * still decides what runs (`resolveDefaultTextModel()`).
+ */
+async function assertDefaultModelAllowed(userId: string, input: UpdatePreferencesInput) {
+  if (!input.defaultModelKey) return;
+  const entitlements = await getEntitlements(userId);
+  if (!(entitlements.models as readonly string[]).includes(input.defaultModelKey)) {
+    throw Errors.forbidden("This model isn't included in your plan", "model_not_in_plan");
+  }
+}
+
+/** The person's saved default model (null = Automatic), for the generation service. */
+export async function getDefaultModelPreference(userId: string): Promise<DefaultModelChoice | null> {
+  const pref = await db.userPreference.findUnique({
+    where: { userId },
+    select: { defaultModelKey: true },
+  });
+  return isDefaultModelChoice(pref?.defaultModelKey) ? pref.defaultModelKey : null;
 }

@@ -121,7 +121,7 @@ describe("Step 9.2 — /api/v1/me/preferences", () => {
     const { data } = await (await getPrefs(req("GET"))).json();
     expect(Object.keys(data).sort()).toEqual(
       [
-        "aiLanguage", "density", "enterToSend", "onboardingDismissed", "reduceMotion", "theme", "themeSaved",
+        "aiLanguage", "defaultModelKey", "density", "enterToSend", "onboardingDismissed", "reduceMotion", "theme", "themeSaved",
         "uiLocale", "updatedAt", "voiceId", "voiceProvider", "voiceSpeed", "webSearchEnabled",
       ].sort()
     );

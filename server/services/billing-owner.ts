@@ -282,6 +282,8 @@ export async function checkAndNotifyOwnerAllowanceThresholds(opts: {
   workspaceId?: string | null;
   remainingBalance?: number;
   force100?: boolean;
+  /** Pre-10.6 fix: a message was refused with credits left (too few for it): "running low". */
+  force80?: boolean;
 }): Promise<{ notified80: boolean; notified100: boolean }> {
   const { ownerId, accountId, workspaceId } = opts;
   const periodStart = getCurrentBillingPeriodStart();
@@ -313,7 +315,7 @@ export async function checkAndNotifyOwnerAllowanceThresholds(opts: {
     monthlyAllowance > 0 ? spentThisPeriod / monthlyAllowance : 0;
   const reached100 =
     Boolean(opts.force100) || remaining <= 0 || ratioUsed >= 1.0;
-  const reached80 = reached100 || ratioUsed >= 0.8;
+  const reached80 = reached100 || Boolean(opts.force80) || ratioUsed >= 0.8;
 
   let notified80 = false;
   let notified100 = false;
@@ -491,17 +493,26 @@ export async function reserveForWorkspaceGeneration(opts: {
     });
   } catch (err: unknown) {
     if (err instanceof ApiError && err.status === 402 && err.code !== "collaborator_cap_exceeded") {
+      const details = (err.details ?? {}) as { needed?: number; balance?: number };
+      // Pre-10.6 fix: "out of credits" is for an empty account; a balance
+      // too small for this one message (e.g. 10 credits for a Standard
+      // Reasoning answer) gets "running low", with the real count.
+      const left = details.balance ?? 0;
       await checkAndNotifyOwnerAllowanceThresholds({
         ownerId,
         accountId: billedAccountId,
         workspaceId: ws.id,
-        remainingBalance: 0,
-        force100: true,
+        remainingBalance: left,
+        ...(left > 0 ? { force80: true } : { force100: true }),
       }).catch(() => {});
 
       if (isCollaborator) {
         // Neutral message for collaborators — never reveal the owner's balance
-        throw Errors.paymentRequired(OWNER_OUT_OF_CREDITS_MESSAGE);
+        // (only what this message needed, and that the owner pays).
+        throw new ApiError(402, "insufficient_credits", OWNER_OUT_OF_CREDITS_MESSAGE, {
+          needed: details.needed ?? opts.amount,
+          ownerPays: true,
+        });
       }
     }
     throw err;

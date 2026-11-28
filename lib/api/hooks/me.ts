@@ -28,6 +28,8 @@ export interface UserPreferencesDto {
   voiceSpeed: number;
   onboardingDismissed: boolean;
   density: Density;
+  /** Pre-10.6 fix: the default model for new messages; null = Automatic. */
+  defaultModelKey?: "text-economy" | "text-standard" | null;
 }
 
 export interface UserCreditsDto {

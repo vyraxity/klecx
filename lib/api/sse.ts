@@ -34,8 +34,18 @@ export type GenerationSSEHandlers = {
     /** Documents Klecx generated in this answer (F3.4). */
     documents?: GeneratedDocumentDto[];
   }) => void;
-  onError?: (data: { code: string; message?: string }) => void;
+  onError?: (data: { code: string; message?: string; details?: StreamErrorDetails }) => void;
 };
+
+/**
+ * Pre-10.6 fix: what a refused message (402) needed. `balance` only when the
+ * person pays themselves; `ownerPays` when the workspace owner does.
+ */
+export interface StreamErrorDetails {
+  needed?: number;
+  balance?: number;
+  ownerPays?: boolean;
+}
 
 /**
  * Streams generation events using fetch + eventsource-parser.
@@ -77,6 +87,7 @@ export async function streamGeneration(
         handlers.onError?.({
           code: errData?.error?.code || `http_${res.status}`,
           message: errData?.error?.message || res.statusText,
+          details: errData?.error?.details,
         });
         return;
       }

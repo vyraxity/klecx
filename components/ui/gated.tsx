@@ -61,6 +61,10 @@ export function gateMessage(
       return t("owner_out_of_credits");
     case "member_credit_cap":
       return t("member_credit_cap", { cap: reason.cap });
+    case "not_enough_credits":
+      return t("not_enough_credits", { needed: reason.needed, balance: reason.balance });
+    case "owner_not_enough_credits":
+      return t("owner_not_enough_credits", { needed: reason.needed });
     case "daily_voice_limit":
       return t("daily_voice_limit");
     case "unsupported_browser":
@@ -131,7 +135,9 @@ export function Gated({
   // ("Available on the Lite plan and above") and drop the Upgrade link.
   const isUpgradable =
     billingEnabled &&
-    (reason.code === "requires_plan" || reason.code === "out_of_credits");
+    (reason.code === "requires_plan" ||
+      reason.code === "out_of_credits" ||
+      reason.code === "not_enough_credits");
   const ariaLabel = isUpgradable
     ? `${message} · ${upgradeLabel}`
     : `${message}\u200B`;
