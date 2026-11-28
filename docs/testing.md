@@ -6,7 +6,7 @@ Four layers, from fastest to slowest. None of them calls Gemini, Resend, Cloudin
 | --- | --- | --- | --- |
 | Unit / service (Jest) | business rules, authorization (two-user suite), webhooks, credits, prompts, UI components | `__tests__/` | every push and PR (`ci.yml`), `npm test` |
 | Coverage | at least **80 % of lines in `server/services`** (91.6 % on 2026-11-25) | `jest.config.ts` (`coverageThreshold`) | every push and PR (`npm run test:coverage`) |
-| End-to-end (Playwright) | 15 journeys through the real UI: Chromium, WebKit, and a phone viewport for the `@mobile` ones | `e2e/*.e2e.ts` | nightly on `dev`, every PR into `main`, by hand (`e2e.yml`) |
+| End-to-end (Playwright) | 16 journeys through the real UI: Chromium, WebKit, and a phone viewport for the `@mobile` ones | `e2e/*.e2e.ts` | nightly on `dev`, every PR into `main`, by hand (`e2e.yml`) |
 | Lighthouse | marketing ≥ 90 performance / ≥ 95 accessibility / ≥ 95 SEO, sign-in ≥ 90 / ≥ 95, app ≥ 95 accessibility (Step 10.5, `docs/performance.md`) | `scripts/lighthouse.mjs` | with the journeys (`e2e.yml`, job `lighthouse`), `npm run lighthouse` |
 | Load (k6) | 50 simultaneous answers, 20 sessions on one balance, ledger integrity, API p95 | `load/k6-load.js` | by hand (`load.yml`) |
 
@@ -64,6 +64,7 @@ Load test: `npm run e2e:build`, `npm run e2e:start` (keep it running), then `k6 
 | `13-plan-gating` | Free: Standard model and inviting disabled with a reason; forged requests refused by the server |
 | `14-accessibility` | axe (WCAG 2.2 AA) on every public page, the auth pages, the workspace list, a conversation and every Settings page, light and dark theme; keyboard walkthrough (skip link, `[`, Ctrl+K, composer, Share dialog focus return, Ctrl+Alt+M) — `docs/accessibility.md` |
 | `15-pseudo-locale` | pseudo-locale `en-XA` (texts ~30 % longer and accented) on public and app pages, desktop and phone: no sideways scroll, no cut-off button or link text |
+| `16-landing-and-help` | a signed-in visitor sees "Go to your workspaces" on the landing page (signed-out visitors see Sign in / Get started); `/help?q=` opens filtered and typing keeps the URL in step; the not-found page's search lands on filtered help |
 
 Shared steps are in `e2e/helpers.ts` (`newUser` signs up through the API and verifies with the emailed link; every test uses fresh people, so tests never depend on each other).
 

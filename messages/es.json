@@ -112,7 +112,7 @@
     "heroDescription": "Organiza el trabajo con IA en proyectos, guarda las versiones de cada respuesta y haz preguntas sobre cualquier pasaje sin perder el hilo de pensamiento."
   },
   "Auth": {
-    "orContinueWith": "O continúa con tu correo",
+    "orContinueWith": "O continúa con",
     "google": "Google",
     "github": "GitHub",
     "emailPlaceholder": "nombre@ejemplo.com",
@@ -1185,7 +1185,8 @@
       "toggleTheme": "Cambiar tema de color",
       "openMenu": "Abrir menú",
       "closeMenu": "Cerrar menú",
-      "help": "Ayuda"
+      "help": "Ayuda",
+      "goToWorkspaces": "Ir a tus espacios de trabajo"
     },
     "footer": {
       "tagline": "Piensa en espacios de trabajo, no en hilos. Organiza el razonamiento en proyectos, preserva versiones y colabora con claridad.",
@@ -1393,7 +1394,8 @@
           "sideQuestion": "Pregunta secundaria: ¿Cómo debemos fijar los precios de la carta inicial para equilibrar margen y prueba?"
         }
       },
-      "scenesTablistLabel": "Vistas previas en diferentes campos"
+      "scenesTablistLabel": "Vistas previas en diferentes campos",
+      "goToWorkspaces": "Ir a tus espacios de trabajo"
     },
     "features": {
       "badge": "Diseñado para creadores",
@@ -1588,7 +1590,8 @@
       "heading": "¿Listo para organizar tu pensamiento con IA?",
       "subheading": "Descubre espacios que preservan versiones, admiten preguntas a nivel de pasaje y se mantienen organizados. Empieza gratis con 100 créditos mensuales, sin tarjeta de crédito.",
       "button": "Lanzar espacio gratis",
-      "viewPlans": "Ver planes"
+      "viewPlans": "Ver planes",
+      "goToWorkspaces": "Ir a tus espacios de trabajo"
     },
     "pricingPage": {
       "heading": "Precios sencillos y transparentes.",
@@ -2094,7 +2097,8 @@
         "documentDrafts": "Conserva las ediciones de documentos sin guardar si recargas la página.",
         "usernamePrompt": "Evita mostrar dos veces en una misma visita el aviso del nombre de usuario.",
         "cookieNotice": "Recuerda que ya viste el aviso de cookies.",
-        "localeSuggestion": "Recuerda tu respuesta a la sugerencia de cambiar al idioma de tu país, para no volver a mostrarla."
+        "localeSuggestion": "Recuerda tu respuesta a la sugerencia de cambiar al idioma de tu país, para no volver a mostrarla.",
+        "signedInHint": "Indica a nuestras páginas públicas que has iniciado sesión, para que muestren un botón a tus espacios de trabajo. No contiene información de tu cuenta."
       }
     }
   },
@@ -2396,7 +2400,12 @@
       "two_factor_already_on": "El inicio de sesión en dos pasos ya está activado.",
       "two_factor_not_on": "El inicio de sesión en dos pasos no está activado.",
       "two_factor_not_started": "Empieza de nuevo: escribe tu contraseña para obtener un nuevo código QR.",
-      "password_required": "Primero crea una contraseña para usar el inicio de sesión en dos pasos."
+      "password_required": "Primero crea una contraseña para usar el inicio de sesión en dos pasos.",
+      "user_not_found": "Nadie en Klecx tiene ese nombre de usuario. Revisa cómo está escrito o invítalo por correo electrónico.",
+      "already_member": "Esta persona ya tiene acceso.",
+      "cannot_invite_owner": "El propietario ya tiene acceso.",
+      "cannot_invite_self": "No puedes invitarte a ti mismo.",
+      "invalid_email": "Introduce una dirección de correo electrónico válida."
     }
   },
   "Gates": {
@@ -3428,7 +3437,8 @@
       "confirmRemove": "¿Seguro que quieres quitar a este miembro?",
       "left": "Has salido del {resource}",
       "memberRemoved": "Miembro quitado",
-      "removeFailed": "No se pudo quitar al miembro"
+      "removeFailed": "No se pudo quitar al miembro",
+      "userNotFound": "Nadie en Klecx tiene el nombre de usuario @{username}. Revisa cómo está escrito o invítalo por correo electrónico."
     }
   },
   "Invite": {

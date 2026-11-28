@@ -17,8 +17,15 @@ test("invite a collaborator who generates on the owner's credits; activity and @
   await ask(owner.page, "Plan a team offsite");
   const workspaceUrl = owner.page.url();
 
-  // Invite by email from the Share dialog.
+  // An unknown username is refused with a clear message (pre-10.6 fix), and
+  // nothing lands in the pending invitations.
   const share = await openShare(owner.page);
+  const inviteBox = share.getByRole("textbox", { name: "Invite people by email or @username" });
+  await inviteBox.fill("@nobody_by_that_name");
+  await share.getByRole("button", { name: "Invite" }).click();
+  await expect(owner.page.getByText("No one on Klecx has the username @nobody_by_that_name", { exact: false })).toBeVisible();
+
+  // Invite by email from the Share dialog.
   await share.getByRole("textbox", { name: "Invite people by email or @username" }).fill(member.email);
   await share.getByRole("button", { name: "Invite" }).click();
   await expect(share.getByRole("tab", { name: "Invitations" })).toBeVisible();

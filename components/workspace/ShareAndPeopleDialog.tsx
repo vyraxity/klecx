@@ -53,6 +53,7 @@ import {
 import { toast } from "sonner";
 import { useFormatter, useTranslations } from "next-intl";
 import {
+  getApiErrorCode,
   getApiErrorMessage,
   LocalizedError,
   readApiError,
@@ -485,7 +486,14 @@ export function ShareAndPeopleDialog({
       fetchMembers();
       fetchActivity();
     } catch (err: unknown) {
-      toast.error(getApiErrorMessage(err, tRoot, tShare("toasts.inviteFailed")));
+      // An unknown username names the handle that was typed; the other
+      // refusals (already has access, the owner, yourself) use Errors.api.
+      const username = input.replace(/^@/, "");
+      toast.error(
+        getApiErrorCode(err) === "user_not_found"
+          ? tShare("toasts.userNotFound", { username })
+          : getApiErrorMessage(err, tRoot, tShare("toasts.inviteFailed"))
+      );
     } finally {
       setSendingInvite(false);
     }

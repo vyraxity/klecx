@@ -3,7 +3,7 @@ import { log, errInfo } from "@/server/log";
 import crypto from "node:crypto";
 import { db } from "@/server/db/client";
 import type { Actor } from "@/server/auth/session";
-import { Errors } from "@/server/http/errors";
+import { ApiError, Errors } from "@/server/http/errors";
 import {
   requireWorkspace,
   requireProject,
@@ -228,15 +228,17 @@ export async function createInvitation(
       targetEmail = foundUser.email;
       targetUserId = foundUser.id;
     } else {
-      // Per spec: "resolves usernames to emails; always responds generically ('Invitation sent')"
-      return { success: true, message: "Invitation sent" };
+      // Pre-10.6 fix (owner, 2026-11-27): say so instead of a generic
+      // "Invitation sent". Usernames are public already (the availability
+      // check and the mention list), so this reveals nothing new.
+      throw new ApiError(404, "user_not_found", "No user with that username");
     }
   } else {
     // Treat as email
     targetEmail = rawInput.toLowerCase();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(targetEmail)) {
-      throw Errors.badRequest("Invalid email address format");
+      throw Errors.badRequest("Invalid email address format", "invalid_email");
     }
     const foundUser = await db.user.findUnique({
       where: { email: targetEmail },
@@ -247,18 +249,20 @@ export async function createInvitation(
     }
   }
 
-  // If target user is the owner, no need to invite
-  if (targetUserId && targetUserId === ownerId) {
-    return { success: true, message: "Invitation sent" };
+  // Nothing to send to yourself, the owner, or someone who already has access
+  // (explicit or inherited): tell the inviter instead of a generic "sent".
+  if (targetUserId && targetUserId === actor.userId) {
+    throw Errors.badRequest("You can't invite yourself", "cannot_invite_self");
   }
-
-  // Already has access (explicit or inherited) -> nothing to send; stay generic
+  if (targetUserId && targetUserId === ownerId) {
+    throw Errors.badRequest("The owner already has access", "cannot_invite_owner");
+  }
   if (targetUserId) {
     const existingAccess = workspaceId
       ? await resolveWorkspaceRole(targetUserId, workspaceId)
       : await resolveProjectRole(targetUserId, projectId!);
     if (existingAccess) {
-      return { success: true, message: "Invitation sent" };
+      throw Errors.conflict("This person already has access", "already_member");
     }
   }
 

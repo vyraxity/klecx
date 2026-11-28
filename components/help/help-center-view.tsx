@@ -17,23 +17,54 @@ import { Button } from "@/components/ui/button";
 import {
   HelpArticleMeta,
   HELP_CATEGORY_KEYS,
+  HELP_QUERY_MAX_LENGTH,
+  helpSearchQueryString,
   matchesQuery,
 } from "@/lib/help/shared";
 
 interface HelpCenterViewProps {
   articles: HelpArticleMeta[];
   categories?: readonly string[];
+  /** From `/help?q=` (pre-10.6 fix). */
+  initialQuery?: string;
+  /** From `/help?category=`, already checked against the known categories. */
+  initialCategory?: string | null;
 }
+
+/** How long typing pauses before the address bar follows the search. */
+const URL_SYNC_DELAY_MS = 300;
 
 export function HelpCenterView({
   articles,
   categories = HELP_CATEGORY_KEYS,
+  initialQuery = "",
+  initialCategory = null,
 }: HelpCenterViewProps) {
   const t = useTranslations("Help");
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(
-    null
+    initialCategory
   );
+
+  // Keep the address bar in step with the filters (bookmarkable, shareable,
+  // and what the site's SearchAction promises). `history.replaceState` is
+  // understood by Next.js and doesn't re-run the server page or add history
+  // entries; typing is debounced, a category click applies at once.
+  const firstRender = React.useRef(true);
+  React.useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    const search = helpSearchQueryString(searchQuery, selectedCategory);
+    const timer = window.setTimeout(() => {
+      if (window.location.search !== search) {
+        const href = window.location.pathname + search + window.location.hash;
+        window.history.replaceState(window.history.state, "", href);
+      }
+    }, URL_SYNC_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [searchQuery, selectedCategory]);
 
   const filteredArticles = React.useMemo(() => {
     let list = articles;
@@ -74,7 +105,9 @@ export function HelpCenterView({
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              maxLength={HELP_QUERY_MAX_LENGTH}
               placeholder={t("searchPlaceholder")}
+              aria-label={t("searchPlaceholder")}
               className="bg-surface border-border focus-visible:ring-accent h-13 rounded-2xl pe-4 ps-12 text-base shadow-sm"
             />
           </div>

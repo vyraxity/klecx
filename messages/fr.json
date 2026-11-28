@@ -112,7 +112,7 @@
     "heroDescription": "Organisez vos recherches d'IA en projets, conservez les versions de chaque réponse et posez des questions sur n'importe quel passage sans perdre le fil."
   },
   "Auth": {
-    "orContinueWith": "Ou continuer avec votre e-mail",
+    "orContinueWith": "Ou continuer avec",
     "google": "Google",
     "github": "GitHub",
     "emailPlaceholder": "nom@exemple.com",
@@ -1185,7 +1185,8 @@
       "toggleTheme": "Changer de thème",
       "openMenu": "Ouvrir le menu",
       "closeMenu": "Fermer le menu",
-      "help": "Aide"
+      "help": "Aide",
+      "goToWorkspaces": "Accéder à vos espaces de travail"
     },
     "footer": {
       "tagline": "Pensez en espaces de travail, pas en fils. Organisez vos réflexions en projets, conservez les versions et collaborez proprement.",
@@ -1393,7 +1394,8 @@
           "sideQuestion": "Question secondaire : Comment calibrer la grille tarifaire initiale pour concilier marge et attractivité ?"
         }
       },
-      "scenesTablistLabel": "Aperçus dans différents domaines"
+      "scenesTablistLabel": "Aperçus dans différents domaines",
+      "goToWorkspaces": "Accéder à vos espaces de travail"
     },
     "features": {
       "badge": "Conçu pour les bâtisseurs",
@@ -1588,7 +1590,8 @@
       "heading": "Prêt à structurer votre travail avec l'IA ?",
       "subheading": "Découvrez des espaces qui conservent les versions, acceptent les annotations et restent clairs au fil du temps. Démarrez gratuitement avec 100 crédits par mois, sans carte bancaire.",
       "button": "Lancer un espace gratuit",
-      "viewPlans": "Voir les forfaits"
+      "viewPlans": "Voir les forfaits",
+      "goToWorkspaces": "Accéder à vos espaces de travail"
     },
     "pricingPage": {
       "heading": "Une tarification simple et transparente.",
@@ -2094,7 +2097,8 @@
         "documentDrafts": "Conserve les modifications de documents non enregistrées si vous rechargez la page.",
         "usernamePrompt": "Évite d'afficher deux fois dans une même visite la demande de nom d'utilisateur.",
         "cookieNotice": "Mémorise que vous avez vu l'avis sur les cookies.",
-        "localeSuggestion": "Retient votre réponse à la suggestion de passer à la langue de votre pays, pour ne plus l'afficher."
+        "localeSuggestion": "Retient votre réponse à la suggestion de passer à la langue de votre pays, pour ne plus l'afficher.",
+        "signedInHint": "Indique à nos pages publiques que vous êtes connecté, pour qu'elles affichent un bouton vers vos espaces de travail. Il ne contient aucune information sur votre compte."
       }
     }
   },
@@ -2396,7 +2400,12 @@
       "two_factor_already_on": "La connexion en deux étapes est déjà activée.",
       "two_factor_not_on": "La connexion en deux étapes n'est pas activée.",
       "two_factor_not_started": "Recommencez : saisissez votre mot de passe pour obtenir un nouveau code QR.",
-      "password_required": "Définissez d'abord un mot de passe pour utiliser la connexion en deux étapes."
+      "password_required": "Définissez d'abord un mot de passe pour utiliser la connexion en deux étapes.",
+      "user_not_found": "Personne sur Klecx n'a ce nom d'utilisateur. Vérifiez l'orthographe ou invitez cette personne par e-mail.",
+      "already_member": "Cette personne a déjà accès.",
+      "cannot_invite_owner": "Le propriétaire a déjà accès.",
+      "cannot_invite_self": "Vous ne pouvez pas vous inviter vous-même.",
+      "invalid_email": "Saisissez une adresse e-mail valide."
     }
   },
   "Gates": {
@@ -3428,7 +3437,8 @@
       "confirmRemove": "Voulez-vous vraiment retirer ce membre ?",
       "left": "Vous avez quitté {resource}",
       "memberRemoved": "Membre retiré",
-      "removeFailed": "Impossible de retirer le membre"
+      "removeFailed": "Impossible de retirer le membre",
+      "userNotFound": "Personne sur Klecx n'a le nom d'utilisateur @{username}. Vérifiez l'orthographe ou invitez cette personne par e-mail."
     }
   },
   "Invite": {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
+import { SIGNED_IN_HINT_COOKIE, syncSignedInHint } from "@/lib/auth/signed-in-hint-cookie";
 import {
   authRoutes,
   DEFAULT_LOGIN_REDIRECT,
@@ -138,6 +139,13 @@ async function handle(req: NextRequest, csp: Csp | null): Promise<NextResponse> 
 
   const isAuthRoute = authRoutes.includes(pathname);
 
+  // Pre-10.6 fix: a readable hint so marketing pages can offer "Go to your
+  // workspaces" without a server-side session check. Cleared with the session.
+  const hasHint = req.cookies.get(SIGNED_IN_HINT_COOKIE)?.value === "1";
+  const secureCookie = nextUrl.protocol === "https:";
+  const finish = (res: NextResponse, signedIn = isLoggedIn) =>
+    attachSecurityHeaders(syncSignedInHint(res, hasHint, signedIn, secureCookie), pathname);
+
   const hasExpiredReason =
     nextUrl.searchParams.get("reason") === "expired" ||
     nextUrl.searchParams.get("reason") === "revoked" ||
@@ -153,7 +161,7 @@ async function handle(req: NextRequest, csp: Csp | null): Promise<NextResponse> 
     if (hasExpiredReason) {
       clearAuthCookies(res);
     }
-    return attachSecurityHeaders(res, pathname);
+    return finish(res, isLoggedIn && !hasExpiredReason);
   }
 
   if (isAuthRoute) {
@@ -161,26 +169,20 @@ async function handle(req: NextRequest, csp: Csp | null): Promise<NextResponse> 
     if (hasExpiredReason) {
       const res = nextWith(csp);
       clearAuthCookies(res);
-      return attachSecurityHeaders(res, pathname);
+      return finish(res, false);
     }
 
     if (isLoggedIn) {
-      return attachSecurityHeaders(
-        NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl)),
-        pathname,
-      );
+      return finish(NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl)));
     }
-    return attachSecurityHeaders(nextWith(csp), pathname);
+    return finish(nextWith(csp));
   }
 
   if (!isLoggedIn && !isPublicRoute) {
-    return attachSecurityHeaders(
-      NextResponse.redirect(new URL("/auth/login", nextUrl)),
-      pathname,
-    );
+    return finish(NextResponse.redirect(new URL("/auth/login", nextUrl)));
   }
 
-  return attachSecurityHeaders(nextWith(csp), pathname);
+  return finish(nextWith(csp));
 }
 
 export default proxy;

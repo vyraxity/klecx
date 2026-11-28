@@ -112,7 +112,7 @@
     "heroDescription": "Organize AI work into projects, keep every answer's versions, and ask questions about any passage without losing your train of thought."
   },
   "Auth": {
-    "orContinueWith": "Or continue with email",
+    "orContinueWith": "Or continue with",
     "google": "Google",
     "github": "GitHub",
     "emailPlaceholder": "name@example.com",
@@ -1185,7 +1185,8 @@
       "toggleTheme": "Toggle color theme",
       "openMenu": "Open menu",
       "closeMenu": "Close menu",
-      "help": "Help"
+      "help": "Help",
+      "goToWorkspaces": "Go to your workspaces"
     },
     "footer": {
       "tagline": "Think in workspaces, not threads. Organize reasoning into projects, preserve versions, and collaborate cleanly.",
@@ -1393,7 +1394,8 @@
           "sideQuestion": "Side Question: How should we price the opening menu to balance margins and trial?"
         }
       },
-      "scenesTablistLabel": "Preview scenes across fields"
+      "scenesTablistLabel": "Preview scenes across fields",
+      "goToWorkspaces": "Go to your workspaces"
     },
     "features": {
       "badge": "Architected for Builders",
@@ -1588,7 +1590,8 @@
       "heading": "Ready to organize your AI thinking?",
       "subheading": "Experience workspaces that preserve versions, support passage-level questions, and stay clean over time. Start free with 100 monthly credits — no credit card required.",
       "button": "Start Free Workspace",
-      "viewPlans": "View Plans"
+      "viewPlans": "View Plans",
+      "goToWorkspaces": "Go to your workspaces"
     },
     "pricingPage": {
       "heading": "Simple, honest pricing.",
@@ -2094,7 +2097,8 @@
         "documentDrafts": "Keeps unsaved document edits if you reload the page.",
         "usernamePrompt": "Avoids showing the username prompt twice in one visit.",
         "cookieNotice": "Remembers that you have seen the cookie notice.",
-        "localeSuggestion": "Remembers your answer to the suggestion to switch to your country's language, so it isn't shown again."
+        "localeSuggestion": "Remembers your answer to the suggestion to switch to your country's language, so it isn't shown again.",
+        "signedInHint": "Tells our public pages that you're signed in, so they show a button to your workspaces. It holds no account information."
       }
     }
   },
@@ -2396,7 +2400,12 @@
       "two_factor_already_on": "Two-factor sign-in is already on.",
       "two_factor_not_on": "Two-factor sign-in isn't on.",
       "two_factor_not_started": "Start again: enter your password to get a new QR code.",
-      "password_required": "Set a password first to use two-factor sign-in."
+      "password_required": "Set a password first to use two-factor sign-in.",
+      "user_not_found": "No one on Klecx has that username. Check the spelling, or invite them by email.",
+      "already_member": "This person already has access.",
+      "cannot_invite_owner": "The owner already has access.",
+      "cannot_invite_self": "You can't invite yourself.",
+      "invalid_email": "Enter a valid email address."
     }
   },
   "Gates": {
@@ -3428,7 +3437,8 @@
       "confirmRemove": "Are you sure you want to remove this member?",
       "left": "You have left the {resource}",
       "memberRemoved": "Member removed",
-      "removeFailed": "Couldn't remove the member"
+      "removeFailed": "Couldn't remove the member",
+      "userNotFound": "No one on Klecx has the username @{username}. Check the spelling, or invite them by email."
     }
   },
   "Invite": {
