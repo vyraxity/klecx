@@ -59,8 +59,23 @@ export function YourDataSettings({ userId }: { userId: string }) {
   return (
     <>
       <ExportSection userId={userId} />
+      <RecentlyDeletedLink />
       <DeleteSection userId={userId} />
     </>
+  );
+}
+
+/** Pre-10.6 fix: deleted workspaces and projects can be restored for 30 days. */
+function RecentlyDeletedLink() {
+  const t = useTranslations("Settings.data");
+  return (
+    <SettingsSection title={t("recentlyDeletedTitle")} description={t("recentlyDeletedHint")}>
+      <div>
+        <Button asChild variant="outline" size="sm">
+          <Link href="/settings/deleted">{t("recentlyDeletedOpen")}</Link>
+        </Button>
+      </div>
+    </SettingsSection>
   );
 }
 

@@ -77,6 +77,7 @@ import {
   useUpdateWorkspace,
 } from "@/lib/api/hooks/workspaces";
 import { queryKeys } from "@/lib/api/hooks/query-keys";
+import { api } from "@/lib/api/client";
 import type { GateReason } from "@/lib/entitlements/shared";
 import { useUiStore } from "@/lib/stores/ui";
 import { cn } from "@/lib/utils";
@@ -276,11 +277,32 @@ export function ProjectView({
     }
   };
 
+  // Pre-10.6 fix: the Undo of a delete toast restores it at once.
+  const undoDelete = async (restorePath: string, thenGoTo?: string) => {
+    try {
+      await api(restorePath, { method: "POST" });
+      toast.success(t("toasts.restored"));
+      if (thenGoTo) router.push(thenGoTo);
+      refreshAfterWorkspaceChange();
+      router.refresh();
+    } catch {
+      toast.error(t("toasts.restoreFailed"));
+    }
+  };
+
   const [deleteProjectOpen, setDeleteProjectOpen] = React.useState(false);
   const confirmDeleteProject = async () => {
     try {
       await deleteProject.mutateAsync(project.id);
-      toast.success(t("toasts.projectDeleted"));
+      const projectId = project.id;
+      // Pre-10.6 fix: kept 30 days in Recently deleted; Undo restores it now.
+      toast.success(t("toasts.projectDeleted"), {
+        description: t("toasts.deleteUndoHint"),
+        action: {
+          label: t("toasts.undo"),
+          onClick: () => void undoDelete(`/api/v1/projects/${projectId}/restore`, `/projects/${projectId}`),
+        },
+      });
       setDeleteProjectOpen(false);
       router.push("/workspaces");
       router.refresh();
@@ -408,7 +430,14 @@ export function ProjectView({
     if (!deleteWs) return;
     try {
       await deleteWorkspace.mutateAsync(deleteWs.id);
-      toast.success(t("toasts.workspaceDeleted"));
+      const workspaceId = deleteWs.id;
+      toast.success(t("toasts.workspaceDeleted"), {
+        description: t("toasts.deleteUndoHint"),
+        action: {
+          label: t("toasts.undo"),
+          onClick: () => void undoDelete(`/api/v1/workspaces/${workspaceId}/restore`),
+        },
+      });
       setDeleteWs(null);
       refreshAfterWorkspaceChange();
     } catch {

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
+  ArchiveRestore,
   BarChart3,
   Bell,
   CreditCard,
@@ -38,6 +39,7 @@ const ICONS: Record<SettingsPage, LucideIcon> = {
   usage: BarChart3,
   billing: CreditCard,
   data: Database,
+  deleted: ArchiveRestore,
   support: LifeBuoy,
 };
 

@@ -420,9 +420,26 @@ export function AppShell({
 
     try {
       await api(`/api/v1/workspaces/${targetId}`, { method: "DELETE" });
-      toast.success(tChat("deleteSuccess"));
+      const wasOpen = activeWorkspaceId === targetId;
+      // Pre-10.6 fix: kept 30 days in Recently deleted; Undo restores it now.
+      toast.success(tChat("deleteSuccess"), {
+        description: tChat("deleteUndoHint"),
+        action: {
+          label: tChat("undo"),
+          onClick: async () => {
+            try {
+              await api(`/api/v1/workspaces/${targetId}/restore`, { method: "POST" });
+              toast.success(tChat("restoreSuccess"));
+              if (wasOpen) router.push(`/workspaces/${targetId}`);
+              router.refresh();
+            } catch {
+              toast.error(tChat("restoreError"));
+            }
+          },
+        },
+      });
       setDeletingWorkspace(null);
-      if (activeWorkspaceId === targetId) {
+      if (wasOpen) {
         router.push("/workspaces");
       }
       router.refresh();

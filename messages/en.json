@@ -255,12 +255,12 @@
     "noSearchResults": "No matching messages or chats found.",
     "renameChat": "Rename conversation",
     "renamePlaceholder": "Enter conversation title...",
-    "deleteConfirmTitle": "Delete Conversation?",
-    "deleteConfirmDescription": "This will permanently remove \"{title}\" and all of its messages. This action cannot be undone.",
-    "confirmDelete": "Delete Forever",
+    "deleteConfirmTitle": "Delete workspace?",
+    "deleteConfirmDescription": "“{title}” moves to Recently deleted: you can restore it for 30 days, then it's erased with its answers, comments and files. Its members lose access.",
+    "confirmDelete": "Delete",
     "renameSuccess": "Conversation renamed",
     "renameError": "Failed to rename conversation",
-    "deleteSuccess": "Conversation deleted",
+    "deleteSuccess": "Workspace deleted",
     "deleteError": "Failed to delete conversation",
     "downloadImage": "Download image",
     "settings": "Settings",
@@ -289,7 +289,11 @@
     "charCount": "{current} / {max}",
     "useModel": "Use {model}",
     "notEnoughCreditsForMessage": "This message needs about {needed} credits, and you have {balance}.",
-    "ownerNotEnoughCredits": "The workspace owner doesn't have enough credits for this message."
+    "ownerNotEnoughCredits": "The workspace owner doesn't have enough credits for this message.",
+    "deleteUndoHint": "You can restore it for 30 days from Settings → Recently deleted.",
+    "undo": "Undo",
+    "restoreSuccess": "Workspace restored",
+    "restoreError": "Couldn't restore the workspace."
   },
   "Settings": {
     "ai": {
@@ -361,7 +365,8 @@
       "data": "Your data",
       "support": "Support",
       "usage": "Usage",
-      "voice": "Voice"
+      "voice": "Voice",
+      "deleted": "Recently deleted"
     },
     "errors": {
       "pageTitle": "This page couldn't load",
@@ -649,7 +654,34 @@
       "stillBlocked": "Some shared workspaces or projects still need to be transferred or deleted.",
       "deleteError": "Couldn't delete your account. Try again.",
       "cancel": "Cancel",
-      "confirmButton": "Delete my account"
+      "confirmButton": "Delete my account",
+      "recentlyDeletedTitle": "Recently deleted",
+      "recentlyDeletedHint": "Workspaces and projects you deleted can be restored for 30 days.",
+      "recentlyDeletedOpen": "See recently deleted"
+    },
+    "deleted": {
+      "title": "Recently deleted",
+      "description": "Workspaces and projects you deleted stay here for {days} days, then they're erased for good. Only you see them, and you can restore them until then.",
+      "workspacesTitle": "Workspaces",
+      "projectsTitle": "Projects",
+      "projectsHint": "Deleting a project doesn't delete its workspaces: they stay in your sidebar. Restoring the project puts them back in it.",
+      "noWorkspaces": "No deleted workspaces.",
+      "noProjects": "No deleted projects.",
+      "loading": "Loading…",
+      "loadError": "Couldn't load what you deleted. Reload the page to try again.",
+      "untitled": "Untitled workspace",
+      "deletedOn": "Deleted {date}",
+      "daysLeft": "{count, plural, one {# day left (erased {date})} other {# days left (erased {date})}}",
+      "lastDay": "Erased within a day",
+      "projectAlsoDeleted": "Its project “{project}” is deleted too: it comes back without a project.",
+      "restore": "Restore",
+      "restoreNamed": "Restore {name}",
+      "restoredWorkspace": "“{name}” restored",
+      "restoredProject": "Project “{name}” restored",
+      "open": "Open",
+      "restoreError": "Couldn't restore it. Try again.",
+      "footnote": "Members lose access while it's deleted and get it back when you restore it. After {days} days the files, answers, comments and notes are erased and can't be recovered.",
+      "privacyLink": "Privacy Policy"
     }
   },
   "Email": {
@@ -1025,7 +1057,8 @@
     "collapseProject": "Hide workspaces in {name}",
     "usernameClaimed": "Username claimed: @{username}",
     "backTo": "Back to {title}",
-    "countOverflow": "{max}+"
+    "countOverflow": "{max}+",
+    "recentlyDeleted": "Recently deleted"
   },
   "Home": {
     "greetingMorning": "Good morning, {name}",
@@ -2438,7 +2471,8 @@
       "already_has_password": "This account already has a password.",
       "code_expired": "The code has expired. Ask for a new one.",
       "code_attempts_exceeded": "Too many wrong codes. Ask for a new one.",
-      "invalid_email_code": "That code isn't right. Check the email and try again."
+      "invalid_email_code": "That code isn't right. Check the email and try again.",
+      "restore_expired": "It was deleted more than 30 days ago and can't be restored."
     }
   },
   "Gates": {
@@ -2594,7 +2628,7 @@
     "renameWorkspaceTitle": "Rename workspace",
     "workspaceName": "Workspace name",
     "deleteWorkspaceTitle": "Delete workspace",
-    "deleteWorkspaceConfirm": "Delete “{title}”? You and its members will lose access to it.",
+    "deleteWorkspaceConfirm": "Delete “{title}”? It moves to Recently deleted, where you can restore it for 30 days. You and its members lose access until then.",
     "searchWorkspaces": "Search workspaces…",
     "sortBy": "Sort by",
     "sortLastActivity": "Last activity",
@@ -2607,7 +2641,7 @@
     "unarchiveProject": "Unarchive project",
     "transferProject": "Transfer ownership",
     "deleteProject": "Delete project",
-    "deleteProjectConfirm": "Delete this project? Its workspaces are not deleted.",
+    "deleteProjectConfirm": "Delete this project? Its workspaces aren't deleted: they stay in your sidebar. You can restore the project for 30 days from Settings → Recently deleted.",
     "shareAndPeople": "Share & people",
     "projectOptions": "Project options",
     "workspaceOptions": "Options for {title}",
@@ -2662,7 +2696,11 @@
       "workspaceRestored": "Workspace restored",
       "workspaceUpdateFailed": "Couldn't update the workspace",
       "workspaceDeleted": "Workspace deleted",
-      "workspaceDeleteFailed": "Couldn't delete the workspace"
+      "workspaceDeleteFailed": "Couldn't delete the workspace",
+      "deleteUndoHint": "You can restore it for 30 days from Settings → Recently deleted.",
+      "undo": "Undo",
+      "restored": "Restored",
+      "restoreFailed": "Couldn't restore it."
     },
     "currentlyIn": "Currently in {name}",
     "moveSearchHint": "Showing your most recent workspaces. Search to find others."
@@ -3422,8 +3460,8 @@
         "workspace_renamed": "renamed the workspace to “{title}”",
         "workspace_archived": "archived the workspace",
         "workspace_unarchived": "took the workspace out of the archive",
-        "workspace_deleted": "moved the workspace to the trash",
-        "workspace_restored": "restored the workspace from the trash",
+        "workspace_deleted": "deleted the workspace",
+        "workspace_restored": "restored the workspace",
         "project_created": "created the project “{name}”",
         "project_renamed": "renamed the project to “{name}”",
         "project_archived": "archived the project",
@@ -3450,7 +3488,8 @@
         "note_archived": "archived a Klecx note",
         "note_restored": "restored a Klecx note",
         "note_deleted": "deleted a Klecx note",
-        "other": "made a change"
+        "other": "made a change",
+        "project_restored": "restored the project"
       }
     },
     "toasts": {

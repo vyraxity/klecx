@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Archive,
+  ArchiveRestore,
   ChevronDown,
   ChevronRight,
   Coins,
@@ -825,6 +826,17 @@ export function Sidebar({
               >
                 <Settings className="h-4 w-4" strokeWidth={1.5} />
                 <span>{t("settings")}</span>
+              </DropdownMenuItem>
+
+              {/* Pre-10.6 fix: deleted workspaces and projects, restorable for 30 days. */}
+              <DropdownMenuItem
+                onSelect={() => {
+                  onNavigate?.();
+                  router.push("/settings/deleted");
+                }}
+              >
+                <ArchiveRestore className="h-4 w-4" strokeWidth={1.5} />
+                <span>{t("recentlyDeleted")}</span>
               </DropdownMenuItem>
 
               <DropdownMenuSub>

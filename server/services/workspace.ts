@@ -88,6 +88,7 @@ export async function listWorkspaces(
         select: {
           id: true,
           name: true,
+          deletedAt: true,
         },
       },
     },
@@ -103,7 +104,18 @@ export async function listWorkspaces(
       })
     : [];
   const countById = new Map(counts.map((c) => [c.workspaceId, c._count._all]));
-  const rows = found.map((w) => ({ ...w, _count: { members: countById.get(w.id) ?? 0 } }));
+  // Pre-10.6 fix: a deleted project's workspaces aren't deleted with it; they
+  // show as standalone (not under a project nobody can open) until the
+  // project is restored from Recently deleted.
+  const rows = found.map(({ project, ...w }) => {
+    const live = project && !project.deletedAt ? { id: project.id, name: project.name } : null;
+    return {
+      ...w,
+      projectId: live ? w.projectId : null,
+      project: live,
+      _count: { members: countById.get(w.id) ?? 0 },
+    };
+  });
 
   return toPage(rows, limit);
 }
@@ -425,41 +437,14 @@ export async function deleteWorkspace(actor: Actor, workspaceId: string) {
   return deleted;
 }
 
+/**
+ * Restores a deleted workspace within the 30 days (pre-10.6 fix: the logic
+ * lives in `recently-deleted.ts`; a workspace whose project is also deleted
+ * comes back without it).
+ */
 export async function restoreWorkspace(actor: Actor, workspaceId: string) {
-  const ws = await db.workspace.findUnique({
-    where: { id: workspaceId },
-  });
-
-  // Only the owner can restore; return 404 if not found or not owner
-  if (!ws || ws.ownerId !== actor.userId) {
-    throw Errors.notFound("Workspace");
-  }
-
-  if (!ws.deletedAt) {
-    return ws;
-  }
-
-  const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
-  const elapsed = Date.now() - ws.deletedAt.getTime();
-  if (elapsed > thirtyDaysMs) {
-    throw Errors.conflict("Workspace deleted more than 30 days ago cannot be restored");
-  }
-
-  const restored = await db.workspace.update({
-    where: { id: workspaceId },
-    data: { deletedAt: null },
-  });
-
-  await logActivity(db, {
-    workspaceId,
-    projectId: restored.projectId,
-    actorId: actor.userId,
-    action: "workspace.restored",
-    targetType: "workspace",
-    targetId: workspaceId,
-  });
-
-  return restored;
+  const { restoreDeletedWorkspace } = await import("./recently-deleted");
+  return restoreDeletedWorkspace(actor, workspaceId);
 }
 
 export async function touchWorkspaceActivity(workspaceId: string) {
