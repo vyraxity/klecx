@@ -19,7 +19,8 @@ test("archive a workspace, undo it, archive it again and unarchive it from Setti
   await ask(page, "Plan a picnic");
   const workspaceUrl = new URL(page.url()).pathname;
   const title = (await page.getByTestId("topbar").getByRole("button").filter({ hasText: /\w/ }).first().textContent())?.trim() ?? "";
-  const sidebar = page.getByRole("navigation", { name: "Sidebar navigation" }).first();
+  // The sidebar is an <aside> (role "complementary").
+  const sidebar = page.getByRole("complementary", { name: "Sidebar navigation" });
 
   // Undo from the toast.
   await archiveOpenWorkspace(page);

@@ -21,7 +21,8 @@ test("delete a workspace, undo it, delete it again and restore it from Deleted &
   await ask(page, "Plan a garden");
   const workspaceUrl = new URL(page.url()).pathname;
   const title = (await page.getByTestId("topbar").getByRole("button").filter({ hasText: /\w/ }).first().textContent())?.trim() ?? "";
-  const sidebar = page.getByRole("navigation", { name: "Sidebar navigation" }).first();
+  // The sidebar is an <aside> (role "complementary").
+  const sidebar = page.getByRole("complementary", { name: "Sidebar navigation" });
 
   // Undo from the toast.
   await deleteOpenWorkspace(page);
@@ -39,6 +40,7 @@ test("delete a workspace, undo it, delete it again and restore it from Deleted &
   await list.getByRole("button", { name: `Restore ${title}` }).click();
   await expect(page.getByText(`“${title}” restored`)).toBeVisible();
   await expect(list).toContainText("No deleted workspaces.");
+  await expect(sidebar.getByRole("link", { name: title })).toHaveCount(1);
   await page.goto(workspaceUrl);
   await expect(page.getByTestId("topbar")).toContainText(title);
 });
