@@ -409,10 +409,8 @@
       "description": "Tu contraseña, tus formas de iniciar sesión y tus sesiones activas.",
       "passwordTitle": "Contraseña",
       "passwordHint": "Cambiar la contraseña cierra tu sesión en todos los demás dispositivos.",
-      "noPasswordHint": "Inicias sesión con una cuenta conectada, así que tu cuenta de Klecx no tiene contraseña. Puedes añadir una: te enviaremos un enlace por correo para crearla.",
-      "setPassword": "Enviarme un enlace para crear una contraseña",
-      "setPasswordSent": "Revisa {email}: te enviamos un enlace para crear tu contraseña.",
-      "setPasswordError": "No se pudo enviar el enlace. Inténtalo de nuevo.",
+      "noPasswordHint": "Inicias sesión con una cuenta conectada, así que tu cuenta de Klecx no tiene contraseña. Puedes añadir una aquí: elígela y confírmala con un código que te enviamos por correo.",
+      "setPasswordError": "No se pudo añadir tu contraseña. Inténtalo de nuevo.",
       "currentPassword": "Contraseña actual",
       "newPassword": "Nueva contraseña",
       "confirmPassword": "Confirma la nueva contraseña",
@@ -476,7 +474,15 @@
         "enabledToast": "El inicio de sesión en dos pasos está activado.",
         "disabledToast": "El inicio de sesión en dos pasos está desactivado.",
         "actionError": "No se pudo actualizar el inicio de sesión en dos pasos. Inténtalo de nuevo."
-      }
+      },
+      "setPasswordSendCode": "Enviarme un código",
+      "setPasswordCodeSent": "Enviamos un código a {email}.",
+      "setPasswordCodeHint": "Introduce el código de 6 dígitos que enviamos a {email}. Caduca en {minutes} minutos.",
+      "setPasswordCodeLabel": "Código del correo",
+      "setPasswordConfirm": "Añadir contraseña",
+      "setPasswordResend": "Enviar un código nuevo",
+      "setPasswordBack": "Cambiar la contraseña",
+      "passwordSet": "Contraseña añadida. Ahora también puedes iniciar sesión con tu correo electrónico y esta contraseña."
     },
     "language": {
       "title": "Idioma e IA",
@@ -693,7 +699,10 @@
       "greeting": "Hola,",
       "body": "La contraseña de tu cuenta de Klecx se actualizó con éxito el {time}.",
       "button": "Ver configuración de la cuenta",
-      "disclaimer": "Si realizaste este cambio, puedes ignorar este correo con tranquilidad. Si NO lo hiciste, contacta al soporte técnico de inmediato."
+      "disclaimer": "Si realizaste este cambio, puedes ignorar este correo con tranquilidad. Si NO lo hiciste, contacta al soporte técnico de inmediato.",
+      "subjectSet": "Alerta de seguridad: se añadió una contraseña a tu cuenta de Klecx",
+      "headingSet": "Contraseña añadida",
+      "bodySet": "Se añadió una contraseña a tu cuenta de Klecx el {time}. Ahora también puedes iniciar sesión con tu correo electrónico y esta contraseña."
     },
     "shareCreated": {
       "subject": "Tu enlace de espacio de trabajo compartido para \"{title}\" está listo",
@@ -959,6 +968,13 @@
         "jobOverdue": "La tarea en segundo plano {job} no se ejecuta correctamente desde hace {hours} horas: revisa el programador (el flujo de trabajo cron) y CRON_SECRET.",
         "billingDrift": "Comprobación de facturación: {count, plural, one {# suscripción difiere} other {# suscripciones difieren}} del proveedor de pagos. Los ids de suscripción están en los registros (reconcile-billing)."
       }
+    },
+    "passwordSetCode": {
+      "subject": "{code} es tu código de Klecx para añadir una contraseña",
+      "heading": "Confirma tu nueva contraseña",
+      "greeting": "Hola,",
+      "body": "Introduce este código en Configuración → Seguridad para añadir una contraseña a tu cuenta de Klecx. Caduca en {minutes} minutos.",
+      "disclaimer": "Si no pediste añadir una contraseña, ignora este correo: nada cambia sin el código. Puede que quieras revisar las sesiones de tu cuenta en Configuración → Sesiones y dispositivos."
     }
   },
   "AppShell": {
@@ -2418,7 +2434,11 @@
       "cannot_invite_owner": "El propietario ya tiene acceso.",
       "cannot_invite_self": "No puedes invitarte a ti mismo.",
       "invalid_email": "Introduce una dirección de correo electrónico válida.",
-      "model_not_in_plan": "Este modelo no está incluido en tu plan."
+      "model_not_in_plan": "Este modelo no está incluido en tu plan.",
+      "already_has_password": "Esta cuenta ya tiene contraseña.",
+      "code_expired": "El código ha caducado. Pide uno nuevo.",
+      "code_attempts_exceeded": "Demasiados códigos incorrectos. Pide uno nuevo.",
+      "invalid_email_code": "Ese código no es correcto. Revisa el correo e inténtalo de nuevo."
     }
   },
   "Gates": {

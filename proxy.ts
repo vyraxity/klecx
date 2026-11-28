@@ -67,6 +67,9 @@ function attachSecurityHeaders(res: NextResponse, pathname: string) {
   return res;
 }
 
+/** Sign-in pages a signed-in person may still open (links from their emails). */
+const OPEN_WHEN_SIGNED_IN = new Set(["/auth/reset-password", "/reset-password"]);
+
 export function clearAuthCookies(res: NextResponse) {
   const cookieNames = [
     "better-auth.session_token",
@@ -172,7 +175,9 @@ async function handle(req: NextRequest, csp: Csp | null): Promise<NextResponse> 
       return finish(res, false);
     }
 
-    if (isLoggedIn) {
+    // Pre-10.6 fix: a password-reset link opens even when signed in (it was
+    // sent to this person; sending them to the dashboard lost the link).
+    if (isLoggedIn && !OPEN_WHEN_SIGNED_IN.has(pathname)) {
       return finish(NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl)));
     }
     return finish(nextWith(csp));

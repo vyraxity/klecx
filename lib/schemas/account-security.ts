@@ -19,6 +19,20 @@ export const changePasswordSchema = z.object({
 });
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 
+/**
+ * Pre-10.6 fix: an account without a password (Google/GitHub sign-in) adds
+ * one in Settings → Security with a 6-digit code emailed to it.
+ */
+export const SET_PASSWORD_CODE_MINUTES = 10;
+export const SET_PASSWORD_MAX_ATTEMPTS = 5;
+export const setPasswordConfirmSchema = z
+  .object({
+    code: z.string().trim().regex(/^\d{6}$/),
+    newPassword: z.string().min(PASSWORD_MIN_LENGTH).max(PASSWORD_MAX_LENGTH),
+  })
+  .strict();
+export type SetPasswordConfirmInput = z.infer<typeof setPasswordConfirmSchema>;
+
 export const unlinkAccountSchema = z
   .object({ password: z.string().max(PASSWORD_MAX_LENGTH).optional() })
   .optional();

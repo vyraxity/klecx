@@ -409,10 +409,8 @@
       "description": "Your password, the ways you sign in and your active sessions.",
       "passwordTitle": "Password",
       "passwordHint": "Changing your password signs you out on every other device.",
-      "noPasswordHint": "You sign in with a connected account, so your Klecx account has no password. You can add one: we'll email you a link to set it.",
-      "setPassword": "Email me a link to set a password",
-      "setPasswordSent": "Check {email} for a link to set your password.",
-      "setPasswordError": "Couldn't send the link. Try again.",
+      "noPasswordHint": "You sign in with a connected account, so your Klecx account has no password. You can add one here: choose it, then confirm with a code we email to you.",
+      "setPasswordError": "Couldn't add your password. Try again.",
       "currentPassword": "Current password",
       "newPassword": "New password",
       "confirmPassword": "Confirm new password",
@@ -476,7 +474,15 @@
         "enabledToast": "Two-factor sign-in is on.",
         "disabledToast": "Two-factor sign-in is off.",
         "actionError": "Couldn't update two-factor sign-in. Try again."
-      }
+      },
+      "setPasswordSendCode": "Email me a code",
+      "setPasswordCodeSent": "We sent a code to {email}.",
+      "setPasswordCodeHint": "Enter the 6-digit code we sent to {email}. It expires in {minutes} minutes.",
+      "setPasswordCodeLabel": "Code from the email",
+      "setPasswordConfirm": "Add password",
+      "setPasswordResend": "Send a new code",
+      "setPasswordBack": "Change the password",
+      "passwordSet": "Password added. You can now also sign in with your email and this password."
     },
     "language": {
       "title": "Language & AI",
@@ -693,7 +699,10 @@
       "greeting": "Hi,",
       "body": "The password for your Klecx account was successfully updated on {time}.",
       "button": "View Account Settings",
-      "disclaimer": "If you performed this change, you can safely ignore this email. If you did NOT make this change, please contact support immediately."
+      "disclaimer": "If you performed this change, you can safely ignore this email. If you did NOT make this change, please contact support immediately.",
+      "subjectSet": "Security alert: a password was added to your Klecx account",
+      "headingSet": "Password added",
+      "bodySet": "A password was added to your Klecx account on {time}. You can now also sign in with your email address and this password."
     },
     "shareCreated": {
       "subject": "Your shared workspace link for \"{title}\" is ready",
@@ -959,6 +968,13 @@
         "jobOverdue": "Background job {job} hasn't run successfully for {hours} hours: check the scheduler (the cron workflow) and CRON_SECRET.",
         "billingDrift": "Billing check: {count, plural, one {# subscription differs} other {# subscriptions differ}} from the billing provider. The subscription ids are in the logs (reconcile-billing)."
       }
+    },
+    "passwordSetCode": {
+      "subject": "{code} is your Klecx code to add a password",
+      "heading": "Confirm your new password",
+      "greeting": "Hi,",
+      "body": "Enter this code in Settings → Security to add a password to your Klecx account. It expires in {minutes} minutes.",
+      "disclaimer": "If you didn't ask to add a password, ignore this email: nothing changes without the code. You may want to check your account's sessions in Settings → Sessions & devices."
     }
   },
   "AppShell": {
@@ -2418,7 +2434,11 @@
       "cannot_invite_owner": "The owner already has access.",
       "cannot_invite_self": "You can't invite yourself.",
       "invalid_email": "Enter a valid email address.",
-      "model_not_in_plan": "This model isn't included in your plan."
+      "model_not_in_plan": "This model isn't included in your plan.",
+      "already_has_password": "This account already has a password.",
+      "code_expired": "The code has expired. Ask for a new one.",
+      "code_attempts_exceeded": "Too many wrong codes. Ask for a new one.",
+      "invalid_email_code": "That code isn't right. Check the email and try again."
     }
   },
   "Gates": {

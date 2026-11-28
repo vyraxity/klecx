@@ -409,10 +409,8 @@
       "description": "Votre mot de passe, vos moyens de connexion et vos sessions actives.",
       "passwordTitle": "Mot de passe",
       "passwordHint": "Changer votre mot de passe vous déconnecte de tous vos autres appareils.",
-      "noPasswordHint": "Vous vous connectez avec un compte associé : votre compte Klecx n'a donc pas de mot de passe. Vous pouvez en ajouter un : nous vous enverrons un lien par e-mail pour le définir.",
-      "setPassword": "M'envoyer un lien pour définir un mot de passe",
-      "setPasswordSent": "Consultez {email} : nous avons envoyé un lien pour définir votre mot de passe.",
-      "setPasswordError": "Impossible d'envoyer le lien. Réessayez.",
+      "noPasswordHint": "Vous vous connectez avec un compte associé, votre compte Klecx n'a donc pas de mot de passe. Vous pouvez en ajouter un ici : choisissez-le, puis confirmez avec un code envoyé par e-mail.",
+      "setPasswordError": "Impossible d'ajouter votre mot de passe. Réessayez.",
       "currentPassword": "Mot de passe actuel",
       "newPassword": "Nouveau mot de passe",
       "confirmPassword": "Confirmez le nouveau mot de passe",
@@ -476,7 +474,15 @@
         "enabledToast": "La connexion en deux étapes est activée.",
         "disabledToast": "La connexion en deux étapes est désactivée.",
         "actionError": "Impossible de modifier la connexion en deux étapes. Réessayez."
-      }
+      },
+      "setPasswordSendCode": "M'envoyer un code",
+      "setPasswordCodeSent": "Nous avons envoyé un code à {email}.",
+      "setPasswordCodeHint": "Saisissez le code à 6 chiffres envoyé à {email}. Il expire dans {minutes} minutes.",
+      "setPasswordCodeLabel": "Code reçu par e-mail",
+      "setPasswordConfirm": "Ajouter le mot de passe",
+      "setPasswordResend": "Envoyer un nouveau code",
+      "setPasswordBack": "Modifier le mot de passe",
+      "passwordSet": "Mot de passe ajouté. Vous pouvez maintenant aussi vous connecter avec votre adresse e-mail et ce mot de passe."
     },
     "language": {
       "title": "Langue et IA",
@@ -693,7 +699,10 @@
       "greeting": "Bonjour,",
       "body": "Le mot de passe de votre compte Klecx a été mis à jour avec succès le {time}.",
       "button": "Gérer les paramètres du compte",
-      "disclaimer": "Si vous êtes à l'origine de cette modification, vous pouvez ignorer cet e-mail. Si vous n'avez PAS effectué ce changement, contactez immédiatement l'assistance."
+      "disclaimer": "Si vous êtes à l'origine de cette modification, vous pouvez ignorer cet e-mail. Si vous n'avez PAS effectué ce changement, contactez immédiatement l'assistance.",
+      "subjectSet": "Alerte de sécurité : un mot de passe a été ajouté à votre compte Klecx",
+      "headingSet": "Mot de passe ajouté",
+      "bodySet": "Un mot de passe a été ajouté à votre compte Klecx le {time}. Vous pouvez maintenant aussi vous connecter avec votre adresse e-mail et ce mot de passe."
     },
     "shareCreated": {
       "subject": "Le lien de partage pour votre espace « {title} » est prêt",
@@ -959,6 +968,13 @@
         "jobOverdue": "La tâche de fond {job} ne s'est pas exécutée correctement depuis {hours} heures : vérifiez le planificateur (le workflow cron) et CRON_SECRET.",
         "billingDrift": "Contrôle de facturation : {count, plural, one {# abonnement diffère} other {# abonnements diffèrent}} du prestataire de paiement. Les identifiants d'abonnement sont dans les journaux (reconcile-billing)."
       }
+    },
+    "passwordSetCode": {
+      "subject": "{code} est votre code Klecx pour ajouter un mot de passe",
+      "heading": "Confirmez votre nouveau mot de passe",
+      "greeting": "Bonjour,",
+      "body": "Saisissez ce code dans Paramètres → Sécurité pour ajouter un mot de passe à votre compte Klecx. Il expire dans {minutes} minutes.",
+      "disclaimer": "Si vous n'avez pas demandé à ajouter un mot de passe, ignorez cet e-mail : rien ne change sans le code. Vous pouvez vérifier les sessions de votre compte dans Paramètres → Sessions et appareils."
     }
   },
   "AppShell": {
@@ -2418,7 +2434,11 @@
       "cannot_invite_owner": "Le propriétaire a déjà accès.",
       "cannot_invite_self": "Vous ne pouvez pas vous inviter vous-même.",
       "invalid_email": "Saisissez une adresse e-mail valide.",
-      "model_not_in_plan": "Ce modèle n'est pas inclus dans votre forfait."
+      "model_not_in_plan": "Ce modèle n'est pas inclus dans votre forfait.",
+      "already_has_password": "Ce compte a déjà un mot de passe.",
+      "code_expired": "Le code a expiré. Demandez-en un nouveau.",
+      "code_attempts_exceeded": "Trop de codes erronés. Demandez-en un nouveau.",
+      "invalid_email_code": "Ce code n'est pas correct. Vérifiez l'e-mail et réessayez."
     }
   },
   "Gates": {
