@@ -34,7 +34,7 @@ const AuthCard = ({
           <span>{backText}</span>
           <Link
             href={`/auth/${backLink}${subscribeIntentQuery(intent)}`}
-            className="font-semibold text-accent hover:underline capitalize"
+            className="font-semibold text-accent hover:underline"
           >
             {backLink === "register" ? t("createAccountLink") : t("signInLink")}
           </Link>

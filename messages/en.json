@@ -112,7 +112,7 @@
     "heroDescription": "Organize AI work into projects, keep every answer's versions, and ask questions about any passage without losing your train of thought."
   },
   "Auth": {
-    "orContinueWith": "Or continue with email",
+    "orContinueWith": "Or continue with",
     "google": "Google",
     "github": "GitHub",
     "emailPlaceholder": "name@example.com",

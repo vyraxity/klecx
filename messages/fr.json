@@ -112,7 +112,7 @@
     "heroDescription": "Organisez vos recherches d'IA en projets, conservez les versions de chaque réponse et posez des questions sur n'importe quel passage sans perdre le fil."
   },
   "Auth": {
-    "orContinueWith": "Ou continuer avec votre e-mail",
+    "orContinueWith": "Ou continuer avec",
     "google": "Google",
     "github": "GitHub",
     "emailPlaceholder": "nom@exemple.com",

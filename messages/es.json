@@ -112,7 +112,7 @@
     "heroDescription": "Organiza el trabajo con IA en proyectos, guarda las versiones de cada respuesta y haz preguntas sobre cualquier pasaje sin perder el hilo de pensamiento."
   },
   "Auth": {
-    "orContinueWith": "O continúa con tu correo",
+    "orContinueWith": "O continúa con",
     "google": "Google",
     "github": "GitHub",
     "emailPlaceholder": "nombre@ejemplo.com",
