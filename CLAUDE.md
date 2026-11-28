@@ -14,11 +14,14 @@ Context for Claude Code sessions in this repository. Read this first, then the g
 
 ## Pre-10.6 fixes (owner, 2026-11-27) — do these before Step 10.6
 
-Seven PRs, **in this order: 2, 3, 1, 4, 5, 6, 7** (PR 2 done 2026-11-27, PR 3, PR 1, PR 4, PR 5 and PR 6 done 2026-11-28) (numbers are the PR names below, not the order). One PR each, branch name as given, from the latest `origin/dev`. **When a PR is done (pushed and opened), delete its entry here in that same PR; when all seven are gone, delete this section** and point the plan back at Step 10.6. The owner's decisions are final (don't ask again).
+Eight PRs, **in this order: 2, 3, 1, 4, 5, 6, 7, 8** (PR 2 done 2026-11-27, PR 3, PR 1, PR 4, PR 5 and PR 6 done 2026-11-28) (numbers are the PR names below, not the order). One PR each, branch name as given, from the latest `origin/dev`. **When a PR is done (pushed and opened), delete its entry here in that same PR; when all eight are gone, delete this section** and point the plan back at Step 10.6. The owner's decisions are final (don't ask again).
 
-- **PR 7 — `docs/readme-contributor-guide`** (last).
+- **PR 7 — `docs/readme-contributor-guide`**.
   - Rewrite `README.md` (today it describes NextAuth, Redux and quickbot): what Klecx is (for contributors), stack, code layout and house rules (short, link `CLAUDE.md` and `docs/`), prerequisites and accounts needed, a **numbered local setup** (clone, `.env.local`, install, migrate, generate, run, first user, tests and e2e), and a **table of every env variable** from `server/env.ts` / `.env.example` / `process.env` reads: required or optional, what it does, where to get it, and for optional ones the effect when absent and when present. Bring `.env.example` in line.
 
+- **PR 8 — `fix/archived-workspaces`** (owner, 2026-11-28: after the README; found while building PR 6).
+  - Archiving hides a workspace or project, but there's **no screen to find and un-archive** a standalone workspace or a project: the sidebar and `listWorkspaces()` / `listProjects()` leave out archived ones (`archivedAt: null` unless `?archived=1`), and the top bar / sidebar menus only offer "Archive". Only a project page shows its own archived workspaces with Unarchive (`components/project/project-view.tsx`), and only if you reach the project. The server already supports it: `PATCH /api/v1/workspaces/:id` and `PATCH /api/v1/projects/:id` with `{ archived: false }` (activity `workspace.unarchived` / `project.unarchived`), and `GET …?archived=1`.
+  - Add a place to see archived workspaces and projects and un-archive them (probably an **Archived** section or page beside Recently deleted, reachable from the sidebar), and make the help text (`account-and-security`: "archive a workspace to hide it") say where to find them, in en/es/fr. Decide with the owner where it lives before building.
 Each step = one PR. Implement **only** the step you were asked for. Follow its _Update / Create / Schema / Env / i18n / Done when_ fields. If the code disagrees with a guide (paths, names), check the live code, follow its intent, and say so in the PR.
 
 ## Workflow
