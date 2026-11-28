@@ -57,12 +57,10 @@ export function WorkspaceHome({
   const tWorkspace = useTranslations("Workspace");
 
   const setCurrentPageTitle = useUiStore((s) => s.setCurrentPageTitle);
-  const setCurrentPageId = useUiStore((s) => s.setCurrentPageId);
 
   React.useEffect(() => {
     setCurrentPageTitle("");
-    setCurrentPageId(null);
-  }, [setCurrentPageTitle, setCurrentPageId]);
+  }, [setCurrentPageTitle]);
 
   const { data, isLoading, isError, refetch } = useHomeData(userId, {
     initialData,

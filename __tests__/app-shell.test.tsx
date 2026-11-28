@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act, within } from "@testing-library/react";
 import { AppShell } from "@/components/layout/app-shell";
 import { getDateBucket } from "@/components/layout/sidebar";
 import { useUiStore, parseSidebarCookie } from "@/lib/stores/ui";
@@ -15,6 +15,7 @@ const mockRefresh = jest.fn();
 let mockPathname = "/workspaces/ws-today";
 
 jest.mock("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(),
   useRouter: () => ({
     push: mockPush,
     refresh: mockRefresh,
@@ -324,12 +325,12 @@ describe("Step 3.4 — AppShell, Sidebar, Topbar, Mobile Drawer & Command Palett
     ).toBeInTheDocument();
   });
 
-  it("opens the All-annotations drawer from the top bar (closed by default) & the Command Palette", async () => {
+  it("opens the Comments & Asks panel from the top bar (closed by default) & the Command Palette", async () => {
     renderAppShell(false);
 
     // F2.4: the right panel is a drawer, closed until the top-bar button is used.
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    const panelBtn = screen.getByRole("button", { name: /All annotations/i });
+    const panelBtn = screen.getByRole("button", { name: /Comments & Asks/i });
     expect(panelBtn).toHaveAttribute("aria-expanded", "false");
     fireEvent.click(panelBtn);
     expect(useUiStore.getState().rightPanelOpen).toBe(true);
@@ -342,5 +343,44 @@ describe("Step 3.4 — AppShell, Sidebar, Topbar, Mobile Drawer & Command Palett
     expect(
       screen.getByPlaceholderText(/Search workspaces, projects, or commands/i)
     ).toBeInTheDocument();
+  });
+
+  // Pre-10.6 fix: the top bar follows the URL, not the last workspace opened.
+  it("on Settings shows Settings and a link back to the page you came from, without the workspace's actions", async () => {
+    mockPathname = "/workspaces/ws-today";
+    const { rerender } = renderAppShell(false);
+    expect(screen.getByRole("button", { name: /Bernoulli Numbers/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Comments & Asks/i })).toBeInTheDocument();
+
+    mockPathname = "/settings/profile";
+    rerender(
+      <QueryProvider userId={mockUser.id}>
+        <AppShell
+          user={mockUser}
+          initialSidebarCollapsed={false}
+          initialProjects={mockProjects}
+          initialWorkspaces={mockWorkspaces}
+        >
+          <div data-testid="workspace-canvas">Settings content</div>
+        </AppShell>
+      </QueryProvider>
+    );
+
+    const banner = screen.getByTestId("topbar");
+    expect(within(banner).getByRole("heading", { name: "Settings" })).toBeInTheDocument();
+    const back = within(banner).getByRole("link", { name: "Back to Bernoulli Numbers" });
+    expect(back).toHaveAttribute("href", "/workspaces/ws-today");
+    expect(within(banner).queryByRole("button", { name: /Bernoulli Numbers/ })).not.toBeInTheDocument();
+    expect(within(banner).queryByRole("button", { name: /Share/ })).not.toBeInTheDocument();
+    expect(within(banner).queryByRole("button", { name: /Comments & Asks/i })).not.toBeInTheDocument();
+    expect(within(banner).queryByRole("button", { name: /Workspace options/i })).not.toBeInTheDocument();
+  });
+
+  it("opened directly, Settings links back to the workspaces", () => {
+    useUiStore.setState({ settingsReturnTo: null });
+    mockPathname = "/settings/security";
+    renderAppShell(false);
+    const back = within(screen.getByTestId("topbar")).getByRole("link", { name: "Back to Workspaces" });
+    expect(back).toHaveAttribute("href", "/workspaces");
   });
 });

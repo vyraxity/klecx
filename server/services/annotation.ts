@@ -357,6 +357,44 @@ export async function listWorkspaceAnnotations(
 }
 
 /**
+ * Pre-10.6 fix: the numbers behind the top bar's "Comments & Asks" badge,
+ * counted like the panel lists them (`components/annotations/all-annotations-drawer.tsx`):
+ * every comment, and every Ask except questions still waiting in the queue,
+ * being answered from it, or removed from it before an answer (those live in
+ * the composer's queue popover). Same visibility as `listWorkspaceAnnotations`.
+ */
+export async function countWorkspaceAnnotations(
+  actor: Actor,
+  workspaceId: string
+): Promise<{ comments: number; asks: number; total: number }> {
+  await requireWorkspace(actor, workspaceId, "workspace.read");
+
+  const visible = {
+    workspaceId,
+    deletedAt: null,
+    OR: [{ visibility: "WORKSPACE" as const }, { createdById: actor.userId }],
+  };
+  const [comments, asks] = await Promise.all([
+    db.annotation.count({ where: { ...visible, kind: "COMMENT" } }),
+    db.annotation.count({
+      where: {
+        ...visible,
+        kind: "ASK",
+        AND: [
+          {
+            OR: [
+              { questionState: { notIn: ["QUEUED", "ANSWERING", "CANCELLED"] } },
+              { messages: { some: { role: "ASSISTANT" } } },
+            ],
+          },
+        ],
+      },
+    }),
+  ]);
+  return { comments, asks, total: comments + asks };
+}
+
+/**
  * Lists question annotations for a workspace created by the calling actor,
  * optionally filtered by `questionState` (e.g. QUEUED).
  * Caller needs `workspace.read` permission.

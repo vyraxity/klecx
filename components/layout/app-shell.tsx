@@ -50,6 +50,7 @@ import { ClaimUsernameBanner } from "@/components/user/claim-username-banner";
 import { UpgradeDialogHost } from "@/components/billing/upgrade-dialog";
 import { ReadAloudDock } from "@/components/speech/read-aloud-dock";
 import { MAIN_CONTENT_ID, SkipLink } from "./skip-link";
+import { topbarPage } from "@/lib/layout/topbar-page";
 import type {
   AppShellUser,
   SidebarProjectItem,
@@ -232,7 +233,6 @@ export function AppShell({
   const setCommandPaletteOpen = useUiStore((s) => s.setCommandPaletteOpen);
   const rightPanelOpen = useUiStore((s) => s.rightPanelOpen);
   const setRightPanelOpen = useUiStore((s) => s.setRightPanelOpen);
-  const currentPageId = useUiStore((s) => s.currentPageId);
   const setCurrentPageTitle = useUiStore((s) => s.setCurrentPageTitle);
 
   const [projects, setProjects] =
@@ -248,16 +248,17 @@ export function AppShell({
     setWorkspaces(initialWorkspaces);
   }, [initialWorkspaces]);
 
+  // Only a workspace page has an active workspace (pre-10.6 fix: no fallback
+  // to the last workspace opened, which kept its actions on other pages).
   const activeWorkspaceId = React.useMemo(() => {
-    if (
-      pathname.startsWith("/workspaces/") &&
-      pathname !== "/workspaces" &&
-      pathname.split("/").length >= 3
-    ) {
-      return pathname.split("/")[2] || null;
-    }
-    return currentPageId;
-  }, [pathname, currentPageId]);
+    const page = topbarPage(pathname);
+    return page.kind === "workspace" ? page.id : null;
+  }, [pathname]);
+
+  // The Comments & Asks panel belongs to one workspace: close it on leaving.
+  React.useEffect(() => {
+    if (!activeWorkspaceId) setRightPanelOpen(false);
+  }, [activeWorkspaceId, setRightPanelOpen]);
 
   const activeWorkspace = React.useMemo(
     () => workspaces.find((w) => w.id === activeWorkspaceId) ?? null,
@@ -616,12 +617,14 @@ export function AppShell({
         </main>
       </div>
 
-      {/* All Annotations Drawer (Step F2.4) */}
-      <AllAnnotationsDrawer
-        workspaceId={activeWorkspace?.id}
-        open={rightPanelOpen}
-        onOpenChange={setRightPanelOpen}
-      />
+      {/* Comments & Asks panel (Step F2.4; workspace pages only since the pre-10.6 fix) */}
+      {activeWorkspaceId && (
+        <AllAnnotationsDrawer
+          workspaceId={activeWorkspaceId}
+          open={rightPanelOpen}
+          onOpenChange={setRightPanelOpen}
+        />
+      )}
 
       {/* Command Palette (Ctrl/⌘ + K) */}
       <UpgradeDialogHost userId={user.id} />

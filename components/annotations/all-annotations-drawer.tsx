@@ -24,7 +24,7 @@ import { RenderMentions } from "./mention-textarea";
 import { api } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 
-type DrawerTab = "comments" | "asks" | "queue";
+type DrawerTab = "comments" | "asks";
 
 const formatCountParens = (count: number) => `(${count})`;
 const SCOPE_WORKSPACE = "workspace" as const;
@@ -49,18 +49,25 @@ interface DrawerAnnotation {
 }
 
 /**
- * A question that still waits in the queue (or is being answered, or could
- * not be answered). Everything else of kind ASK is an answered thread and is
- * listed under Asks, however it was asked: asked now, answered from the
- * queue, or migrated from the old "reply" kind.
+ * A question that still waits in the queue, is being answered from it, or was
+ * removed from it before an answer. The composer's queue popover lists the
+ * waiting ones (with edit, remove and "Ask all"), so the panel leaves them out
+ * (pre-10.6 fix: the panel's own Queue tab only repeated it). Everything else
+ * of kind ASK is listed under Asks, however it was asked: asked now, answered
+ * from the queue (or not: shown as "Not answered"), or migrated from the old
+ * "reply" kind. `countWorkspaceAnnotations()` counts the same way.
  */
 function isWaitingInQueue(a: DrawerAnnotation): boolean {
   if (a.kind !== "ASK") return false;
   if (a.messages.some((m) => m.role === "ASSISTANT")) return false;
+  return a.questionState === "QUEUED" || a.questionState === "ANSWERING";
+}
+
+function isRemovedFromQueue(a: DrawerAnnotation): boolean {
   return (
-    a.questionState === "QUEUED" ||
-    a.questionState === "ANSWERING" ||
-    a.questionState === "FAILED"
+    a.kind === "ASK" &&
+    a.questionState === "CANCELLED" &&
+    !a.messages.some((m) => m.role === "ASSISTANT")
   );
 }
 
@@ -133,9 +140,15 @@ export function AllAnnotationsDrawer({
   const lists: Record<DrawerTab, DrawerAnnotation[]> = React.useMemo(
     () => ({
       comments: scoped.filter((a) => a.kind === "COMMENT"),
-      asks: scoped.filter((a) => a.kind === "ASK" && !isWaitingInQueue(a)),
-      queue: scoped.filter(isWaitingInQueue),
+      asks: scoped.filter(
+        (a) => a.kind === "ASK" && !isWaitingInQueue(a) && !isRemovedFromQueue(a)
+      ),
     }),
+    [scoped]
+  );
+  const listedCount = lists.comments.length + lists.asks.length;
+  const waitingCount = React.useMemo(
+    () => scoped.filter(isWaitingInQueue).length,
     [scoped]
   );
 
@@ -153,7 +166,6 @@ export function AllAnnotationsDrawer({
   }> = [
     { value: "comments", label: t("tabComments"), empty: t("noComments"), icon: MessageSquare },
     { value: "asks", label: t("tabAsks"), empty: t("noAsks"), icon: Sparkles },
-    { value: "queue", label: t("tabQueue"), empty: t("noQueued"), icon: ListTodo },
   ];
 
   const scopeButton = (value: "workspace" | "response", label: string) => (
@@ -181,22 +193,25 @@ export function AllAnnotationsDrawer({
         <SheetHeader className="p-4 border-b border-border space-y-0 shrink-0">
           <SheetTitle className="text-sm font-semibold flex items-center gap-2">
             <span>{t("title")}</span>
-            <span className="text-xs font-normal text-muted">{formatCountParens(scoped.length)}</span>
+            <span className="text-xs font-normal text-muted">{formatCountParens(listedCount)}</span>
           </SheetTitle>
           <SheetDescription className="sr-only">{t("description")}</SheetDescription>
         </SheetHeader>
 
-        <div className="flex items-center gap-1.5 px-4 py-2 border-b border-border bg-surface/50 text-xs shrink-0">
-          {scopeButton(SCOPE_WORKSPACE, t("filterEntireWorkspace"))}
-          {activeResponseId && scopeButton(SCOPE_RESPONSE, t("filterThisResponse"))}
-        </div>
+        {/* The scope only matters when a response is in focus. */}
+        {activeResponseId && (
+          <div className="flex items-center gap-1.5 px-4 py-2 border-b border-border bg-surface/50 text-xs shrink-0">
+            {scopeButton(SCOPE_WORKSPACE, t("filterEntireWorkspace"))}
+            {scopeButton(SCOPE_RESPONSE, t("filterThisResponse"))}
+          </div>
+        )}
 
         <Tabs
           value={activeTab}
           onValueChange={(v) => setActiveTab(v as DrawerTab)}
           className="flex-1 flex flex-col overflow-hidden"
         >
-          <TabsList className="grid grid-cols-3 mx-4 mt-3 bg-surface/80 border border-border">
+          <TabsList className="grid grid-cols-2 mx-4 mt-3 bg-surface/80 border border-border">
             {tabs.map(({ value, label, icon: Icon }) => (
               <TabsTrigger key={value} value={value} className="text-xs gap-1.5">
                 <Icon className="w-3.5 h-3.5" />
@@ -215,7 +230,14 @@ export function AllAnnotationsDrawer({
             ) : loadFailed ? (
               <div className="text-center py-12 text-muted text-xs">{t("loadFailed")}</div>
             ) : (
-              tabs.map(({ value, empty }) => (
+              <>
+              {waitingCount > 0 && (
+                <p className="mb-3 flex items-start gap-1.5 text-[11px] text-muted" data-testid="drawer-queued-hint">
+                  <ListTodo className="mt-px h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                  <span>{t("queuedHint", { count: waitingCount })}</span>
+                </p>
+              )}
+              {tabs.map(({ value, empty }) => (
                 <TabsContent key={value} value={value} className="m-0 space-y-2.5">
                   {lists[value].length === 0 ? (
                     <div className="text-center py-12 text-muted text-xs">{empty}</div>
@@ -226,10 +248,10 @@ export function AllAnnotationsDrawer({
                         type="button"
                         onClick={() => handleOpenItem(item)}
                         data-testid={`drawer-item-${item.id}`}
-                        className="group block w-full text-start p-3 rounded-lg border border-border bg-surface/40 hover:bg-surface/80 hover:border-accent/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent cursor-pointer transition-all space-y-2 text-xs"
+                        className="group block w-full min-w-0 text-start p-3 rounded-lg border border-border bg-surface/40 hover:bg-surface/80 hover:border-accent/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent cursor-pointer transition-all space-y-2 text-xs"
                       >
-                        <span className="flex items-center justify-between text-[11px] text-muted">
-                          <span className="flex items-center gap-1.5 font-medium text-foreground">
+                        <span className="flex items-center justify-between gap-2 text-[11px] text-muted">
+                          <span className="flex min-w-0 items-center gap-1.5 truncate font-medium text-foreground">
                             {item.kind === "COMMENT"
                               ? item.createdBy?.name ||
                                 item.createdBy?.username ||
@@ -238,21 +260,20 @@ export function AllAnnotationsDrawer({
                             {item.resolvedAt && (
                               <span className="font-normal text-success">{t("resolved")}</span>
                             )}
-                            {value === "queue" && (
-                              <span className="font-normal text-warning">
-                                {item.questionState === "FAILED" ? t("failed") : t("queued")}
-                              </span>
-                            )}
+                            {item.questionState === "FAILED" &&
+                              !item.messages.some((m) => m.role === "ASSISTANT") && (
+                                <span className="font-normal text-warning">{t("failed")}</span>
+                              )}
                           </span>
-                          <span className="flex items-center gap-1 group-hover:text-accent transition-colors">
+                          <span className="flex shrink-0 items-center gap-1 group-hover:text-accent transition-colors">
                             <span>{t("open")}</span>
                             <ChevronRight className="w-3 h-3" />
                           </span>
                         </span>
-                        <span className="block italic line-clamp-2 text-muted/90 border-s-2 border-accent/40 ps-2">
+                        <span className="block italic line-clamp-2 wrap-anywhere text-muted/90 border-s-2 border-accent/40 ps-2">
                           «{item.anchorExact}»
                         </span>
-                        <span className="block text-foreground/90 line-clamp-2">
+                        <span className="block text-foreground/90 line-clamp-2 wrap-anywhere">
                           {item.kind === "COMMENT" ? (
                             <RenderMentions
                               text={item.messages[0]?.content || ""}
@@ -267,7 +288,8 @@ export function AllAnnotationsDrawer({
                     ))
                   )}
                 </TabsContent>
-              ))
+              ))}
+              </>
             )}
           </div>
         </Tabs>

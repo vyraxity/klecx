@@ -93,6 +93,7 @@ const ROWS: Row[] = [
   { route: "workspaces/[id]/restore", method: "POST", params: () => ({ id: ID.workspace }) },
   { route: "workspaces/[id]/activity", method: "GET", params: () => ({ id: ID.workspace }) },
   { route: "workspaces/[id]/annotations", method: "GET", params: () => ({ id: ID.workspace }) },
+  { route: "workspaces/[id]/annotations", method: "GET", params: () => ({ id: ID.workspace }), query: "?summary=1" },
   { route: "workspaces/[id]/attachments", method: "GET", params: () => ({ id: ID.workspace }) },
   { route: "workspaces/[id]/attachments/init", method: "POST", params: () => ({ id: ID.workspace }), body: () => ({ name: "x.txt", mime: "text/plain", bytes: 10 }) },
   { route: "workspaces/[id]/attachments/link", method: "POST", params: () => ({ id: ID.workspace }), body: () => ({ url: "https://example.com/" }) },

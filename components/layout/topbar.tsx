@@ -2,21 +2,22 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import {
   Archive,
+  ArrowLeft,
   ChevronRight,
   FolderInput,
   FolderKanban,
   Menu,
   MoreHorizontal,
-  PanelRight,
+  MessagesSquare,
   Pencil,
   Share2,
   Trash2,
 } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -34,8 +35,15 @@ import type { SidebarProjectItem, SidebarWorkspaceItem } from "./types";
 import { ShareAndPeopleDialog } from "@/components/workspace/ShareAndPeopleDialog";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { NotesPopover } from "@/components/workspace/notes-popover";
+import { api } from "@/lib/api/client";
+import {
+  SETTINGS_RETURN_FALLBACK,
+  settingsReturnHref,
+  topbarPage,
+} from "@/lib/layout/topbar-page";
 
 export interface TopbarProps {
+  /** The sidebar's entry for the workspace page being shown (null elsewhere, or when it isn't listed). */
   activeWorkspace: SidebarWorkspaceItem | null;
   currentUserId?: string;
   projects: SidebarProjectItem[];
@@ -73,20 +81,76 @@ export function Topbar({
   const [draftTitle, setDraftTitle] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
 
+  const tSettings = useTranslations("Settings");
+  const searchParams = useSearchParams();
+  const page = React.useMemo(() => topbarPage(pathname), [pathname]);
+  const onWorkspacePage = page.kind === "workspace";
+  const workspacePageId = page.kind === "workspace" ? page.id : null;
+
   // On /projects/[id] the breadcrumb is "Projects › {project name}".
-  const projectPageId = React.useMemo(() => {
-    const match = pathname?.match(/^\/projects\/([^/]+)\/?$/);
-    return match ? match[1] : null;
-  }, [pathname]);
+  const projectPageId = page.kind === "project" ? page.id : null;
   const projectPageName = projectPageId
     ? (projects.find((p) => p.id === projectPageId)?.name ?? "")
     : null;
 
+  // The title comes from the page in the URL (pre-10.6 fix), never from the
+  // last workspace opened.
   const displayedTitle =
-    projectPageName ||
-    activeWorkspace?.title ||
-    currentPageTitle ||
-    tChat("newChat");
+    page.kind === "project"
+      ? projectPageName || t("projects")
+      : page.kind === "settings"
+        ? tSettings("nav.title")
+        : page.kind === "home"
+          ? tChat("newChat")
+          : page.kind === "workspace"
+            ? activeWorkspace?.title || currentPageTitle || tChat("newChat")
+            : currentPageTitle;
+
+  // Settings' "Back to …" link: the last other page of the app, with its query
+  // string (an open thread column), remembered as the person moves around.
+  const settingsReturnTo = useUiStore((s) => s.settingsReturnTo);
+  const setSettingsReturnTo = useUiStore((s) => s.setSettingsReturnTo);
+  const search = searchParams?.toString() ?? "";
+  const returnTitle =
+    page.kind === "home" ? t("workspaces") : displayedTitle || t("workspaces");
+  React.useEffect(() => {
+    const href = settingsReturnHref(pathname ?? "", search);
+    if (!href) return;
+    const current = useUiStore.getState().settingsReturnTo;
+    if (current?.href === href && current.title === returnTitle) return;
+    setSettingsReturnTo({ href, title: returnTitle });
+  }, [pathname, search, returnTitle, setSettingsReturnTo]);
+  const backTarget = settingsReturnTo ?? {
+    href: SETTINGS_RETURN_FALLBACK,
+    title: t("workspaces"),
+  };
+
+  // The Comments & Asks badge: counted on the server, refreshed whenever a
+  // comment or Ask changes ("annotation-changed") or the queue is answered.
+  const queryClient = useQueryClient();
+  const { data: annotationSummary } = useQuery({
+    queryKey: ["workspaces", workspacePageId, "annotations", "summary"],
+    queryFn: () =>
+      api<{ comments: number; asks: number; total: number }>(
+        `/api/v1/workspaces/${workspacePageId}/annotations?summary=1`
+      ),
+    enabled: Boolean(workspacePageId),
+    staleTime: 30_000,
+  });
+  React.useEffect(() => {
+    if (!workspacePageId) return;
+    const refresh = () =>
+      void queryClient.invalidateQueries({
+        queryKey: ["workspaces", workspacePageId, "annotations", "summary"],
+      });
+    window.addEventListener("annotation-changed", refresh);
+    return () => window.removeEventListener("annotation-changed", refresh);
+  }, [queryClient, workspacePageId]);
+  const annotationCount = annotationSummary?.total ?? 0;
+  const annotationsLabel =
+    annotationCount > 0
+      ? tThreads("allAnnotationsCount", { count: annotationCount })
+      : tThreads("allAnnotations");
   const projectName = React.useMemo(() => {
     if (!activeWorkspace?.projectId) return null;
     if (activeWorkspace.projectName) return activeWorkspace.projectName;
@@ -143,15 +207,12 @@ export function Topbar({
   const [shareOpen, setShareOpen] = React.useState(false);
 
   const handleShareClick = () => {
-    if (!activeWorkspace || !currentUserId) {
-      toast.info(t("shareComingSoon"));
-      return;
-    }
+    if (!activeWorkspace || !currentUserId) return;
     setShareOpen(true);
   };
 
   return (
-    <header className="flex h-14 w-full shrink-0 items-center justify-between gap-2 border-b border-border bg-surface/85 px-3 sm:px-5 backdrop-blur-md z-20">
+    <header data-testid="topbar" className="flex h-14 w-full shrink-0 items-center justify-between gap-2 border-b border-border bg-surface/85 px-3 sm:px-5 backdrop-blur-md z-20">
       {/* Left: Mobile Drawer Trigger + Project Breadcrumb + Inline-Editable Workspace Title */}
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <Button
@@ -170,6 +231,21 @@ export function Topbar({
           aria-label={tCommon("breadcrumb")}
           className="flex min-w-0 flex-1 items-center gap-1.5 text-sm"
         >
+          {page.kind === "settings" && (
+            <>
+              <Link
+                href={backTarget.href}
+                className="inline-flex min-w-0 max-w-36 sm:max-w-64 max-sm:min-h-11 max-sm:min-w-11 max-sm:justify-center items-center gap-1.5 rounded-md px-1.5 py-1 text-xs sm:text-sm font-medium text-muted transition-colors hover:bg-surface-2 hover:text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                data-testid="settings-back-link"
+                title={t("backTo", { title: backTarget.title })}
+              >
+                <ArrowLeft className="h-4 w-4 sm:h-3.5 sm:w-3.5 shrink-0 rtl:rotate-180" strokeWidth={1.5} aria-hidden="true" />
+                {/* Phones: the arrow alone, so "Settings" keeps the room. */}
+                <span className="truncate max-sm:sr-only">{t("backTo", { title: backTarget.title })}</span>
+              </Link>
+              <span className="h-4 w-px shrink-0 bg-border" aria-hidden="true" />
+            </>
+          )}
           {projectPageName !== null ? (
             <>
               <span className="text-xs font-medium text-muted sm:text-sm">
@@ -239,31 +315,45 @@ export function Topbar({
         </nav>
       </div>
 
-      {/* Right: Share, Right Panel Toggle, Locale, Overflow Menu */}
+      {/* Right: workspace actions (workspace pages only), bell, language */}
       <div className="flex shrink-0 items-center gap-1.5">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={handleShareClick}
-          className="hidden sm:inline-flex"
-        >
-          <Share2 className="h-3.5 w-3.5" strokeWidth={1.5} />
-          <span>{t("share")}</span>
-        </Button>
+        {activeWorkspace && currentUserId && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleShareClick}
+            className="hidden sm:inline-flex"
+          >
+            <Share2 className="h-3.5 w-3.5" strokeWidth={1.5} />
+            <span>{t("share")}</span>
+          </Button>
+        )}
 
-        <Button
-          type="button"
-          variant={rightPanelOpen ? "secondary" : "ghost"}
-          size="icon"
-          aria-label={tThreads("allAnnotations")}
-          aria-haspopup="dialog"
-          aria-expanded={rightPanelOpen}
-          tooltip={tThreads("allAnnotations")}
-          onClick={() => toggleRightPanelOpen()}
-        >
-          <PanelRight className="h-4 w-4" strokeWidth={1.5} />
-        </Button>
+        {onWorkspacePage && (
+          <Button
+            type="button"
+            variant={rightPanelOpen ? "secondary" : "ghost"}
+            size="icon"
+            aria-label={annotationsLabel}
+            aria-haspopup="dialog"
+            aria-expanded={rightPanelOpen}
+            tooltip={annotationsLabel}
+            onClick={() => toggleRightPanelOpen()}
+            className="relative"
+          >
+            <MessagesSquare className="h-4 w-4" strokeWidth={1.5} />
+            {annotationCount > 0 && (
+              <span
+                aria-hidden="true"
+                data-testid="annotations-count-badge"
+                className="pointer-events-none absolute -top-0.5 -end-0.5 min-w-4 rounded-full bg-accent px-1 text-center text-[10px] font-semibold leading-4 text-accent-fg"
+              >
+                {annotationCount > 99 ? t("countOverflow", { max: 99 }) : annotationCount}
+              </span>
+            )}
+          </Button>
+        )}
 
         {activeWorkspace && (
           <NotesPopover workspaceId={activeWorkspace.id} />

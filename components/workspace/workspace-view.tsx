@@ -83,13 +83,11 @@ export function WorkspaceView({
   const tThreads = useTranslations("Threads");
   const queryClient = useQueryClient();
   const setCurrentPageTitle = useUiStore((s) => s.setCurrentPageTitle);
-  const setCurrentPageId = useUiStore((s) => s.setCurrentPageId);
 
-  // Sync title and id to UI store on mount/update
+  // The top bar's title until the sidebar list has this workspace (a new one).
   React.useEffect(() => {
-    setCurrentPageId(workspace.id);
     setCurrentPageTitle(workspace.title || "Workspace");
-  }, [workspace.id, workspace.title, setCurrentPageId, setCurrentPageTitle]);
+  }, [workspace.title, setCurrentPageTitle]);
 
   // Refresh timeline when a side question is promoted to this workspace.
   React.useEffect(() => {

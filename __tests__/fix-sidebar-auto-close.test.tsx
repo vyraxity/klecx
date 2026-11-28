@@ -21,6 +21,7 @@ const mockRefresh = jest.fn();
 const mockPathname = "/workspaces/ws-today";
 
 jest.mock("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(),
   useRouter: () => ({
     push: mockPush,
     refresh: mockRefresh,
