@@ -27,6 +27,7 @@ import {
  * - `GET  /api/test/ledger-check?email=` — the load test's check: balances
  *   equal the ledger sums and never went negative.
  */
+const emailBody = z.object({ email: z.string().email() });
 const setCreditsBody = z.object({ email: z.string().email(), balance: z.number().int().min(0).max(100_000) });
 
 const subscribeBody = z.object({
@@ -92,6 +93,18 @@ export const POST = route({
         "e2e.set_credits",
         `e2e:set-credits:${account.id}:${Date.now()}`
       );
+    }
+    if (action === "remove-password") {
+      // Pre-10.6 fix: an account like one that signs in with Google only (no
+      // password), for the "add a password" journey.
+      const body = emailBody.parse(raw);
+      const user = await db.user.findFirst({
+        where: { email: { equals: body.email, mode: "insensitive" } },
+        select: { id: true },
+      });
+      if (!user) throw Errors.notFound("User");
+      const removed = await db.account.deleteMany({ where: { userId: user.id, providerId: "credential" } });
+      return { removed: removed.count };
     }
     if (action === "subscription-event") {
       const body = eventBody.parse(raw);

@@ -12,6 +12,7 @@ export const policies = {
   "auth:reset":   { n: 3,   window: "1 h"  as Duration }, // key: email
   "auth:verify":  { n: 3,   window: "1 h"  as Duration }, // key: email
   "auth:reauth":  { n: 5,   window: "15 m" as Duration }, // key: userId (password re-entry for sensitive actions)
+  "auth:setpw":   { n: 3,   window: "1 h"  as Duration }, // key: userId (codes to add a password, pre-10.6 fix)
   "auth:2fa":     { n: 10,  window: "10 m" as Duration }, // key: ip (two-factor codes; the plugin also limits each challenge)
   "api:default":  { n: 120, window: "1 m"  as Duration }, // key: userId
   "gen:start":    { n: 20,  window: "1 m"  as Duration }, // key: userId (plan caps are in Step 8.1)

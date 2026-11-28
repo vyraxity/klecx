@@ -54,6 +54,14 @@ export interface ChangeEmailVerifyData {
 
 export interface PasswordChangedData {
   time: string;
+  /** Pre-10.6 fix: a password was added (the account had none), not changed. */
+  set?: boolean;
+}
+
+/** Pre-10.6 fix: the code that confirms adding a password in Settings. */
+export interface PasswordSetCodeData {
+  code: string;
+  minutes: number;
 }
 
 /** Step 10.2: internal monitoring alerts (to ALERTS_EMAIL). */
@@ -192,6 +200,7 @@ export interface EmailTemplateMap {
   invitation: InvitationData;
   "new-sign-in": NewSignInData;
   "password-changed": PasswordChangedData;
+  "password-set-code": PasswordSetCodeData;
   "two-factor-changed": TwoFactorChangedData;
   "monitoring-alert": MonitoringAlertData;
   "change-email-confirm": ChangeEmailConfirmData;

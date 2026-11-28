@@ -1,4 +1,5 @@
 import "server-only";
+import crypto from "node:crypto";
 import { shouldRefusePassword } from "@/server/auth/pwned-passwords";
 import { hashPassword, verifyPassword } from "better-auth/crypto";
 import { APIError } from "better-auth/api";
@@ -12,7 +13,10 @@ import { isDisposableEmail } from "@/server/auth/disposable-email";
 import { verifySensitiveActionAuth } from "@/server/services/session";
 import type { Actor } from "@/server/auth/session";
 import {
+  SET_PASSWORD_CODE_MINUTES,
+  SET_PASSWORD_MAX_ATTEMPTS,
   SOCIAL_PROVIDERS,
+  type SetPasswordConfirmInput,
   type SignInMethod,
   type SocialProvider,
 } from "@/lib/schemas/account-security";
@@ -153,6 +157,128 @@ export async function changePassword(
   }
 
   return { success: true, revokedSessions: others.length };
+}
+
+/**
+ * Pre-10.6 fix (owner, 2026-11-27): an account that signs in only with Google
+ * or GitHub adds a password from Settings → Security without leaving the
+ * page. Step 1 emails a 6-digit code to the account's address (valid
+ * `SET_PASSWORD_CODE_MINUTES`); step 2 takes the code and the new password.
+ * The code proves the person still controls the mailbox, like the reset
+ * link did. Two-factor can't apply: it needs a password.
+ *
+ * The code is kept only as a hash, in Better Auth's `verifications` table
+ * (identifier `set-password:<userId>`, value `<sha256>:<failed tries>`); a new
+ * code replaces the previous one. Sends are limited (`auth:setpw`, 3 an hour).
+ */
+const SET_PASSWORD_PREFIX = "set-password:";
+
+function hashSetPasswordCode(userId: string, code: string): string {
+  return crypto.createHash("sha256").update(`${userId}:${code}`).digest("hex");
+}
+
+async function assertHasNoPassword(userId: string) {
+  const credential = await db.account.findFirst({
+    where: { userId, providerId: "credential" },
+    select: { password: true },
+  });
+  if (credential?.password) {
+    throw Errors.conflict("This account already has a password", "already_has_password");
+  }
+}
+
+export async function startPasswordSet(actor: Actor) {
+  await assertHasNoPassword(actor.userId);
+  await limit("auth:setpw", actor.userId);
+
+  const user = await db.user.findUnique({ where: { id: actor.userId }, select: { email: true } });
+  if (!user) throw Errors.notFound("User");
+
+  const code = crypto.randomInt(0, 1_000_000).toString().padStart(6, "0");
+  const identifier = `${SET_PASSWORD_PREFIX}${actor.userId}`;
+  await db.$transaction([
+    db.verification.deleteMany({ where: { identifier } }),
+    db.verification.create({
+      data: {
+        id: crypto.randomUUID(),
+        identifier,
+        value: `${hashSetPasswordCode(actor.userId, code)}:0`,
+        expiresAt: new Date(Date.now() + SET_PASSWORD_CODE_MINUTES * 60_000),
+      },
+    }),
+  ]);
+
+  await sendEmail("password-set-code", user.email, { code, minutes: SET_PASSWORD_CODE_MINUTES });
+  return { sent: true, expiresInMinutes: SET_PASSWORD_CODE_MINUTES };
+}
+
+export async function confirmPasswordSet(actor: Actor, input: SetPasswordConfirmInput) {
+  await assertHasNoPassword(actor.userId);
+  const identifier = `${SET_PASSWORD_PREFIX}${actor.userId}`;
+  const row = await db.verification.findFirst({ where: { identifier }, orderBy: { createdAt: "desc" } });
+  if (!row || row.expiresAt.getTime() < Date.now()) {
+    if (row) await db.verification.deleteMany({ where: { identifier } });
+    throw Errors.badRequest("The code has expired. Ask for a new one.", "code_expired");
+  }
+
+  const [storedHash, triesText] = row.value.split(":");
+  const tries = Number(triesText) || 0;
+  const given = Buffer.from(hashSetPasswordCode(actor.userId, input.code), "hex");
+  const stored = Buffer.from(storedHash ?? "", "hex");
+  const matches = stored.length === given.length && crypto.timingSafeEqual(stored, given);
+
+  if (!matches) {
+    const failed = tries + 1;
+    if (failed >= SET_PASSWORD_MAX_ATTEMPTS) {
+      // Too many wrong codes: this code is spent; ask for a new one.
+      await db.verification.deleteMany({ where: { identifier } });
+      throw Errors.badRequest("Too many wrong codes. Ask for a new one.", "code_attempts_exceeded");
+    }
+    await db.verification.update({ where: { id: row.id }, data: { value: `${storedHash}:${failed}` } });
+    throw Errors.badRequest("That code isn't right", "invalid_email_code", {
+      attemptsLeft: SET_PASSWORD_MAX_ATTEMPTS - failed,
+    });
+  }
+
+  // Step 10.1: never accept a password found in a known data breach. The
+  // code stays valid, so the person can try another password.
+  if (await shouldRefusePassword(input.newPassword)) {
+    throw Errors.unprocessable("This password appears in a known data breach", "PASSWORD_COMPROMISED");
+  }
+
+  const hash = await hashPassword(input.newPassword);
+  await db.$transaction(async (tx) => {
+    // A credential row without a password (shouldn't exist) gets one; else a
+    // new email-and-password sign-in method, as Better Auth creates it.
+    const existing = await tx.account.findFirst({
+      where: { userId: actor.userId, providerId: "credential" },
+      select: { id: true },
+    });
+    if (existing) {
+      await tx.account.update({ where: { id: existing.id }, data: { password: hash } });
+    } else {
+      await tx.account.create({
+        data: {
+          id: crypto.randomUUID(),
+          userId: actor.userId,
+          providerId: "credential",
+          accountId: actor.userId,
+          password: hash,
+        },
+      });
+    }
+    await tx.verification.deleteMany({ where: { identifier } });
+    await tx.auditLog.create({ data: { userId: actor.userId, action: "PASSWORD_SET" } });
+  });
+
+  const user = await db.user.findUnique({ where: { id: actor.userId }, select: { email: true } });
+  if (user) {
+    await sendEmail("password-changed", user.email, {
+      time: new Date().toUTCString(),
+      set: true,
+    }).catch(() => undefined);
+  }
+  return { success: true };
 }
 
 /**

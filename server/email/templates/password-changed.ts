@@ -10,10 +10,12 @@ export function renderPasswordChanged(
   toEmail: string
 ): EmailTemplateResult {
   const site = getSiteConfig();
-  const subject = t("passwordChanged.subject");
-  const heading = t("passwordChanged.heading");
+  // Pre-10.6 fix: "a password was added" when the account had none.
+  const v = data.set ? "Set" : "";
+  const subject = t(`passwordChanged.subject${v}`);
+  const heading = t(`passwordChanged.heading${v}`);
   const greeting = t("passwordChanged.greeting");
-  const bodyText = t("passwordChanged.body", { time: data.time });
+  const bodyText = t(`passwordChanged.body${v}`, { time: data.time });
   const actionLabel = t("passwordChanged.button");
   const disclaimerText = t("passwordChanged.disclaimer");
 

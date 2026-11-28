@@ -18,6 +18,7 @@ import { renderResetPassword } from "./templates/reset-password";
 import { renderInvitation } from "./templates/invitation";
 import { renderNewSignIn } from "./templates/new-sign-in";
 import { renderPasswordChanged } from "./templates/password-changed";
+import { renderPasswordSetCode } from "./templates/password-set-code";
 import { renderTwoFactorChanged } from "./templates/two-factor-changed";
 import { renderMonitoringAlert } from "./templates/monitoring-alert";
 import { renderChangeEmailConfirm, renderChangeEmailVerify } from "./templates/change-email";
@@ -125,6 +126,8 @@ export async function renderEmail<T extends EmailTemplateName>(
       return renderMonitoringAlert(data as EmailTemplateMap["monitoring-alert"], t, to);
     case "two-factor-changed":
       return renderTwoFactorChanged(data as EmailTemplateMap["two-factor-changed"], t, to);
+    case "password-set-code":
+      return renderPasswordSetCode(data as EmailTemplateMap["password-set-code"], t, to);
     case "password-changed":
       return renderPasswordChanged(
         data as EmailTemplateMap["password-changed"],
@@ -285,6 +288,8 @@ export async function sendEmail<T extends EmailTemplateName>(
         `To: ${to}\n` +
         `Subject: ${rendered.subject}\n` +
         (actionUrl ? `Action Link: ${actionUrl}\n` : "") +
+        // Development only, like the links above: a sign-in code to try flows locally.
+        (typeof rawData.code === "string" ? `Code: ${rawData.code}\n` : "") +
         `----------------------------------------\n`
     );
     return { success: true, id: `dev-${Date.now()}` };

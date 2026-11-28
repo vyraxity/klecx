@@ -43,6 +43,10 @@ describe("Step 1.7 & F0.2 — Transactional Email Module", () => {
     "password-changed": {
       time: "2026-10-28 09:45 UTC",
     },
+    "password-set-code": {
+      code: "482913",
+      minutes: 10,
+    },
     "two-factor-changed": { kind: "enabled", time: "2026-11-23 10:00 UTC" },
     "monitoring-alert": { alerts: [{ kind: "providerErrors", severity: "critical", values: { failed: 4, total: 12, rate: 33 } }], time: "Tue, 24 Nov 2026 09:00:00 GMT" },
     "change-email-confirm": {
@@ -135,6 +139,7 @@ describe("Step 1.7 & F0.2 — Transactional Email Module", () => {
     "invitation",
     "new-sign-in",
     "password-changed",
+    "password-set-code",
     "change-email-confirm",
     "change-email-verify",
     "share-created",

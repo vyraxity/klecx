@@ -112,6 +112,10 @@ describe("Step F0.2 — Site configuration: emails, company identity, links from
       "password-changed": {
         time: "2026-11-08 10:05 UTC",
       },
+      "password-set-code": {
+        code: "482913",
+        minutes: 10,
+      },
       "two-factor-changed": { kind: "enabled", time: "2026-11-23 10:00 UTC" },
       "monitoring-alert": { alerts: [{ kind: "providerErrors", severity: "critical", values: { failed: 4, total: 12, rate: 33 } }], time: "Tue, 24 Nov 2026 09:00:00 GMT" },
       "change-email-confirm": {
@@ -203,6 +207,7 @@ describe("Step F0.2 — Site configuration: emails, company identity, links from
       "invitation",
       "new-sign-in",
       "password-changed",
+      "password-set-code",
       "change-email-confirm",
       "change-email-verify",
       "share-created",

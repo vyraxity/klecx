@@ -36,7 +36,8 @@ export default async function SecuritySettingsPage({
     <>
       <SettingsPageHeader title={t("title")} description={t("description")} />
       <PasswordCard hasPassword={linked.hasPassword} email={identity.email} />
-      <TwoFactorCard initial={twoFactor} />
+      {/* Remounts when a password is added here, so two-factor becomes available. */}
+      <TwoFactorCard key={linked.hasPassword ? "password" : "no-password"} initial={twoFactor} />
       <LinkedAccountsCard userId={actor.userId} linkError={params.linkError === "1" || typeof params.error === "string"} />
       <SettingsSection title={t("sessionsTitle")} description={t("sessionsHint")}>
         <div>
