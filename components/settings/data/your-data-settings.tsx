@@ -22,6 +22,7 @@ import { SettingsSection } from "@/components/settings/settings-section";
 import { api } from "@/lib/api/client";
 import { queryKeys } from "@/lib/api/hooks/query-keys";
 import { getApiErrorCode, getApiErrorMessage } from "@/lib/api/error-message";
+import { DELETED_PAGE_HREF } from "@/lib/settings/deleted-tabs";
 
 interface DataExport {
   id: string;
@@ -65,14 +66,14 @@ export function YourDataSettings({ userId }: { userId: string }) {
   );
 }
 
-/** Pre-10.6 fix: deleted workspaces and projects can be restored for 30 days. */
+/** Pre-10.6 fixes: deleted workspaces and projects (restorable for 30 days) and archived ones. */
 function RecentlyDeletedLink() {
   const t = useTranslations("Settings.data");
   return (
     <SettingsSection title={t("recentlyDeletedTitle")} description={t("recentlyDeletedHint")}>
       <div>
         <Button asChild variant="outline" size="sm">
-          <Link href="/settings/deleted">{t("recentlyDeletedOpen")}</Link>
+          <Link href={DELETED_PAGE_HREF}>{t("recentlyDeletedOpen")}</Link>
         </Button>
       </div>
     </SettingsSection>

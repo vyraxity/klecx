@@ -270,6 +270,8 @@ export function ProjectView({
       });
       toast.success(
         isArchived ? t("toasts.projectRestored") : t("toasts.projectArchived"),
+        // Pre-10.6 fix PR 8: archived projects are listed in Settings.
+        isArchived ? undefined : { description: t("toasts.archivedHint") },
       );
       router.refresh();
     } catch {

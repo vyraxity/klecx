@@ -20,10 +20,13 @@ export const envSchema = z
     E2E_TEST_MODE: emptyToUndefined(z.enum(["true", "false"]).default("false")).transform((v) => v === "true"),
     /** Set by Vercel on every deployment; only read to refuse test mode there. */
     VERCEL: emptyToUndefined(z.string().optional()),
-    GEMINI_TEXT_MODEL: z.string().default("gemini-2.5-flash"),
-    GEMINI_TEXT_MODEL_ECONOMY: z.string().default("gemini-2.5-flash"),
-    GEMINI_TEXT_MODEL_STANDARD: z.string().default("gemini-2.5-pro"),
-    GEMINI_IMAGE_MODEL: z.string().default("imagen-3.0-generate-002"),
+    // Fallbacks = the models the credits are priced for (lib/ai/model-catalog.ts; owner,
+    // 2026-11-24/28). Fast & Efficient = economy, Standard Reasoning = standard.
+    GEMINI_TEXT_MODEL: z.string().default("gemini-3.1-flash-lite"),
+    GEMINI_TEXT_MODEL_ECONOMY: z.string().default("gemini-3.1-flash-lite"),
+    GEMINI_TEXT_MODEL_STANDARD: z.string().default("gemini-3.8-flash"),
+    // Image generation is off at launch (NEXT_PUBLIC_IMAGE_GENERATION_ENABLED); same model as .env.example.
+    GEMINI_IMAGE_MODEL: z.string().default("gemini-nano-banana-2.1"),
     AI_TRANSCRIBE_MODEL: emptyToUndefined(z.string().optional()),
     /** Step 9.4: the natural-voice read-aloud model (text-to-speech). */
     GEMINI_TTS_MODEL: z.string().default("gemini-3.8-flash-lite-tts"),

@@ -400,8 +400,28 @@ export function AppShell({
         method: "PATCH",
         body: { archived: true },
       });
-      toast.success(t("archivedSuccess"));
-      if (activeWorkspaceId === workspaceId) {
+      const wasOpen = activeWorkspaceId === workspaceId;
+      // Pre-10.6 fix PR 8: say where archived workspaces are, and offer Undo.
+      toast.success(t("archivedSuccess"), {
+        description: t("archivedHint"),
+        action: {
+          label: t("archiveUndo"),
+          onClick: async () => {
+            try {
+              await api(`/api/v1/workspaces/${workspaceId}`, {
+                method: "PATCH",
+                body: { archived: false },
+              });
+              toast.success(t("unarchivedSuccess"));
+              if (wasOpen) router.push(`/workspaces/${workspaceId}`);
+              router.refresh();
+            } catch {
+              toast.error(t("unarchiveError"));
+            }
+          },
+        },
+      });
+      if (wasOpen) {
         router.push("/workspaces");
       }
       router.refresh();

@@ -256,7 +256,7 @@
     "renameChat": "Renommer la discussion",
     "renamePlaceholder": "Entrez le titre de la discussion...",
     "deleteConfirmTitle": "Supprimer l'espace de travail ?",
-    "deleteConfirmDescription": "« {title} » passe dans Supprimés récemment : vous pouvez le restaurer pendant 30 jours, puis il est effacé avec ses réponses, commentaires et fichiers. Ses membres perdent l'accès.",
+    "deleteConfirmDescription": "« {title} » passe dans Supprimés et archivés : vous pouvez le restaurer pendant 30 jours, puis il est effacé avec ses réponses, commentaires et fichiers. Ses membres perdent l'accès.",
     "confirmDelete": "Supprimer",
     "renameSuccess": "Discussion renommée",
     "renameError": "Échec du renommage de la discussion",
@@ -290,7 +290,7 @@
     "useModel": "Utiliser {model}",
     "notEnoughCreditsForMessage": "Ce message demande environ {needed} crédits, et il vous en reste {balance}.",
     "ownerNotEnoughCredits": "Le propriétaire de l'espace de travail n'a pas assez de crédits pour ce message.",
-    "deleteUndoHint": "Vous pouvez le restaurer pendant 30 jours depuis Paramètres → Supprimés récemment.",
+    "deleteUndoHint": "Vous pouvez le restaurer pendant 30 jours depuis Paramètres → Supprimés et archivés.",
     "undo": "Annuler",
     "restoreSuccess": "Espace de travail restauré",
     "restoreError": "Impossible de restaurer l'espace de travail."
@@ -366,7 +366,7 @@
       "support": "Assistance",
       "usage": "Utilisation",
       "voice": "Voix",
-      "deleted": "Supprimés récemment"
+      "deleted": "Supprimés et archivés"
     },
     "errors": {
       "pageTitle": "Impossible de charger cette page",
@@ -655,13 +655,13 @@
       "deleteError": "Impossible de supprimer votre compte. Réessayez.",
       "cancel": "Annuler",
       "confirmButton": "Supprimer mon compte",
-      "recentlyDeletedTitle": "Supprimés récemment",
-      "recentlyDeletedHint": "Les espaces de travail et projets que vous supprimez peuvent être restaurés pendant 30 jours.",
-      "recentlyDeletedOpen": "Voir les éléments supprimés"
+      "recentlyDeletedTitle": "Supprimés et archivés",
+      "recentlyDeletedHint": "Les espaces de travail et projets que vous supprimez peuvent être restaurés pendant 30 jours. Ceux que vous archivez y sont aussi listés.",
+      "recentlyDeletedOpen": "Voir les éléments supprimés et archivés"
     },
     "deleted": {
-      "title": "Supprimés récemment",
-      "description": "Les espaces de travail et projets que vous supprimez restent ici {days} jours, puis sont effacés définitivement. Vous seul les voyez et vous pouvez les restaurer jusque-là.",
+      "title": "Supprimés et archivés",
+      "description": "Retrouvez ce que vous avez supprimé ou archivé. Les espaces de travail et projets supprimés restent {days} jours, puis sont effacés définitivement ; vous seul les voyez. Les éléments archivés restent jusqu'à ce que vous les sortiez de l'archive.",
       "workspacesTitle": "Espaces de travail",
       "projectsTitle": "Projets",
       "projectsHint": "Supprimer un projet ne supprime pas ses espaces de travail : ils restent dans votre barre latérale. Restaurer le projet les y remet.",
@@ -681,7 +681,25 @@
       "open": "Ouvrir",
       "restoreError": "Impossible de le restaurer. Réessayez.",
       "footnote": "Les membres perdent l'accès tant qu'il est supprimé et le retrouvent quand vous le restaurez. Après {days} jours, les fichiers, réponses, commentaires et notes sont effacés et ne peuvent pas être récupérés.",
-      "privacyLink": "Politique de confidentialité"
+      "privacyLink": "Politique de confidentialité",
+      "tabsLabel": "Supprimés ou archivés",
+      "tabDeleted": "Supprimés",
+      "tabArchived": "Archivés",
+      "archivedIntro": "Archiver masque un espace de travail ou un projet de votre barre latérale et des listes, sans rien supprimer. Un projet archivé masque aussi ses espaces de travail. Sortez-le de l'archive pour le retrouver.",
+      "noArchivedWorkspaces": "Aucun espace de travail archivé.",
+      "noArchivedProjects": "Aucun projet archivé.",
+      "archivedLoadError": "Impossible de charger les éléments archivés. Rechargez la page pour réessayer.",
+      "archivedOn": "Archivé le {date}",
+      "inProject": "Dans « {project} »",
+      "sharedWithYou": "Partagé avec vous",
+      "projectWorkspaces": "{count, plural, =0 {Aucun espace de travail} one {# espace de travail} other {# espaces de travail}}",
+      "unarchive": "Désarchiver",
+      "unarchiveNamed": "Désarchiver {name}",
+      "unarchivedWorkspace": "« {name} » est de retour dans votre barre latérale",
+      "unarchivedProject": "Le projet « {name} » est de retour dans votre barre latérale",
+      "unarchiveError": "Impossible de le sortir de l'archive. Réessayez.",
+      "cannotUnarchive": "Seul le propriétaire ou un administrateur peut le désarchiver.",
+      "openNamed": "Ouvrir {name}"
     }
   },
   "Email": {
@@ -1058,7 +1076,11 @@
     "usernameClaimed": "Nom d'utilisateur réservé : @{username}",
     "backTo": "Retour à {title}",
     "countOverflow": "{max}+",
-    "recentlyDeleted": "Supprimés récemment"
+    "recentlyDeleted": "Supprimés et archivés",
+    "archivedHint": "Retrouvez-le dans Paramètres → Supprimés et archivés.",
+    "unarchivedSuccess": "Espace de travail sorti de l'archive",
+    "archiveUndo": "Annuler",
+    "unarchiveError": "Impossible de le sortir de l'archive. Retrouvez-le dans Paramètres → Supprimés et archivés."
   },
   "Home": {
     "greetingMorning": "Bonjour, {name}",
@@ -2628,7 +2650,7 @@
     "renameWorkspaceTitle": "Renommer l'espace de travail",
     "workspaceName": "Nom de l'espace de travail",
     "deleteWorkspaceTitle": "Supprimer l'espace de travail",
-    "deleteWorkspaceConfirm": "Supprimer « {title} » ? Il passe dans Supprimés récemment, où vous pouvez le restaurer pendant 30 jours. Vous et ses membres n'y avez plus accès d'ici là.",
+    "deleteWorkspaceConfirm": "Supprimer « {title} » ? Il passe dans Supprimés et archivés, où vous pouvez le restaurer pendant 30 jours. Vous et ses membres n'y avez plus accès d'ici là.",
     "searchWorkspaces": "Rechercher des espaces de travail…",
     "sortBy": "Trier par",
     "sortLastActivity": "Dernière activité",
@@ -2641,7 +2663,7 @@
     "unarchiveProject": "Désarchiver le projet",
     "transferProject": "Transférer la propriété",
     "deleteProject": "Supprimer le projet",
-    "deleteProjectConfirm": "Supprimer ce projet ? Ses espaces de travail ne sont pas supprimés : ils restent dans votre barre latérale. Vous pouvez restaurer le projet pendant 30 jours depuis Paramètres → Supprimés récemment.",
+    "deleteProjectConfirm": "Supprimer ce projet ? Ses espaces de travail ne sont pas supprimés : ils restent dans votre barre latérale. Vous pouvez restaurer le projet pendant 30 jours depuis Paramètres → Supprimés et archivés.",
     "shareAndPeople": "Partage et membres",
     "projectOptions": "Options du projet",
     "workspaceOptions": "Options de {title}",
@@ -2697,10 +2719,11 @@
       "workspaceUpdateFailed": "Impossible de mettre à jour l'espace de travail",
       "workspaceDeleted": "Espace de travail supprimé",
       "workspaceDeleteFailed": "Impossible de supprimer l'espace de travail",
-      "deleteUndoHint": "Vous pouvez le restaurer pendant 30 jours depuis Paramètres → Supprimés récemment.",
+      "deleteUndoHint": "Vous pouvez le restaurer pendant 30 jours depuis Paramètres → Supprimés et archivés.",
       "undo": "Annuler",
       "restored": "Restauré",
-      "restoreFailed": "Impossible de le restaurer."
+      "restoreFailed": "Impossible de le restaurer.",
+      "archivedHint": "Retrouvez-le dans Paramètres → Supprimés et archivés."
     },
     "currentlyIn": "Actuellement dans {name}",
     "moveSearchHint": "Vos espaces de travail les plus récents sont affichés. Recherchez pour en trouver d'autres."

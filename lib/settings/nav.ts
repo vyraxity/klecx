@@ -14,7 +14,8 @@ export const SETTINGS_PAGES = [
   "usage",
   "billing",
   "data",
-  // Pre-10.6 fix: deleted workspaces and projects, restorable for 30 days.
+  // Pre-10.6 fixes PR 6 and PR 8: "Deleted & archived" (deleted items restorable for
+  // 30 days on one tab, archived items on the other).
   "deleted",
   "support",
 ] as const;
