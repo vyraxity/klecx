@@ -1,5 +1,6 @@
 import "server-only";
 import { z } from "zod";
+import { FEATURE_KEYS, isFeatureKey, type FeatureKey } from "@/lib/features/flags";
 
 const emptyToUndefined = <T extends z.ZodTypeAny>(schema: T) =>
   z.preprocess((v) => (v === "" ? undefined : v), schema);
@@ -51,6 +52,20 @@ export const envSchema = z
     SOCIAL_X_URL: emptyToUndefined(z.string().url().optional()),
     SOCIAL_GITHUB_URL: emptyToUndefined(z.string().url().optional()),
     STATUS_PAGE_URL: emptyToUndefined(z.string().url().optional()),
+    // Step 10.6: features switched off for this deployment, comma-separated keys from
+    // `FEATURE_KEYS` (e.g. "webSearch,voiceInput"); "ai" is the kill switch. Unknown keys are refused.
+    DISABLED_FEATURES: emptyToUndefined(z.string().optional()).transform((v, ctx): FeatureKey[] => {
+      const keys = (v ?? "").split(",").map((k) => k.trim()).filter(Boolean);
+      const unknown = keys.filter((k) => !isFeatureKey(k));
+      if (unknown.length > 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `unknown feature(s) ${unknown.join(", ")}; known: ${FEATURE_KEYS.join(", ")}`,
+        });
+        return z.NEVER;
+      }
+      return [...new Set(keys)] as FeatureKey[];
+    }),
     BILLING_ENABLED: z
       .enum(["true", "false"])
       .default("false")

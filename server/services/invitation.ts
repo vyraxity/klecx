@@ -1,4 +1,5 @@
 import "server-only";
+import { assertFeature } from "@/server/flags";
 import { log, errInfo } from "@/server/log";
 import crypto from "node:crypto";
 import { db } from "@/server/db/client";
@@ -206,6 +207,9 @@ export async function createInvitation(
   if (role === "ADMIN" && actor.userId !== ownerId) {
     throw Errors.forbidden("Only the owner can invite Admins");
   }
+
+  // Step 10.6: new invitations can be paused (existing members aren't affected).
+  await assertFeature("collaboration");
 
   // 2. Resolve emailOrUsername
   let targetEmail = "";
@@ -456,6 +460,8 @@ export async function resendInvitation(
   if (!invitation || (workspaceId && invitation.workspaceId !== workspaceId) || (projectId && invitation.projectId !== projectId)) {
     throw Errors.notFound("Invitation");
   }
+
+  await assertFeature("collaboration");
 
   // Only open or lapsed invitations can be resent. Revoked and accepted ones are
   // final: resending them would resurrect a cancelled or single-use invite.

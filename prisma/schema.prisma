@@ -1250,3 +1250,15 @@ model JobRun {
   @@index([startedAt])
   @@map("job_runs")
 }
+
+/// Step 10.6: an admin's runtime pause of a feature (`server/flags.ts`). A row means
+/// "off"; deleting it lifts the pause. Keys are `FEATURE_KEYS` in `lib/features/flags.ts`.
+/// Read by every server instance at most every 10 s; changes go to `audit_logs`.
+model FeatureFlag {
+  key         String   @id
+  reason      String?
+  updatedById String?  @map("updated_by_id")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("feature_flags")
+}

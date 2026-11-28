@@ -220,7 +220,8 @@
       "INVALID_BACKUP_CODE": "That backup code isn't right, or it was already used.",
       "TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE": "Too many wrong codes. Sign in again to get a new chance.",
       "ACCOUNT_TEMPORARILY_LOCKED": "Too many wrong codes. Two-factor sign-in is locked for a few minutes; try again later.",
-      "INVALID_TWO_FACTOR_COOKIE": "This sign-in has expired. Sign in again with your email and password."
+      "INVALID_TWO_FACTOR_COOKIE": "This sign-in has expired. Sign in again with your email and password.",
+      "SIGNUPS_PAUSED": "New sign-ups are paused for now. Please try again later."
     },
     "planIntent": "You chose {plan} ({interval}). After you confirm your email, you'll continue to payment.",
     "accountDeleted": "Your account is deleted. Check your email for the link to restore it if you change your mind.",
@@ -2494,7 +2495,10 @@
       "code_expired": "The code has expired. Ask for a new one.",
       "code_attempts_exceeded": "Too many wrong codes. Ask for a new one.",
       "invalid_email_code": "That code isn't right. Check the email and try again.",
-      "restore_expired": "It was deleted more than 30 days ago and can't be restored."
+      "restore_expired": "It was deleted more than 30 days ago and can't be restored.",
+      "ai_paused": "AI features are paused for a moment. Please try again later.",
+      "feature_paused": "This feature is paused for a moment. Please try again later.",
+      "SIGNUPS_PAUSED": "New sign-ups are paused for now. Please try again later."
     }
   },
   "Gates": {
@@ -2513,7 +2517,8 @@
     "unsupported_browser": "Voice input isn't supported in this browser",
     "view_only_project": "You have view-only access to this project",
     "not_enough_credits": "This model needs about {needed} credits per message, and you have {balance}.",
-    "owner_not_enough_credits": "The workspace owner doesn't have enough credits for this model (about {needed} per message)."
+    "owner_not_enough_credits": "The workspace owner doesn't have enough credits for this model (about {needed} per message).",
+    "paused": "Paused for a moment. Please try again later."
   },
   "Models": {
     "text-economy": {
@@ -3918,5 +3923,9 @@
   "DataExport": {
     "readme": "Your Klecx data\n\naccount.json — your profile, settings, sign-in methods, sessions, plan and billing consents.\ncredits.csv — your credit history.\nprojects.json — projects you own or are a member of.\nworkspaces/ — one folder per workspace you own: workspace.json (members, Klecx notes, share links, ownership transfers), conversation.md (every prompt, answer version and saved edit), annotations.json (comments and Ask threads at every depth), documents/ (every revision) and files/ (your original files).\ncontributions.json — what you wrote in other people's workspaces.\nmentions.json, notifications.json, ownership-transfers.json, support/ — the rest.\nfiles-not-included.txt — files that didn't fit (only when there are any).",
     "skippedIntro": "These files weren't included because the export holds at most {mb} MB of files. You can still download them in Klecx:"
+  },
+  "FeaturePause": {
+    "aiTitle": "AI is paused for a moment.",
+    "aiText": "New answers, Asks, reviews and voice input are unavailable for now. You can still read, comment and download."
   }
 }

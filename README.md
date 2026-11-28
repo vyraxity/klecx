@@ -382,6 +382,7 @@ Setup steps: [`docs/observability.md`](docs/observability.md).
 | `NEXT_PUBLIC_IMAGE_GENERATION_ENABLED` | `true` turns image generation on. **Keep it off** until Creem has approved the store and its image requirements are built (`CLAUDE.md`, "Text-only launch"). Built into the code: rebuild. | Off: text only. |
 | `CSP_REPORT_ONLY` | `true` sends the Content-Security-Policy as report-only, an emergency switch if it blocks something after a deploy. | Enforced. |
 | `PWNED_PASSWORD_CHECK` | `false` turns off the breached-password check at sign-up and password change. | On (only a 5-character hash prefix leaves the server). |
+| `DISABLED_FEATURES` | Comma-separated features to switch off for this deployment: `ai` (every new AI call: the kill switch), `webSearch`, `voiceInput`, `naturalVoices`, `documentReview`, `collaboration`, `signups`, `checkout`. Unknown names stop the app from starting. Admins can also pause any of them at runtime without a redeploy: [`docs/feature-flags.md`](docs/feature-flags.md). | Everything on. |
 | `MAINTENANCE_MODE` | `true` sends every page to `/maintenance` (health checks and `/status` still answer). | Off. |
 | `MARKETING_LOCALE_URLS` | Per-language marketing URLs. Not ready yet (Step 10.7): leave it unset. | One URL per page. |
 

@@ -1,4 +1,5 @@
 import "server-only";
+import { isFeatureOn } from "@/server/flags";
 import type { WebSearchUsage } from "@/server/ai/tools/web-search";
 import { recordLimitHit } from "@/server/monitoring/limit-hits";
 import { db } from "@/server/db/client";
@@ -73,7 +74,8 @@ export async function resolveWebSearchAccess(
   const locale = pref?.uiLocale ?? null;
   const enabled = pref?.webSearchEnabled ?? true;
 
-  if (!enabled || !ownerEntitlements.features.webSearch) {
+  // Step 10.6: a paused web search means answers are written without searching.
+  if (!enabled || !ownerEntitlements.features.webSearch || !(await isFeatureOn("webSearch"))) {
     return { allowed: false, reachedDailyCap: false, locale };
   }
 

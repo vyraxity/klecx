@@ -1,4 +1,5 @@
 import "server-only";
+import { assertAiFeature } from "@/server/flags";
 import { recordLimitHit } from "@/server/monitoring/limit-hits";
 import { log, errInfo } from "@/server/log";
 import { db } from "@/server/db/client";
@@ -416,6 +417,9 @@ export async function reserveForWorkspaceGeneration(opts: {
     where: { idempotencyKey: opts.reservationKey },
     select: { id: true },
   });
+
+  // Step 10.6: no new AI call while the kill switch is on (a retry of a recorded reservation passes).
+  if (!alreadyReserved) await assertAiFeature();
 
   // 1. Collaborator monthly spend cap.
   // The cap counts everything the member spends from this owner's credits this

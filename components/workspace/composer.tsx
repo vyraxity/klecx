@@ -56,6 +56,7 @@ import { getIdleQueryClient, useUserPreferences } from "@/lib/api/hooks/me";
 import { QuestionQueuePopover } from "@/components/workspace/question-queue-popover";
 import { VoiceInput } from "./voice-input";
 import { Gated } from "@/components/ui/gated";
+import { useFeatureFlags } from "@/lib/api/hooks/features";
 import { useSiteConfig } from "@/components/providers/site-config-provider";
 import { PLAN_UPGRADE_HREF } from "@/lib/billing/links";
 import {
@@ -163,6 +164,8 @@ export function Composer({
   const clearDraft = useUiStore((s) => s.clearDraft);
 
   const { entitlements, isSuccess: entitlementsLoaded } = useEntitlements();
+  // Step 10.6: an admin can pause AI calls (or voice input) without a redeploy.
+  const features = useFeatureFlags();
   // Text-only launch: no image mode while image generation is switched off.
   const imagesOn = isImageGenerationEnabled();
   // Only treat images and models as locked once the real entitlements have
@@ -583,15 +586,20 @@ export function Composer({
   const attachmentGateReason: GateReason | null = isAttachmentLimitReached
     ? { code: "attachment_limit", limit: attachmentMax }
     : null;
+  const aiPaused = !features.ai;
+  const cannotSend = cannotSendForCredits || aiPaused;
   const submitGateReason: GateReason | null = !canGenerate
     ? { code: "no_permission", capability: t("capGenerate") }
-    : creditsGate ?? lowCreditsGate;
+    : aiPaused
+      ? { code: "paused" }
+      : creditsGate ?? lowCreditsGate;
 
   // Voice input is billed to the speaker, but a transcript is only useful if
   // it can be sent, so the mic follows the same credits gate as Send (with its
   // own reason: "you" vs "the workspace owner"). The server checks the
   // speaker's own balance and daily seconds.
-  const voiceGateReason: GateReason | null = creditsGate;
+  const voiceGateReason: GateReason | null =
+    aiPaused || !features.voiceInput ? { code: "paused" } : creditsGate;
 
   const handleSubmit = async (overridePrompt?: string) => {
     // F4.5: If user clicked Send while recording voice, delegate to voice handler
@@ -602,7 +610,7 @@ export function Composer({
 
     const cleanPrompt = (overridePrompt ?? prompt).trim();
     const isUploadingAny = attachments.some((a) => a.status === "uploading");
-    if (!cleanPrompt || isSubmitting || isStreaming || cannotSendForCredits || !canGenerate || isUploadingAny) return;
+    if (!cleanPrompt || isSubmitting || isStreaming || cannotSend || !canGenerate || isUploadingAny) return;
     if (mode === "image" && imageGateReason) return;
     const readyAttachmentIds = attachments
       .filter((a) => a.status === "ready" && a.attachmentId)
@@ -1436,14 +1444,14 @@ export function Composer({
                 disabled={
                   isSubmitting ||
                   (!prompt.trim() && !isRecordingVoice) ||
-                  cannotSendForCredits ||
+                  cannotSend ||
                   !canGenerate ||
                   attachments.some((a) => a.status === "uploading")
                 }
                 aria-label={t("send")}
                 className={cn(
                   "flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl sm:rounded-2xl shadow-sm transition-all cursor-pointer",
-                  (prompt.trim() || isRecordingVoice) && !isSubmitting && !cannotSendForCredits && canGenerate
+                  (prompt.trim() || isRecordingVoice) && !isSubmitting && !cannotSend && canGenerate
                     ? "bg-accent text-accent-fg hover:bg-accent-hover active:scale-95"
                     : "cursor-not-allowed bg-surface-3 text-subtle opacity-60",
                 )}

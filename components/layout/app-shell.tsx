@@ -47,6 +47,7 @@ import { CommandPalette } from "./command-palette";
 import { AllAnnotationsDrawer } from "@/components/annotations";
 import { ClaimUsernameDialog } from "@/components/user/claim-username-dialog";
 import { ClaimUsernameBanner } from "@/components/user/claim-username-banner";
+import { AiPausedBanner } from "@/components/layout/ai-paused-banner";
 import { UpgradeDialogHost } from "@/components/billing/upgrade-dialog";
 import { ReadAloudDock } from "@/components/speech/read-aloud-dock";
 import { MAIN_CONTENT_ID, SkipLink } from "./skip-link";
@@ -646,6 +647,8 @@ export function AppShell({
           claimed={Boolean(user.usernameClaimedAt || claimedUsername)}
           onClaimClick={() => setClaimUsernameOpen(true)}
         />
+
+        <AiPausedBanner />
 
         <main id={MAIN_CONTENT_ID} tabIndex={-1} className="relative flex min-h-0 flex-1 flex-col overflow-hidden focus:outline-none">
           {children}

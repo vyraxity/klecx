@@ -1,4 +1,5 @@
 import "server-only";
+import { assertAiFeature } from "@/server/flags";
 import { recordLimitHit } from "@/server/monitoring/limit-hits";
 import { createHash, randomUUID } from "node:crypto";
 import type { Prisma } from "@/server/db/generated/client";
@@ -279,6 +280,10 @@ export async function synthesizeReadAloudSegment(
     return { url: await signedUrl(hit.storageId, hit.mime), seconds: hit.seconds, cached: true, credits: 0 };
   }
 
+  // Not cached: a new AI call, so the kill switch and the natural-voice switch apply
+  // (Step 10.6; the player carries on with the browser voice). Cached audio still plays.
+  await assertAiFeature("naturalVoices");
+
   // Not cached: check the day's seconds, reserve on the listener's own account.
   const limitSeconds = entitlements.limits.readAloudSecondsPerDay;
   const estimate = estimateAudioSeconds(text.length);
@@ -368,6 +373,7 @@ export async function previewVoice(actor: Actor, voiceId: string, sampleText: st
   const key = speechCacheKey(`${PREVIEW_SPEAKER}:${sampleText}`, provider.modelId, voiceId);
   const hit = await db.speechCache.findUnique({ where: { key } });
   if (hit) return { url: await signedUrl(hit.storageId, hit.mime) };
+  await assertAiFeature("naturalVoices");
   try {
     const result = await provider.synthesize({ text: sampleText, voiceId });
     const cache = await storeAudio(key, voiceId, provider.modelId, sampleText, result.audio, result.usage.audioSeconds);

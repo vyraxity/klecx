@@ -1,4 +1,5 @@
 import "server-only";
+import { assertAiFeature } from "@/server/flags";
 import { firstTokenMarker } from "@/server/services/generation-timing";
 import { log, errInfo } from "@/server/log";
 import crypto from "node:crypto";
@@ -445,6 +446,9 @@ export async function startDocumentReview(
   if (sameRequest) {
     throw Errors.conflict("This request was already sent", "duplicate_request");
   }
+
+  // Step 10.6: the AI kill switch and the review switch.
+  await assertAiFeature("documentReview");
 
   const chunks = chunkDocumentByHeadings(source);
   if (chunks.length === 0) {

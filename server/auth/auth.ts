@@ -10,6 +10,7 @@ import { sendEmail } from "@/server/email/send";
 import { authSecondaryStorage } from "@/server/http/rate-limit";
 import { createAccountWithFreeGrant } from "@/server/services/credits";
 import { isDisposableEmail } from "@/server/auth/disposable-email";
+import { isFeatureOn } from "@/server/flags";
 import { TWO_FACTOR_TRUST_DAYS } from "@/lib/auth/two-factor";
 import { PASSWORD_SETTING_PATHS, shouldRefusePassword } from "@/server/auth/pwned-passwords";
 import { getSignInBlock } from "@/server/services/account-moderation";
@@ -53,6 +54,15 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
+          // Step 10.6: new sign-ups (email and OAuth) can be paused; existing accounts still sign in.
+          // Not 403: Better Auth answers a 403 from this hook with its generic "check your
+          // email" success (email-enumeration protection), which would hide the refusal.
+          if (!(await isFeatureOn("signups"))) {
+            throw new APIError("SERVICE_UNAVAILABLE", {
+              message: "New sign-ups are paused for now",
+              code: "SIGNUPS_PAUSED",
+            });
+          }
           // Step 8.4: Free credits renew monthly, so throwaway inboxes can't sign up.
           if (isDisposableEmail(user.email)) {
             throw new APIError("BAD_REQUEST", {

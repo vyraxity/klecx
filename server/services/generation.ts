@@ -46,6 +46,7 @@ import {
 import { PLANS, PlanKey } from "@/server/billing/plans";
 import { getEntitlements, entitlementsForPlan } from "@/server/billing/entitlements";
 import { isImageGenerationEnabled } from "@/lib/features/image-generation";
+import { assertAiFeature } from "@/server/flags";
 import { getDefaultModelPreference, getUserPreferences } from "@/server/services/user-preferences";
 import { GROUNDING_SURCHARGE_CREDITS, RESERVED_OUTPUT_TOKENS } from "@/lib/ai/model-catalog";
 import { resolveDefaultTextModel } from "@/lib/ai/default-model";
@@ -1080,6 +1081,9 @@ export async function createAndStreamGeneration(
       return { stream, generationId: existingGen.id };
     }
   }
+
+  // Step 10.6: the AI kill switch (also checked when credits are reserved).
+  await assertAiFeature();
 
   // 4. Determine Kind, Validate Moderation, Plan Access & Model
   const kind = input.kind === "IMAGE" ? "IMAGE" : "TEXT";

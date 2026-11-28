@@ -19,6 +19,7 @@ import { notifyCreditsChanged } from "@/lib/billing/credits-changed";
 import { api } from "@/lib/api/client";
 import { streamDocumentReview } from "@/lib/api/document-review";
 import { useDocumentReviewStore } from "@/lib/stores/document-review";
+import { useFeatureFlags } from "@/lib/api/hooks/features";
 import { REVIEW_PRESETS } from "@/lib/schemas/document-review";
 import { cn } from "@/lib/utils";
 
@@ -90,9 +91,13 @@ export function DocumentReview({
     [onOpenChange]
   );
 
+  // Step 10.6: reviews can be paused (with every AI call, or on their own).
+  const features = useFeatureFlags();
   const reviewGateReason: GateReason | null = !canAsk
     ? { code: "no_permission", capability: t("capAskReview") }
-    : creditsGate;
+    : !features.ai || !features.documentReview
+      ? { code: "paused" }
+      : creditsGate;
 
   const [preset, setPreset] = React.useState<ReviewPreset>("errors");
   const [instruction, setInstruction] = React.useState("");

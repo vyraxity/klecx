@@ -59,6 +59,8 @@ export type GateReason =
   | { code: "owner_not_enough_credits"; needed: number }
   | { code: "daily_voice_limit" }
   | { code: "unsupported_browser" }
+  /** Step 10.6: an admin paused this feature for now (server answers 503). */
+  | { code: "paused" }
   /** The person is a viewer of the project, so they can't add workspaces to it. */
   | { code: "view_only_project" };
 

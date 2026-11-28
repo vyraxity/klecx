@@ -211,6 +211,8 @@ const ROWS: Row[] = [
   { route: "admin/users/[id]/reset-two-factor", method: "POST", params: () => ({ id: A.id }), expect: [403] },
   { route: "admin/metrics", method: "GET", expect: [403] },
   { route: "admin/alerts", method: "GET", expect: [403] },
+  { route: "admin/features", method: "GET", expect: [403] },
+  { route: "admin/features/[key]", method: "PUT", params: () => ({ key: "ai" }), body: () => ({ enabled: false }), expect: [403] },
   { route: "admin/alerts/run", method: "POST", expect: [403] },
   { route: "admin/monitoring/test-error", method: "POST", expect: [403] },
 

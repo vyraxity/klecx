@@ -1,4 +1,5 @@
 import "server-only";
+import { assertAiFeature } from "@/server/flags";
 import { firstTokenMarker } from "@/server/services/generation-timing";
 import { log, errInfo } from "@/server/log";
 import crypto from "node:crypto";
@@ -1248,6 +1249,9 @@ export async function streamAnnotationAnswer(
         : `Model '${modelKey}' is not available on your current plan.`
     );
   }
+
+  // Step 10.6: the AI kill switch, before the follow-up is saved (it would stay unanswered).
+  await assertAiFeature();
 
   if (deadIds.length > 0) {
     await db.annotationMessage.deleteMany({ where: { id: { in: deadIds } } });

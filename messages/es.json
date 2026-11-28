@@ -220,7 +220,8 @@
       "INVALID_BACKUP_CODE": "Ese código de respaldo no es correcto o ya se usó.",
       "TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE": "Demasiados códigos incorrectos. Vuelve a iniciar sesión para intentarlo de nuevo.",
       "ACCOUNT_TEMPORARILY_LOCKED": "Demasiados códigos incorrectos. El inicio de sesión en dos pasos está bloqueado unos minutos; inténtalo más tarde.",
-      "INVALID_TWO_FACTOR_COOKIE": "Este inicio de sesión caducó. Vuelve a iniciar sesión con tu correo y contraseña."
+      "INVALID_TWO_FACTOR_COOKIE": "Este inicio de sesión caducó. Vuelve a iniciar sesión con tu correo y contraseña.",
+      "SIGNUPS_PAUSED": "Los nuevos registros están en pausa por ahora. Vuelve a intentarlo más tarde."
     },
     "planIntent": "Elegiste {plan} ({interval}). Después de confirmar tu correo, continuarás al pago.",
     "accountDeleted": "Tu cuenta está eliminada. Revisa tu correo: ahí está el enlace para restaurarla si cambias de opinión.",
@@ -2494,7 +2495,10 @@
       "code_expired": "El código ha caducado. Pide uno nuevo.",
       "code_attempts_exceeded": "Demasiados códigos incorrectos. Pide uno nuevo.",
       "invalid_email_code": "Ese código no es correcto. Revisa el correo e inténtalo de nuevo.",
-      "restore_expired": "Se eliminó hace más de 30 días y no se puede restaurar."
+      "restore_expired": "Se eliminó hace más de 30 días y no se puede restaurar.",
+      "ai_paused": "Las funciones de IA están en pausa por un momento. Vuelve a intentarlo más tarde.",
+      "feature_paused": "Esta función está en pausa por un momento. Vuelve a intentarlo más tarde.",
+      "SIGNUPS_PAUSED": "Los nuevos registros están en pausa por ahora. Vuelve a intentarlo más tarde."
     }
   },
   "Gates": {
@@ -2513,7 +2517,8 @@
     "unsupported_browser": "La entrada de voz no es compatible con este navegador",
     "view_only_project": "Solo tienes acceso de lectura a este proyecto",
     "not_enough_credits": "Este modelo necesita unos {needed} créditos por mensaje y tienes {balance}.",
-    "owner_not_enough_credits": "El propietario del espacio de trabajo no tiene créditos suficientes para este modelo (unos {needed} por mensaje)."
+    "owner_not_enough_credits": "El propietario del espacio de trabajo no tiene créditos suficientes para este modelo (unos {needed} por mensaje).",
+    "paused": "En pausa por un momento. Vuelve a intentarlo más tarde."
   },
   "Models": {
     "text-economy": {
@@ -3918,5 +3923,9 @@
   "DataExport": {
     "readme": "Tus datos de Klecx\n\naccount.json: tu perfil, configuración, métodos de inicio de sesión, sesiones, plan y consentimientos de facturación.\ncredits.csv: tu historial de créditos.\nprojects.json: los proyectos de los que eres propietario o miembro.\nworkspaces/: una carpeta por cada espacio de trabajo tuyo: workspace.json (miembros, notas de Klecx, enlaces compartidos, transferencias de propiedad), conversation.md (cada pregunta, versión de respuesta y edición guardada), annotations.json (comentarios y conversaciones de preguntas a cualquier profundidad), documents/ (cada revisión) y files/ (tus archivos originales).\ncontributions.json: lo que escribiste en espacios de trabajo de otras personas.\nmentions.json, notifications.json, ownership-transfers.json, support/: el resto.\nfiles-not-included.txt: archivos que no cupieron (solo si los hay).",
     "skippedIntro": "Estos archivos no se incluyeron porque la exportación admite como máximo {mb} MB de archivos. Aún puedes descargarlos en Klecx:"
+  },
+  "FeaturePause": {
+    "aiTitle": "La IA está en pausa por un momento.",
+    "aiText": "Las nuevas respuestas, preguntas, revisiones y la entrada de voz no están disponibles por ahora. Puedes seguir leyendo, comentando y descargando."
   }
 }

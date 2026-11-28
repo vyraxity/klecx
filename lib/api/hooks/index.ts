@@ -6,3 +6,4 @@ export * from "./me";
 export * from "./home";
 export * from "./entitlements";
 export * from "./billing";
+export * from "./features";

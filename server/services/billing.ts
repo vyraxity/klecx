@@ -1,4 +1,5 @@
 import "server-only";
+import { assertFeature } from "@/server/flags";
 import { log, errInfo } from "@/server/log";
 import { randomUUID } from "node:crypto";
 import { db } from "@/server/db/client";
@@ -90,6 +91,8 @@ export async function startCheckout(
   requestId: string
 ): Promise<{ url: string }> {
   if (env.NODE_ENV === "production" && !env.BILLING_ENABLED) throw billingUnavailable();
+  // Step 10.6: new purchases and upgrades can be paused (webhooks, cancel and the portal still work).
+  await assertFeature("checkout");
 
   const user = await db.user.findUnique({
     where: { id: userId },
@@ -221,6 +224,8 @@ export async function changePlan(
   requestId: string
 ): Promise<{ ok: true }> {
   if (env.NODE_ENV === "production" && !env.BILLING_ENABLED) throw billingUnavailable();
+  // Step 10.6: new purchases and upgrades can be paused (webhooks, cancel and the portal still work).
+  await assertFeature("checkout");
   const sub = await loadSubscription(userId);
   if (!sub?.providerSubscriptionId || !["ACTIVE", "TRIALING"].includes(sub.status)) {
     throw Errors.notFound("Subscription");

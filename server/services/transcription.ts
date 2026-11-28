@@ -1,4 +1,5 @@
 import "server-only";
+import { assertAiFeature } from "@/server/flags";
 import { recordLimitHit } from "@/server/monitoring/limit-hits";
 import crypto from "crypto";
 import { fileTypeFromBuffer } from "file-type";
@@ -157,6 +158,9 @@ export async function transcribeAudio(
     actorId,
     providerInstance,
   } = input;
+
+  // Step 10.6: the AI kill switch and the voice-input switch.
+  await assertAiFeature("voiceInput");
 
   // 1. Size check (<= 5 MB)
   if (!audioBuffer || audioBuffer.length === 0) {

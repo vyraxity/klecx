@@ -1,4 +1,5 @@
 import "server-only";
+import { assertFeature } from "@/server/flags";
 import { log, errInfo } from "@/server/log";
 import crypto from "node:crypto";
 import { db } from "@/server/db/client";
@@ -65,6 +66,8 @@ export async function createShareLink(
   input: CreateShareLinkInput
 ) {
   const { ws } = await requireWorkspace(actor, input.workspaceId, "workspace.share");
+  // Step 10.6: new share links can be paused (existing links keep working).
+  await assertFeature("collaboration");
 
   if (input.scope === "RESPONSE") {
     if (!input.responseId) {
