@@ -6,7 +6,7 @@ Four layers, from fastest to slowest. None of them calls Gemini, Resend, Cloudin
 | --- | --- | --- | --- |
 | Unit / service (Jest) | business rules, authorization (two-user suite), webhooks, credits, prompts, UI components | `__tests__/` | every push and PR (`ci.yml`), `npm test` |
 | Coverage | at least **80 % of lines in `server/services`** (91.6 % on 2026-11-25) | `jest.config.ts` (`coverageThreshold`) | every push and PR (`npm run test:coverage`) |
-| End-to-end (Playwright) | 17 journeys through the real UI: Chromium, WebKit, and a phone viewport for the `@mobile` ones | `e2e/*.e2e.ts` | nightly on `dev`, every PR into `main`, by hand (`e2e.yml`) |
+| End-to-end (Playwright) | 18 journeys through the real UI: Chromium, WebKit, and a phone viewport for the `@mobile` ones | `e2e/*.e2e.ts` | nightly on `dev`, every PR into `main`, by hand (`e2e.yml`) |
 | Lighthouse | marketing ≥ 90 performance / ≥ 95 accessibility / ≥ 95 SEO, sign-in ≥ 90 / ≥ 95, app ≥ 95 accessibility (Step 10.5, `docs/performance.md`) | `scripts/lighthouse.mjs` | with the journeys (`e2e.yml`, job `lighthouse`), `npm run lighthouse` |
 | Load (k6) | 50 simultaneous answers, 20 sessions on one balance, ledger integrity, API p95 | `load/k6-load.js` | by hand (`load.yml`) |
 
@@ -21,7 +21,7 @@ End-to-end and load tests run a **production build** of Klecx in test mode (`e2e
   - Document reviews flag the misspellings `teh`, `recieve` and `seperate`.
 - **Fake voice** (natural read-aloud): a short tone per part.
 - **Test inbox**: emails aren't sent; `GET /api/test/emails?to=` returns them with their links (sign-up verification, invitations, share links…).
-- **Fake Creem** under the real Creem adapter: a checkout's URL is a local page that sends the same **signed** webhooks Creem would (checkout.completed, subscription.paid) to the real webhook route, so the real signature check and state machine run. `POST /api/test/subscribe` puts a person on a plan the same way; `POST /api/test/subscription-event` sends e.g. `subscription.past_due`.
+- **Fake Creem** under the real Creem adapter: a checkout's URL is a local page that sends the same **signed** webhooks Creem would (checkout.completed, subscription.paid) to the real webhook route, so the real signature check and state machine run. `POST /api/test/subscribe` puts a person on a plan the same way; `POST /api/test/subscription-event` sends e.g. `subscription.past_due`. `POST /api/test/set-credits` (`{ email, balance }`) sets a plan balance through a ledger adjustment (`ADJUST`, so `ledger-check` stays consistent), for the low-credits journey.
 - **Mock storage** (no Cloudinary keys) and **in-memory rate limits** (no Redis).
 - `GET /api/test/ledger-check?email=` — balances equal their ledger sums and never went below zero.
 - **Pseudo-locale** `en-XA` (Step 10.5, `lib/i18n/pseudo-locale.ts`): set the `NEXT_LOCALE` cookie to `en-XA` to see every text accented and ~30 % longer, e.g. "[Šåṽé ··]". Honoured in development and test mode only, never offered to people. Unaccented English on screen is a string that skips next-intl; text cut off or overflowing is a layout that only fits English.
@@ -66,6 +66,7 @@ Load test: `npm run e2e:build`, `npm run e2e:start` (keep it running), then `k6 
 | `15-pseudo-locale` | pseudo-locale `en-XA` (texts ~30 % longer and accented) on public and app pages, desktop and phone: no sideways scroll, no cut-off button or link text |
 | `16-landing-and-help` | a signed-in visitor sees "Go to your workspaces" on the landing page (signed-out visitors see Sign in / Get started); `/help?q=` opens filtered and typing keeps the URL in step; the not-found page's search lands on filtered help |
 | `17-topbar-and-annotations-panel` | the Comments & Asks button counts comments and answered Asks (not queued questions), the panel has two tabs and long text wraps; on Settings (reached in the app) the top bar shows "Settings" and "Back to <workspace>" and none of the workspace's actions, and the link returns to that workspace; Settings opened directly links back to the workspaces |
+| `18-default-model-and-low-credits` | Free starts on Fast & Efficient, a paid plan on Standard Reasoning; with too few credits for the chosen model the composer warns with the numbers, blocks Send and offers Fast & Efficient; a long message the balance can't cover is refused with "needs about N, you have M"; Settings → Language & AI changes the default (balances set with the test-only `POST /api/test/set-credits`, a ledger adjustment) |
 
 Shared steps are in `e2e/helpers.ts` (`newUser` signs up through the API and verifies with the emailed link; every test uses fresh people, so tests never depend on each other).
 

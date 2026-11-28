@@ -10,19 +10,29 @@ import {
   useUserPreferences,
 } from "@/lib/api/hooks/me";
 import { AI_LANGUAGES, AI_LANGUAGE_NATIVE_NAMES, type AiLanguage } from "@/lib/locale";
+import { useEntitlements } from "@/lib/api/hooks/entitlements";
+import { getClientModels } from "@/lib/ai/model-catalog";
+import { DEFAULT_MODEL_CHOICES, isDefaultModelChoice } from "@/lib/ai/default-model";
+import { PLANS } from "@/server/billing/plans";
 
 export interface AiPreferencesProps {
   userId: string;
   initialWebSearchEnabled?: boolean;
   initialAiLanguage?: string | null;
+  /** Pre-10.6 fix: the saved default model (null = Automatic). */
+  initialDefaultModelKey?: string | null;
 }
 
 export default function AiPreferences({
   userId,
   initialWebSearchEnabled = true,
   initialAiLanguage = null,
+  initialDefaultModelKey = null,
 }: AiPreferencesProps) {
   const t = useTranslations("Settings.ai");
+  const tModels = useTranslations("Models");
+  const tPlans = useTranslations();
+  const { entitlements, isSuccess: entitlementsLoaded } = useEntitlements();
   const { data: preferences } = useUserPreferences(userId);
   const update = useUpdateUserPreferences(userId);
 
@@ -34,6 +44,34 @@ export default function AiPreferences({
       : initialAiLanguage;
 
   const isUpdating = update.isPending;
+
+  // Pre-10.6 fix: the default model for new messages. Only models the
+  // person's own plan offers; in someone else's workspace the owner's plan
+  // still decides (the composer falls back to what it includes).
+  const currentDefaultModel =
+    preferences?.defaultModelKey !== undefined
+      ? preferences.defaultModelKey
+      : isDefaultModelChoice(initialDefaultModelKey)
+        ? initialDefaultModelKey
+        : null;
+  const modelOptions = getClientModels((key, values) => tModels(key, values), "TEXT")
+    .filter((m) => (DEFAULT_MODEL_CHOICES as readonly string[]).includes(m.key))
+    .map((m) => ({
+      ...m,
+      // Until the plan is known nothing is locked (the server re-checks).
+      locked: entitlementsLoaded && !(entitlements.models as readonly string[]).includes(m.key),
+    }));
+
+  const handleDefaultModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    update.mutate(
+      { defaultModelKey: isDefaultModelChoice(val) ? val : null },
+      {
+        onSuccess: () => toast.success(t("defaultModelUpdatedToast")),
+        onError: () => toast.error(t("saveError")),
+      }
+    );
+  };
 
   const languageOptions = AI_LANGUAGES.map((code) => ({
     code,
@@ -74,6 +112,40 @@ export default function AiPreferences({
         </div>
         <p className="text-xs text-muted mt-0.5">
           {t("subtitle")}
+        </p>
+      </div>
+
+      {/* Default model for new messages (pre-10.6 fix) */}
+      <div className="flex flex-col gap-1.5 rounded-xl border border-border/60 bg-surface-2/40 p-3">
+        <label
+          htmlFor="settings-default-model-select"
+          className="text-xs font-semibold text-fg"
+        >
+          {t("defaultModelLabel")}
+        </label>
+        <select
+          id="settings-default-model-select"
+          data-testid="settings-default-model-select"
+          aria-describedby="settings-default-model-hint"
+          value={currentDefaultModel ?? ""}
+          onChange={handleDefaultModelChange}
+          disabled={isUpdating}
+          className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-xs font-medium text-fg focus:outline-none focus:ring-1 focus:ring-accent cursor-pointer transition-colors"
+        >
+          <option value="">{t("defaultModelAutomatic")}</option>
+          {modelOptions.map((m) => (
+            <option key={m.key} value={m.key} disabled={m.locked}>
+              {m.locked
+                ? t("defaultModelLocked", {
+                    model: m.name,
+                    plan: tPlans(PLANS[m.minPlan].name),
+                  })
+                : `${m.name} · ${m.creditHint}`}
+            </option>
+          ))}
+        </select>
+        <p id="settings-default-model-hint" className="text-[11px] text-muted">
+          {t("defaultModelHint")}
         </p>
       </div>
 

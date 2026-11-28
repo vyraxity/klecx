@@ -39,7 +39,8 @@ import {
 import { uploadAttachment } from "@/lib/api/attachments";
 import { getApiErrorCode, getApiErrorMessage } from "@/lib/api/error-message";
 import { navigateWithTransition } from "@/lib/navigation/view-transition";
-import { getClientModels, type ClientModelOption } from "@/lib/ai/model-catalog";
+import { getClientModels, minimumMessageCredits, type ClientModelOption } from "@/lib/ai/model-catalog";
+import { resolveDefaultTextModel } from "@/lib/ai/default-model";
 import type { WorkspaceDto } from "@/lib/api/hooks/workspaces";
 import { queryKeys } from "@/lib/api/hooks/query-keys";
 import { useEntitlements } from "@/lib/api/hooks/entitlements";
@@ -185,12 +186,14 @@ export function Composer({
   const [mode, setMode] = React.useState<"text" | "image">(
     imagesOn ? storeChatMode || "text" : "text",
   );
-  const [selectedModel, setSelectedModel] = React.useState<string>("text-economy");
+  // Pre-10.6 fix: the model starts on the person's default (Settings →
+  // Language & AI; Automatic = Standard Reasoning when the paying plan has it)
+  // until they pick another one here.
+  const [pickedModel, setPickedModel] = React.useState<string | null>(null);
   const clientModels = React.useMemo(
     () => getClientModels((key, values) => tModels(key, values), "TEXT"),
     [tModels]
   );
-  const activeModel = (clientModels.find((m) => m.key === selectedModel) ?? clientModels[0])!;
   // F4.1: search is a Settings preference; only say so when it's off.
   const { data: preferences } = useUserPreferences(userId ?? "");
   const webSearchOff = preferences?.webSearchEnabled === false;
@@ -322,6 +325,32 @@ export function Composer({
     },
     queryClient ?? getIdleQueryClient()
   );
+  // The plan that pays decides which models run: the owner's in a workspace,
+  // the viewer's own on the home composer (a new workspace is theirs).
+  const payingModels: readonly string[] | null = workspaceId
+    ? (workspaceData?.ownerTextModels ?? null)
+    : entitlementsLoaded
+      ? entitlements.models
+      : null;
+  const defaultModel = payingModels
+    ? resolveDefaultTextModel(preferences?.defaultModelKey ?? null, payingModels)
+    : null;
+  const pickedStillAllowed =
+    pickedModel !== null && (!payingModels || payingModels.includes(pickedModel));
+  // What is sent: the picked model, else the default once it's known (until
+  // then nothing, and the server applies the same default).
+  const modelToSend = pickedStillAllowed ? pickedModel : defaultModel;
+  const selectedModel = modelToSend ?? "text-economy";
+  const setSelectedModel = setPickedModel;
+  const activeModel = (clientModels.find((m) => m.key === selectedModel) ?? clientModels[0])!;
+  // In a workspace the owner's plan decides which models run (the owner
+  // pays); a member can't upgrade it, so they get "the owner's plan".
+  const modelGateFor = (m: ClientModelOption): GateReason | null => {
+    if (workspaceId && payingModels && workspaceData?.role !== "OWNER") {
+      return payingModels.includes(m.key) ? null : { code: "owner_plan", plan: m.minPlan };
+    }
+    return entitlementsLoaded ? getGateReason(entitlements, m.key) : null;
+  };
   const attachmentLimits = workspaceData?.attachmentLimits;
   const attachmentMax = attachmentLimits?.max ?? entitlements.limits.attachmentsPerWorkspace;
   const MAX_ATTACHMENTS = Math.max(0, attachmentMax - (attachmentLimits?.used ?? 0));
@@ -524,14 +553,39 @@ export function Composer({
     credits && credits.balance <= 0
       ? { code: "out_of_credits" }
       : creditsGateReason(workspaceData);
+  // Pre-10.6 fix: some credits left, but fewer than the chosen model's
+  // smallest message needs (the server would refuse it with a 402).
+  const affordable = (modelKey: string): boolean | null => {
+    if (workspaceId) {
+      const flag = workspaceData?.ownerCanAfford?.[modelKey];
+      return flag === undefined ? null : flag;
+    }
+    return credits ? credits.balance >= minimumMessageCredits(modelKey) : null;
+  };
+  const lowCreditsGate: GateReason | null = (() => {
+    if (creditsGate || mode !== "text" || affordable(selectedModel) !== false) return null;
+    const needed = minimumMessageCredits(selectedModel);
+    if (!workspaceId) return { code: "not_enough_credits", needed, balance: credits?.balance ?? 0 };
+    return workspaceData?.role === "OWNER" && typeof workspaceData.ownerBalance === "number"
+      ? { code: "not_enough_credits", needed, balance: workspaceData.ownerBalance }
+      : { code: "owner_not_enough_credits", needed };
+  })();
+  // A cheaper model the balance still covers, offered in the warning.
+  const cheaperModel =
+    lowCreditsGate && selectedModel !== "text-economy" && affordable("text-economy")
+      ? clientModels.find((m) => m.key === "text-economy") ?? null
+      : null;
   const isOutOfCredits = Boolean(creditsGate);
+  // Typing stays possible with too few credits for this model (switch model,
+  // or keep the draft); only sending is blocked.
+  const cannotSendForCredits = isOutOfCredits || Boolean(lowCreditsGate);
   const isAttachmentLimitReached = attachments.length >= MAX_ATTACHMENTS;
   const attachmentGateReason: GateReason | null = isAttachmentLimitReached
     ? { code: "attachment_limit", limit: attachmentMax }
     : null;
   const submitGateReason: GateReason | null = !canGenerate
     ? { code: "no_permission", capability: t("capGenerate") }
-    : creditsGate;
+    : creditsGate ?? lowCreditsGate;
 
   // Voice input is billed to the speaker, but a transcript is only useful if
   // it can be sent, so the mic follows the same credits gate as Send (with its
@@ -548,7 +602,7 @@ export function Composer({
 
     const cleanPrompt = (overridePrompt ?? prompt).trim();
     const isUploadingAny = attachments.some((a) => a.status === "uploading");
-    if (!cleanPrompt || isSubmitting || isStreaming || isOutOfCredits || !canGenerate || isUploadingAny) return;
+    if (!cleanPrompt || isSubmitting || isStreaming || cannotSendForCredits || !canGenerate || isUploadingAny) return;
     if (mode === "image" && imageGateReason) return;
     const readyAttachmentIds = attachments
       .filter((a) => a.status === "ready" && a.attachmentId)
@@ -559,7 +613,7 @@ export function Composer({
       return;
     }
 
-    const effectiveModelKey = mode === "image" ? "image-standard" : selectedModel;
+    const effectiveModelKey = mode === "image" ? "image-standard" : (modelToSend ?? undefined);
     const effectiveKind = mode === "image" ? "IMAGE" : "TEXT";
 
     setIsSubmitting(true);
@@ -621,7 +675,7 @@ export function Composer({
               useGenerationStore.getState().completeStream(workspaceId, data.content, data.citations);
             },
             onError: (err) => {
-              useGenerationStore.getState().failStream(workspaceId, err.code || "unknown");
+              useGenerationStore.getState().failStream(workspaceId, err.code || "unknown", err.details);
             },
           },
         );
@@ -881,6 +935,45 @@ export function Composer({
         {liveAnnouncement}
       </div>
 
+      {/* Pre-10.6 fix: some credits, but not enough for this model's smallest message */}
+      {lowCreditsGate && (
+        <div
+          id="credits-warning"
+          data-testid="low-credits-warning"
+          className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1 rounded-xl bg-warning/10 border border-warning/20 px-3 py-1.5 text-xs text-warning"
+        >
+          <span>
+            {lowCreditsGate.code === "not_enough_credits"
+              ? tGates("not_enough_credits", {
+                  needed: lowCreditsGate.needed,
+                  balance: lowCreditsGate.balance,
+                })
+              : lowCreditsGate.code === "owner_not_enough_credits"
+                ? tGates("owner_not_enough_credits", { needed: lowCreditsGate.needed })
+                : null}
+          </span>
+          <span className="flex items-center gap-3">
+            {cheaperModel && (
+              <button
+                type="button"
+                onClick={() => setSelectedModel(cheaperModel.key)}
+                className="font-semibold underline hover:text-fg transition-colors cursor-pointer"
+              >
+                {t("useModel", { model: cheaperModel.name })}
+              </button>
+            )}
+            {lowCreditsGate.code === "not_enough_credits" && billingEnabled && (
+              <Link
+                href="/settings/billing"
+                className="font-semibold underline hover:text-fg transition-colors"
+              >
+                {t("upgradeCta")}
+              </Link>
+            )}
+          </span>
+        </div>
+      )}
+
       {/* Out of Credits Alert */}
       {creditsGate && (
         <div
@@ -1067,7 +1160,7 @@ export function Composer({
         disabled={isSubmitting || isStreaming || isOutOfCredits}
         maxLength={MAX_PROMPT_LENGTH}
         aria-describedby={
-          isOutOfCredits
+          cannotSendForCredits
             ? "credits-warning"
             : showCharCounter
               ? "composer-char-count"
@@ -1283,9 +1376,7 @@ export function Composer({
                 {t("model")}
               </div>
               {clientModels.map((m: ClientModelOption) => {
-                const modelGateReason = entitlementsLoaded
-                  ? getGateReason(entitlements, m.key)
-                  : null;
+                const modelGateReason = modelGateFor(m);
                 return (
                   <Gated key={m.key} reason={modelGateReason} side="right" className="w-full">
                     <button
@@ -1345,14 +1436,14 @@ export function Composer({
                 disabled={
                   isSubmitting ||
                   (!prompt.trim() && !isRecordingVoice) ||
-                  isOutOfCredits ||
+                  cannotSendForCredits ||
                   !canGenerate ||
                   attachments.some((a) => a.status === "uploading")
                 }
                 aria-label={t("send")}
                 className={cn(
                   "flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl sm:rounded-2xl shadow-sm transition-all cursor-pointer",
-                  (prompt.trim() || isRecordingVoice) && !isSubmitting && !isOutOfCredits && canGenerate
+                  (prompt.trim() || isRecordingVoice) && !isSubmitting && !cannotSendForCredits && canGenerate
                     ? "bg-accent text-accent-fg hover:bg-accent-hover active:scale-95"
                     : "cursor-not-allowed bg-surface-3 text-subtle opacity-60",
                 )}

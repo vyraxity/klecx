@@ -1,4 +1,5 @@
 import "server-only";
+import { bestTextModel } from "@/lib/ai/default-model";
 import { firstTokenMarker } from "@/server/services/generation-timing";
 import { log, errInfo } from "@/server/log";
 import crypto from "node:crypto";
@@ -181,7 +182,8 @@ export async function runQuestionBatch(
 
   // 6. Credit estimation & reservation
   const ownerEntitlements = await getEntitlements(wsAccess.ws.ownerId);
-  const modelKey = (input.modelKey || "text-economy") as ModelKey;
+  // Like "Ask now": the owner's best text model unless one was sent (pre-10.6 fix).
+  const modelKey = (input.modelKey || bestTextModel(ownerEntitlements.models)) as ModelKey;
   const model = getModel(modelKey);
   try {
     assertSelectableModel(modelKey);

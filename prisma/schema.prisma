@@ -512,6 +512,9 @@ model UserPreference {
   voiceSpeed          Float             @default(1) @map("voice_speed")
   onboardingDismissed Boolean           @default(false) @map("onboarding_dismissed")
   density             DensityPreference @default(COMFORTABLE)
+  /// Pre-10.6 fix: the default model for new messages ("text-economy" or
+  /// "text-standard"); null = Automatic (lib/ai/default-model.ts).
+  defaultModelKey     String?           @map("default_model_key")
   updatedAt           DateTime          @updatedAt @map("updated_at")
   user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 

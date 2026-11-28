@@ -46,7 +46,9 @@ import {
 import { PLANS, PlanKey } from "@/server/billing/plans";
 import { getEntitlements, entitlementsForPlan } from "@/server/billing/entitlements";
 import { isImageGenerationEnabled } from "@/lib/features/image-generation";
-import { getUserPreferences } from "@/server/services/user-preferences";
+import { getDefaultModelPreference, getUserPreferences } from "@/server/services/user-preferences";
+import { GROUNDING_SURCHARGE_CREDITS, RESERVED_OUTPUT_TOKENS } from "@/lib/ai/model-catalog";
+import { resolveDefaultTextModel } from "@/lib/ai/default-model";
 import { buildContext, estimateTokens } from "@/server/ai/context-builder";
 import { PROMPT_VERSION } from "@/server/ai/prompts/system";
 import {
@@ -195,6 +197,12 @@ async function executeDetachedGeneration(params: {
   kind: "TEXT" | "IMAGE";
   truncated: boolean;
   reservedCredits: number;
+  /**
+   * The paying account's balance right after the reservation (pre-10.6 fix):
+   * the search surcharge isn't reserved, so a search is only offered while
+   * this balance still covers it (settle() never takes more than is left).
+   */
+  balanceAfterReserve?: number;
   inputMessages: GenerateRequest["messages"];
   systemPrompt: string;
   initialCitations?: CitationItem[];
@@ -214,6 +222,7 @@ async function executeDetachedGeneration(params: {
     prompt,
     kind,
     truncated,
+    balanceAfterReserve = Number.POSITIVE_INFINITY,
     inputMessages,
     systemPrompt,
     initialCitations = [],
@@ -440,7 +449,12 @@ async function executeDetachedGeneration(params: {
         if (createdDocuments.length === 0) {
           availableTools.push(CREATE_DOCUMENT_TOOL);
         }
-        if (webSearch.allowed && searchesExecuted < MAX_SEARCHES_PER_GENERATION) {
+        if (
+          webSearch.allowed &&
+          searchesExecuted < MAX_SEARCHES_PER_GENERATION &&
+          // Each search adds GROUNDING_SURCHARGE_CREDITS that weren't reserved.
+          balanceAfterReserve >= (searchesExecuted + 1) * GROUNDING_SURCHARGE_CREDITS
+        ) {
           availableTools.push(WEB_SEARCH_TOOL);
         }
       }
@@ -1110,8 +1124,15 @@ export async function createAndStreamGeneration(
         "Image generation is not available on the Free plan. Please upgrade to Lite, Standard, or Pro."
       );
     }
+  } else if (input.modelKey) {
+    modelKey = input.modelKey as ModelKey;
   } else {
-    modelKey = (input.modelKey ?? "text-economy") as ModelKey;
+    // Pre-10.6 fix: no model sent → the person's default, limited by the
+    // owner's plan (Automatic = Standard Reasoning when it's included).
+    modelKey = resolveDefaultTextModel(
+      await getDefaultModelPreference(actor.userId).catch(() => null),
+      ownerEntitlements.models
+    );
   }
 
   const model = getModel(modelKey);
@@ -1298,7 +1319,7 @@ export async function createAndStreamGeneration(
       ? creditsFor(modelKey, { images: 1 })
       : creditsFor(modelKey, {
           inputTokens: estimatedInputTokens,
-          outputTokens: 4096,
+          outputTokens: RESERVED_OUTPUT_TOKENS,
         });
 
   // The plan's daily credit cap and concurrency limit are checked when the
@@ -1309,7 +1330,7 @@ export async function createAndStreamGeneration(
 
   // 5. Reserve credits on owner's account & enforce collaborator cap (402 if insufficient or cap exceeded)
   const reservationKey = `res_gen_${input.idempotencyKey}`;
-  await reserveForWorkspaceGeneration({
+  const reservation = await reserveForWorkspaceGeneration({
     workspace: access.ws,
     actorId: actor.userId,
     amount: reserveAmount,
@@ -1317,6 +1338,7 @@ export async function createAndStreamGeneration(
     generationId,
     estimated: true,
   });
+  const balanceAfterReserve = reservation.planBalance + reservation.topupBalance;
 
   // 6. DB Creation: Response + ResponseVersion + Generation in one transaction
   const responseCount = await db.response.count({
@@ -1477,6 +1499,7 @@ export async function createAndStreamGeneration(
     kind,
     truncated,
     reservedCredits: reserveAmount,
+    balanceAfterReserve,
     inputMessages: messages,
     systemPrompt,
     initialCitations: initialAttachmentCitations,

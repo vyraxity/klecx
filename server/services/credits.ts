@@ -1,7 +1,7 @@
 import "server-only";
 import { log, errInfo } from "@/server/log";
 import { db } from "@/server/db/client";
-import { Errors } from "@/server/http/errors";
+import { ApiError, Errors } from "@/server/http/errors";
 import type { Prisma } from "../db/generated/client";
 
 export type ReserveContext = {
@@ -41,6 +41,17 @@ export async function assertAccountNotFrozen(accountId: string): Promise<void> {
       "billing_frozen"
     );
   }
+}
+
+/**
+ * Pre-10.6 fix: the 402 for a reservation the balance can't cover, with the
+ * amount it needed and the balance (`details.needed`, `details.balance`).
+ */
+export function insufficientCredits(needed: number, balance: number): ApiError {
+  return new ApiError(402, "insufficient_credits", "Not enough credits", {
+    needed,
+    balance: Math.max(0, balance),
+  });
 }
 
 /**
@@ -121,7 +132,14 @@ export async function reserve(
 
       const row = rows[0];
       if (!row) {
-        throw Errors.paymentRequired();
+        // Pre-10.6 fix: say what was needed and what is left, so the person
+        // sees "needs about N, you have M" (only shown for their own account;
+        // a workspace member gets the owner-neutral message instead).
+        const account = await tx.creditAccount.findUnique({
+          where: { id: accountId },
+          select: { planBalance: true, topupBalance: true },
+        });
+        throw insufficientCredits(n, account ? account.planBalance + account.topupBalance : 0);
       }
 
       if (ctx.guard) {

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { CitationDto } from "@/lib/api/sse";
+import type { CitationDto, StreamErrorDetails } from "@/lib/api/sse";
 
 export type StreamStatus =
   | "idle"
@@ -18,6 +18,8 @@ export interface WorkspaceGenerationStream {
   generationId: string | null;
   prompt: string;
   error: string | null;
+  /** Pre-10.6 fix: what a refused message needed (402), for "needs about N, you have M". */
+  errorDetails?: StreamErrorDetails | null;
 }
 
 export const DEFAULT_WORKSPACE_STREAM: WorkspaceGenerationStream = {
@@ -68,7 +70,7 @@ export interface GenerationStoreState {
     finalText?: string,
     citations?: CitationDto[]
   ) => void;
-  failStream: (workspaceId: string, error: string) => void;
+  failStream: (workspaceId: string, error: string, details?: StreamErrorDetails | null) => void;
   cancelStream: (workspaceId: string) => void;
   resetStream: (workspaceId: string) => void;
   clearAllStreams: () => void;
@@ -209,7 +211,7 @@ export const useGenerationStore = create<GenerationStoreState>((set, get) => ({
       };
     }),
 
-  failStream: (workspaceId, error) =>
+  failStream: (workspaceId, error, details = null) =>
     set((state) => {
       const current = state.streams[workspaceId] ?? DEFAULT_WORKSPACE_STREAM;
       return {
@@ -219,6 +221,7 @@ export const useGenerationStore = create<GenerationStoreState>((set, get) => ({
             ...current,
             status: "failed",
             error,
+            errorDetails: details,
             progressLabel: null,
           },
         },

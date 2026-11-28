@@ -27,6 +27,20 @@ export const GROUNDING_SURCHARGE_CREDITS = 5;
 export const TYPICAL_INPUT_TOKENS = 2500;
 export const TYPICAL_OUTPUT_TOKENS = 1300;
 
+/**
+ * Output tokens set aside for a text answer when its credits are reserved
+ * (the most it may write). Used by the reservation in `generation.ts` and by
+ * `minimumMessageCredits()`, so the two agree.
+ */
+export const RESERVED_OUTPUT_TOKENS = 4096;
+
+/**
+ * The smallest input a message can have: the base instructions (~220 tokens),
+ * the date line and a short prompt. A longer conversation, documents or
+ * attachments add to it.
+ */
+export const MIN_MESSAGE_INPUT_TOKENS = 500;
+
 export type ModelKey = "text-economy" | "text-standard" | "image-standard" | "audio-transcribe";
 
 export interface ModelCaps {
@@ -174,6 +188,20 @@ export function creditsFor(modelKey: string, u: TokenUsageInput = {}): number {
     model.kind === "TEXT" ? searchCount * GROUNDING_SURCHARGE_CREDITS : 0;
 
   return baseCredits + surcharge;
+}
+
+/**
+ * Pre-10.6 fix: the fewest credits a text message can need before it is sent
+ * (its reservation for the shortest prompt): about 4 for Fast & Efficient and
+ * 16 for Standard Reasoning. With fewer, the server refuses the message
+ * (402); the composer warns before that. The real reservation grows with the
+ * conversation, so a message can still need more.
+ */
+export function minimumMessageCredits(modelKey: string): number {
+  return creditsFor(modelKey, {
+    inputTokens: MIN_MESSAGE_INPUT_TOKENS,
+    outputTokens: RESERVED_OUTPUT_TOKENS,
+  });
 }
 
 /** Credits for one typical message (text) or one image, from the prices above. */

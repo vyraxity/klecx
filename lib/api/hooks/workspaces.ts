@@ -46,6 +46,12 @@ export interface WorkspaceDto {
   ownerOutOfCredits?: boolean;
   /** The caller used up the monthly credit limit the owner set for them (GET /api/v1/workspaces/:id). */
   memberCreditCapReached?: { cap: number } | null;
+  /** Pre-10.6 fix: the text models the owner's plan includes (the owner pays, so these run here). */
+  ownerTextModels?: string[];
+  /** Pre-10.6 fix: whether the owner's balance covers the smallest message of each model (yes/no only). */
+  ownerCanAfford?: Record<string, boolean>;
+  /** Pre-10.6 fix: the balance, only when the caller is the owner (it's theirs); else null. */
+  ownerBalance?: number | null;
   createdAt: string;
   updatedAt: string;
 }

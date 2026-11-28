@@ -11,6 +11,7 @@ import {
   creditsFor,
 } from "@/lib/ai/model-catalog";
 import { Composer } from "@/components/workspace/composer";
+import { useUiStore } from "@/lib/stores/ui";
 import { queryKeys } from "@/lib/api/hooks/query-keys";
 import { StarterLibrary } from "@/components/home/starter-library";
 import { ShareAndPeopleDialog } from "@/components/workspace/ShareAndPeopleDialog";
@@ -241,19 +242,19 @@ describe("Step F4.4 — Plan-locked models and features are disabled with a reas
     it("on PRO plan: Standard model and Image mode are fully enabled", async () => {
       renderWithProviders(<Composer />, "PRO");
 
-      // Standard model in picker
+      // Pre-10.6 fix: a paid plan starts on Standard Reasoning (Automatic).
       const modelTrigger = screen.getByTestId("composer-model-trigger");
-      expect(modelTrigger).toHaveTextContent("Fast & Efficient");
+      await waitFor(() => expect(modelTrigger).toHaveTextContent("Standard Reasoning"));
       fireEvent.click(modelTrigger);
 
       const standardOption = screen.getByTestId("model-option-text-standard");
       expect(standardOption.closest("[data-gated]")).toBeNull();
       expect(standardOption).not.toHaveAttribute("aria-disabled", "true");
 
-      // Click selects standard model
-      fireEvent.click(standardOption);
+      // Picking another model sticks.
+      fireEvent.click(screen.getByTestId("model-option-text-economy"));
       await waitFor(() => {
-        expect(screen.getByTestId("composer-model-trigger")).toHaveTextContent("Standard Reasoning");
+        expect(screen.getByTestId("composer-model-trigger")).toHaveTextContent("Fast & Efficient");
       });
 
       // Image mode tab
@@ -339,6 +340,75 @@ describe("Step F4.4 — Plan-locked models and features are disabled with a reas
       const sendBtn = screen.getByRole("button", { name: /^Send$/i });
       expect(sendBtn.closest("[data-gated='owner_out_of_credits']")).toBeInTheDocument();
       expect(screen.queryByRole("link", { name: /Upgrade/i })).toBeNull();
+    });
+
+    // Pre-10.6 fix: some credits, but not enough for the chosen model.
+    it("owner with too few credits for Standard Reasoning: warned with the numbers, can switch to Fast & Efficient", async () => {
+      // Earlier tests leave the composer in image mode (a shared store).
+      useUiStore.setState({ chatMode: "text" });
+      renderWithProviders(
+        <Composer workspaceId="ws-1" userId="user-1" />,
+        "LITE",
+        "en",
+        seedWorkspace({
+          role: "OWNER",
+          ownerTextModels: ["text-economy", "text-standard"],
+          ownerCanAfford: { "text-economy": true, "text-standard": false },
+          ownerBalance: 10,
+        })
+      );
+
+      const warning = await screen.findByTestId("low-credits-warning");
+      expect(warning).toHaveTextContent("This model needs about 16 credits per message, and you have 10.");
+      expect(screen.getByTestId("composer-model-trigger")).toHaveTextContent("Standard Reasoning");
+      const sendBtn = screen.getByRole("button", { name: /^Send$/i });
+      expect(sendBtn.closest("[data-gated='not_enough_credits']")).toBeInTheDocument();
+      // Typing stays possible.
+      expect(screen.getByRole("textbox")).not.toBeDisabled();
+
+      fireEvent.click(screen.getByRole("button", { name: "Use Fast & Efficient" }));
+      await waitFor(() => expect(screen.queryByTestId("low-credits-warning")).toBeNull());
+      expect(screen.getByTestId("composer-model-trigger")).toHaveTextContent("Fast & Efficient");
+    });
+
+    it("member: told the owner can't cover this model, without the owner's balance or an upgrade link", async () => {
+      // Earlier tests leave the composer in image mode (a shared store).
+      useUiStore.setState({ chatMode: "text" });
+      renderWithProviders(
+        <Composer workspaceId="ws-1" userId="user-1" />,
+        "FREE",
+        "en",
+        seedWorkspace({
+          role: "EDITOR",
+          ownerTextModels: ["text-economy", "text-standard"],
+          ownerCanAfford: { "text-economy": false, "text-standard": false },
+          ownerBalance: null,
+        })
+      );
+
+      const warning = await screen.findByTestId("low-credits-warning");
+      expect(warning).toHaveTextContent(
+        "The workspace owner doesn't have enough credits for this model (about 16 per message)."
+      );
+      // The owner's plan includes Standard Reasoning, so the member (on Free) starts on it.
+      expect(screen.getByTestId("composer-model-trigger")).toHaveTextContent("Standard Reasoning");
+      // Fast & Efficient isn't covered either: no switch offered.
+      expect(screen.queryByRole("button", { name: /^Use / })).toBeNull();
+      expect(screen.queryByRole("link", { name: /Upgrade/i })).toBeNull();
+    });
+
+    it("a member's model picker follows the owner's plan, not their own", async () => {
+      renderWithProviders(
+        <Composer workspaceId="ws-1" userId="user-1" />,
+        "PRO",
+        "en",
+        seedWorkspace({ role: "EDITOR", ownerTextModels: ["text-economy"], ownerCanAfford: { "text-economy": true } })
+      );
+      const trigger = await screen.findByTestId("composer-model-trigger");
+      await waitFor(() => expect(trigger).toHaveTextContent("Fast & Efficient"));
+      fireEvent.click(trigger);
+      const standard = screen.getByTestId("model-option-text-standard");
+      expect(standard.closest("[data-gated='owner_plan']")).toBeInTheDocument();
     });
 
     it("a member at the monthly limit the owner set: Send gated with the limit, no upgrade link", async () => {

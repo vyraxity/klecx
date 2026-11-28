@@ -53,6 +53,10 @@ export type GateReason =
   | { code: "owner_out_of_credits" }
   /** The member used up the monthly credit limit the workspace owner set for them. */
   | { code: "member_credit_cap"; cap: number }
+  /** Pre-10.6 fix: the viewer pays and has some credits, but fewer than this model's smallest message. */
+  | { code: "not_enough_credits"; needed: number; balance: number }
+  /** Pre-10.6 fix: the owner pays and can't cover this model's smallest message (the viewer can't top it up). */
+  | { code: "owner_not_enough_credits"; needed: number }
   | { code: "daily_voice_limit" }
   | { code: "unsupported_browser" }
   /** The person is a viewer of the project, so they can't add workspaces to it. */

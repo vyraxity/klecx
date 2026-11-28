@@ -286,7 +286,10 @@
     "changeInSettings": "Modifier dans les paramètres",
     "capGenerate": "générer des réponses",
     "imageWithAttachments": "La génération d'images ne peut pas être combinée avec des fichiers ou des images joints.",
-    "charCount": "{current} / {max}"
+    "charCount": "{current} / {max}",
+    "useModel": "Utiliser {model}",
+    "notEnoughCreditsForMessage": "Ce message demande environ {needed} crédits, et il vous en reste {balance}.",
+    "ownerNotEnoughCredits": "Le propriétaire de l'espace de travail n'a pas assez de crédits pour ce message."
   },
   "Settings": {
     "ai": {
@@ -299,7 +302,12 @@
       "searchOnToast": "Recherche web activée",
       "searchOffToast": "Recherche web désactivée",
       "languageUpdatedToast": "Langue de l'IA mise à jour",
-      "saveError": "Impossible d'enregistrer vos préférences d'IA. Réessayez."
+      "saveError": "Impossible d'enregistrer vos préférences d'IA. Réessayez.",
+      "defaultModelLabel": "Modèle par défaut des nouveaux messages",
+      "defaultModelAutomatic": "Automatique (recommandé)",
+      "defaultModelLocked": "{model} · forfait {plan} et supérieurs",
+      "defaultModelHint": "Automatique utilise Raisonnement Standard chaque fois que le forfait qui paie l'espace de travail l'inclut, sinon Rapide et Efficace. Dans l'espace de travail de quelqu'un d'autre, son forfait décide des modèles que vous pouvez utiliser. Vous pouvez toujours choisir un autre modèle pour un message, et Régénérer garde le modèle de la réponse régénérée.",
+      "defaultModelUpdatedToast": "Modèle par défaut mis à jour"
     },
     "sessions": {
       "title": "Sessions et appareils",
@@ -696,12 +704,12 @@
       "disclaimer": "Vous pouvez révoquer ou ajuster les permissions de partage à tout moment depuis les paramètres de votre espace."
     },
     "creditsLow": {
-      "subject": "Avis : Votre solde de jetons Klecx est presque épuisé",
-      "heading": "Solde de jetons faible",
+      "subject": "Vos crédits Klecx sont presque épuisés",
+      "heading": "Il reste peu de crédits",
       "greeting": "Bonjour,",
-      "body": "Il vous reste {remainingCredits} jetons dans votre solde Klecx. Rechargez vos jetons pour garantir une génération IA fluide et sans interruption.",
-      "button": "Recharger les jetons",
-      "disclaimer": "Vous pouvez configurer la recharge automatique ou changer d'offre à tout moment dans les paramètres."
+      "body": "Il vous reste {remainingCredits} crédits pour cette période. Un message qui demande plus de crédits qu'il n'en reste ne peut pas être envoyé, dans vos espaces de travail comme pour les personnes avec qui vous les partagez. Vos crédits se renouvellent au début de votre prochaine période.",
+      "button": "Voir les forfaits",
+      "disclaimer": "Paramètres → Utilisation montre ce qui a utilisé vos crédits."
     },
     "paymentFailed": {
       "subject": "Action requise : Échec du paiement pour votre abonnement Klecx",
@@ -2406,7 +2414,8 @@
       "already_member": "Cette personne a déjà accès.",
       "cannot_invite_owner": "Le propriétaire a déjà accès.",
       "cannot_invite_self": "Vous ne pouvez pas vous inviter vous-même.",
-      "invalid_email": "Saisissez une adresse e-mail valide."
+      "invalid_email": "Saisissez une adresse e-mail valide.",
+      "model_not_in_plan": "Ce modèle n'est pas inclus dans votre forfait."
     }
   },
   "Gates": {
@@ -2423,7 +2432,9 @@
     "member_credit_cap": "Vous avez utilisé la limite mensuelle de {cap} crédits que le propriétaire de l'espace de travail vous a fixée",
     "daily_voice_limit": "Limite quotidienne de saisie vocale atteinte pour votre forfait",
     "unsupported_browser": "La saisie vocale n'est pas prise en charge sur ce navigateur",
-    "view_only_project": "Vous n'avez qu'un accès en lecture à ce projet"
+    "view_only_project": "Vous n'avez qu'un accès en lecture à ce projet",
+    "not_enough_credits": "Ce modèle demande environ {needed} crédits par message, et il vous en reste {balance}.",
+    "owner_not_enough_credits": "Le propriétaire de l'espace de travail n'a pas assez de crédits pour ce modèle (environ {needed} par message)."
   },
   "Models": {
     "text-economy": {

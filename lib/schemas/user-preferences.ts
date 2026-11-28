@@ -2,6 +2,7 @@ import { z } from "zod";
 import { UI_LOCALES, AI_LANGUAGES } from "@/lib/locale";
 import { DENSITIES, THEMES } from "@/lib/theme";
 import { MAX_VOICE_SPEED, MIN_VOICE_SPEED, VOICE_PROVIDERS } from "@/lib/speech/voices";
+import { DEFAULT_MODEL_CHOICES } from "@/lib/ai/default-model";
 
 /**
  * Step 9.2: what a person can change through `PATCH /api/v1/me/preferences`.
@@ -22,6 +23,8 @@ export const updatePreferencesSchema = z
     /** A natural voice id, or a browser voice name (device-specific). */
     voiceId: z.string().trim().min(1).max(200).nullable().optional(),
     voiceSpeed: z.number().min(MIN_VOICE_SPEED).max(MAX_VOICE_SPEED).optional(),
+    /** Pre-10.6 fix: the default model for new messages; null = Automatic. Checked against the plan. */
+    defaultModelKey: z.enum(DEFAULT_MODEL_CHOICES).nullable().optional(),
   })
   .strict();
 

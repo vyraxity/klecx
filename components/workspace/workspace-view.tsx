@@ -289,7 +289,8 @@ export function WorkspaceView({
         {
           idempotencyKey,
           prompt: promptText,
-          modelKey: options?.modelKey || (effectiveKind === "IMAGE" ? "image-standard" : "text-economy"),
+          // No text model → the server uses the person's default (pre-10.6 fix).
+          modelKey: options?.modelKey || (effectiveKind === "IMAGE" ? "image-standard" : undefined),
           kind: effectiveKind,
           attachmentIds: options?.attachmentIds,
         },
@@ -343,7 +344,7 @@ export function WorkspaceView({
             router.refresh();
           },
           onError: (err) => {
-            useGenerationStore.getState().failStream(workspace.id, err.code || "unknown");
+            useGenerationStore.getState().failStream(workspace.id, err.code || "unknown", err.details);
             useGenerationStore.getState().setController(workspace.id, null);
           },
         },
@@ -443,7 +444,7 @@ export function WorkspaceView({
             router.refresh();
           },
           onError: (err) => {
-            useGenerationStore.getState().failStream(workspace.id, err.code || "unknown");
+            useGenerationStore.getState().failStream(workspace.id, err.code || "unknown", err.details);
             useGenerationStore.getState().setController(workspace.id, null);
           },
         },

@@ -3,7 +3,7 @@ import path from "path";
 import { getSiteConfig } from "@/server/config/site";
 import { PLANS, getDailyCapForPlan, type PlanKey } from "@/server/billing/plans";
 import { isImageGenerationEnabled } from "@/lib/features/image-generation";
-import { GROUNDING_SURCHARGE_CREDITS, MODEL_CATALOG } from "@/lib/ai/model-catalog";
+import { GROUNDING_SURCHARGE_CREDITS, MODEL_CATALOG, minimumMessageCredits } from "@/lib/ai/model-catalog";
 import { MAX_WORKSPACE_DOCUMENTS } from "@/lib/documents/workspace-document-types";
 import {
   HelpArticle,
@@ -42,6 +42,9 @@ export function productTokens(locale: string = "en"): Record<string, string> {
   const tokens: Record<string, string> = {
     "{{credits.fast}}": num(MODEL_CATALOG["text-economy"].typicalCredits),
     "{{credits.standard}}": num(MODEL_CATALOG["text-standard"].typicalCredits),
+    // Pre-10.6 fix: the fewest credits a message needs before it is sent.
+    "{{credits.minFast}}": num(minimumMessageCredits("text-economy")),
+    "{{credits.minStandard}}": num(minimumMessageCredits("text-standard")),
     "{{credits.image}}": num(MODEL_CATALOG["image-standard"].typicalCredits),
     "{{credits.search}}": num(GROUNDING_SURCHARGE_CREDITS),
     "{{documents.max}}": num(MAX_WORKSPACE_DOCUMENTS),
