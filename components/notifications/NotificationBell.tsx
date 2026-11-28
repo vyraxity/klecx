@@ -294,14 +294,16 @@ export function formatNotificationPresentation(
     case "MENTIONED": {
       const name = text(p.authorName) ?? t("fallback.someone");
       const quote = text(p.quote);
+      // Pre-10.6 fix: reached through `@all`.
+      const all = p.everyone === true ? "Everyone" : "";
       return {
         title: title(item.type),
         description: quote
-          ? desc(item.type, "descriptionQuote", {
+          ? desc(item.type, `descriptionQuote${all}`, {
               name,
               quote: quote.length > 80 ? `${quote.slice(0, 79)}…` : quote,
             })
-          : desc(item.type, "description", { name }),
+          : desc(item.type, `description${all}`, { name }),
         href: href || "/workspaces",
         icon: <AtSign className="h-4 w-4 text-accent" />,
       };

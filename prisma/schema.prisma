@@ -766,6 +766,9 @@ model AnnotationMention {
   messageId String            @map("message_id")
   userId    String?           @map("user_id")
   isKlecx   Boolean           @default(false) @map("is_klecx")
+  /// Pre-10.6 fix: the message said `@all` (one row, userId null). Each
+  /// person it reached also has their own row.
+  isAll     Boolean           @default(false) @map("is_all")
   createdAt DateTime          @default(now()) @map("created_at")
   message   AnnotationMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
   user      User?             @relation(fields: [userId], references: [id], onDelete: Cascade)

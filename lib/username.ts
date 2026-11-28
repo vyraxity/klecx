@@ -1,5 +1,30 @@
 
-export const RESERVED_USERNAMES = new Set([
+/** Pre-10.6 fix: names kept for group mentions (`@all` now, the rest later). */
+export const RESERVED_FOR_GROUP_MENTIONS = [
+  "all",
+  "everyone",
+  "here",
+  "owner",
+  "owners",
+  "admins",
+  "editor",
+  "editors",
+  "commenter",
+  "commenters",
+  "viewer",
+  "viewers",
+  "member",
+  "members",
+  "team",
+  "group",
+  "guest",
+  "guests",
+  "ai",
+  "assistant",
+  "moderator",
+] as const;
+
+export const RESERVED_USERNAMES = new Set<string>([
   "admin",
   "root",
   "support",
@@ -39,6 +64,11 @@ export const RESERVED_USERNAMES = new Set([
   "bot",
   "quickbot",
   "superuser",
+  // Pre-10.6 fix (owner, 2026-11-27): group mentions. `@all` notifies everyone
+  // in a workspace; the others are kept free for future group mentions
+  // (roles, the owner, the team). `scripts/list-reserved-username-conflicts.mjs`
+  // lists accounts that took one of these before they were reserved.
+  ...RESERVED_FOR_GROUP_MENTIONS,
 ]);
 
 // Basic profane / blocked substrings or terms

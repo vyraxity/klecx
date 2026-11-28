@@ -17,13 +17,15 @@ export function renderMentioned(
     excerpt: data.excerpt,
   };
 
+  // `@all`: say everyone was mentioned, not "you".
+  const v = data.everyone ? "Everyone" : "";
   return renderSimpleEmail({
     t,
     toEmail,
-    subject: t("mentioned.subject", values),
-    heading: t("mentioned.heading", values),
+    subject: t(`mentioned.subject${v}`, values),
+    heading: t(`mentioned.heading${v}`, values),
     greeting: t("mentioned.greeting", values),
-    body: t("mentioned.body", values),
+    body: t(`mentioned.body${v}`, values),
     actionUrl: data.actionUrl ?? appUrl("/workspaces"),
     actionLabel: t("mentioned.button"),
     disclaimer: t("mentioned.disclaimer"),

@@ -784,7 +784,10 @@
       "greeting": "Hello,",
       "body": "{authorName} mentioned you: {excerpt}",
       "button": "View Comment",
-      "disclaimer": "You received this email because someone mentioned you in a workspace comment."
+      "disclaimer": "You received this email because someone mentioned you in a workspace comment.",
+      "subjectEveryone": "{authorName} mentioned everyone on Klecx",
+      "headingEveryone": "Everyone was mentioned in a comment",
+      "bodyEveryone": "{authorName} mentioned everyone in the workspace: {excerpt}"
     },
     "welcome": {
       "subject": "Welcome to Klecx — Your AI Workspace",
@@ -2674,7 +2677,10 @@
       "mentionNotMember": "Not a member of this workspace",
       "saveChangesFirst": "Save your changes first. Comments and questions can be added to saved text only.",
       "capComment": "comment",
-      "capAsk": "ask questions"
+      "capAsk": "ask questions",
+      "allLabel": "Everyone",
+      "allDescription": "{count, plural, one {Notifies # person in this workspace} other {Notifies # people in this workspace}}",
+      "allChipTitle": "Everyone in this workspace"
     },
     "preview": {
       "ariaLabel": "Annotation preview",
@@ -2876,7 +2882,9 @@
       "MENTIONED": {
         "title": "You were mentioned",
         "description": "{name} mentioned you in a comment.",
-        "descriptionQuote": "{name} mentioned you in a comment on «{quote}»."
+        "descriptionQuote": "{name} mentioned you in a comment on «{quote}».",
+        "descriptionEveryone": "{name} mentioned everyone in a comment.",
+        "descriptionQuoteEveryone": "{name} mentioned everyone in a comment on «{quote}»."
       },
       "default": {
         "title": "Notification",

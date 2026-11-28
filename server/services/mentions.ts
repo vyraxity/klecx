@@ -46,20 +46,26 @@ export function assertCanCreateKlecxNote(capabilities: Set<Permission>): void {
   }
 }
 
+/** Pre-10.6 fix: `@all` mentions everyone in the workspace (never Klecx). */
+export const ALL_MENTION_HANDLE = "all";
+
 /**
  * Resolves mentions from a given text inside a workspace.
  * Returns only the ids of people who are mentionable here (same set as
  * `listMentionables`): the workspace owner, the project owner, and
  * non-suspended workspace / project members. Unknown names stay plain text.
- * Also returns `klecx: true` if `@klecx` was mentioned.
+ * Also returns `klecx: true` if `@klecx` was mentioned, and for `@all`
+ * (`all: true`) everyone who has access in `allUserIds` (whether they may
+ * use it is the caller's check: `syncMentionsAndNotes`).
  */
 export async function resolveMentions(
   workspaceId: string,
   text: string,
   client: DbOrTx = db
-): Promise<{ userIds: string[]; klecx: boolean }> {
+): Promise<{ userIds: string[]; klecx: boolean; all: boolean; allUserIds: string[] }> {
+  const none = { userIds: [], klecx: false, all: false, allUserIds: [] };
   if (!text) {
-    return { userIds: [], klecx: false };
+    return none;
   }
 
   const handles = new Set<string>();
@@ -75,9 +81,12 @@ export async function resolveMentions(
 
   const klecx = handles.has("klecx");
   handles.delete("klecx");
+  // Reserved: no account can be called "all" (lib/username.ts).
+  const all = handles.has(ALL_MENTION_HANDLE);
+  handles.delete(ALL_MENTION_HANDLE);
 
-  if (handles.size === 0) {
-    return { userIds: [], klecx };
+  if (handles.size === 0 && !all) {
+    return { ...none, klecx };
   }
 
   const workspace = await client.workspace.findFirst({
@@ -91,7 +100,7 @@ export async function resolveMentions(
   });
 
   if (!workspace) {
-    return { userIds: [], klecx };
+    return { ...none, klecx };
   }
 
   const project =
@@ -99,39 +108,87 @@ export async function resolveMentions(
       ? { id: workspace.projectId, ownerId: workspace.project.ownerId }
       : null;
 
-  const candidateUsers = await client.user.findMany({
-    where: {
-      username: { in: Array.from(handles), mode: "insensitive" },
-    },
-    select: {
-      id: true,
-      workspaceMemberships: {
-        where: { workspaceId: workspace.id, suspendedAt: null },
-        select: { userId: true },
-      },
-      projectMemberships: project
-        ? {
-            where: { projectId: project.id, suspendedAt: null },
-            select: { userId: true },
-          }
-        : false,
-    },
-  });
-
   const validUserIds = new Set<string>();
-  for (const u of candidateUsers) {
-    const isOwner = u.id === workspace.ownerId || u.id === project?.ownerId;
-    const isDirectMember = u.workspaceMemberships.length > 0;
-    const isProjectMember = Boolean(
-      u.projectMemberships && u.projectMemberships.length > 0
-    );
+  if (handles.size > 0) {
+    const candidateUsers = await client.user.findMany({
+      where: {
+        username: { in: Array.from(handles), mode: "insensitive" },
+      },
+      select: {
+        id: true,
+        workspaceMemberships: {
+          where: { workspaceId: workspace.id, suspendedAt: null },
+          select: { userId: true },
+        },
+        projectMemberships: project
+          ? {
+              where: { projectId: project.id, suspendedAt: null },
+              select: { userId: true },
+            }
+          : false,
+      },
+    });
 
-    if (isOwner || isDirectMember || isProjectMember) {
-      validUserIds.add(u.id);
+    for (const u of candidateUsers) {
+      const isOwner = u.id === workspace.ownerId || u.id === project?.ownerId;
+      const isDirectMember = u.workspaceMemberships.length > 0;
+      const isProjectMember = Boolean(
+        u.projectMemberships && u.projectMemberships.length > 0
+      );
+
+      if (isOwner || isDirectMember || isProjectMember) {
+        validUserIds.add(u.id);
+      }
     }
   }
 
-  return { userIds: Array.from(validUserIds), klecx };
+  const allUserIds = all ? await workspaceAudience(client, workspace, project) : [];
+
+  return { userIds: Array.from(validUserIds), klecx, all, allUserIds };
+}
+
+/**
+ * Everyone `@all` reaches: the workspace and project owners and every
+ * non-suspended workspace or project member, without deleted accounts.
+ */
+async function workspaceAudience(
+  client: DbOrTx,
+  workspace: { id: string; ownerId: string },
+  project: { id: string; ownerId: string } | null
+): Promise<string[]> {
+  const [wsMembers, projectMembers] = await Promise.all([
+    client.workspaceMember.findMany({
+      where: { workspaceId: workspace.id, suspendedAt: null },
+      select: { userId: true },
+    }),
+    project
+      ? client.projectMember.findMany({
+          where: { projectId: project.id, suspendedAt: null },
+          select: { userId: true },
+        })
+      : Promise.resolve([] as { userId: string }[]),
+  ]);
+  const ids = new Set<string>([
+    workspace.ownerId,
+    ...(project ? [project.ownerId] : []),
+    ...wsMembers.map((m) => m.userId),
+    ...projectMembers.map((m) => m.userId),
+  ]);
+  const active = await client.user.findMany({
+    where: { id: { in: Array.from(ids) }, deletedAt: null },
+    select: { id: true },
+  });
+  return active.map((u) => u.id);
+}
+
+/** How many people `@all` would notify for this author (everyone but them). */
+export async function countAllMentionAudience(
+  workspaceId: string,
+  authorId: string,
+  client: DbOrTx = db
+): Promise<number> {
+  const { allUserIds } = await resolveMentions(workspaceId, `@${ALL_MENTION_HANDLE}`, client);
+  return allUserIds.filter((id) => id !== authorId).length;
 }
 
 export interface SyncMentionsOptions {
@@ -157,6 +214,8 @@ export interface SyncMentionsResult {
   visibility: "PRIVATE" | "WORKSPACE";
   userIds: string[];
   klecx: boolean;
+  /** `@all` was used (by someone allowed to). */
+  all: boolean;
   /** Pass to `sendMentionNotifications` after the transaction commits. */
   pendingNotifications: {
     workspaceId: string;
@@ -169,6 +228,8 @@ export interface SyncMentionsResult {
     authorId: string;
     href: string;
     userIds: string[];
+    /** Of `userIds`, those reached only through `@all` ("mentioned everyone"). */
+    everyoneUserIds?: string[];
   };
 }
 
@@ -197,7 +258,15 @@ export async function syncMentionsAndNotes(
 
   const resolved = await resolveMentions(workspaceId, text, tx);
   const klecx = resolved.klecx;
-  const userIds = canShare ? resolved.userIds : [];
+  const explicitUserIds = canShare ? resolved.userIds : [];
+  // Pre-10.6 fix (owner): anyone who can comment can use `@all`; in a private
+  // thread (canShare false) nobody else can see it, so it reaches nobody.
+  // Otherwise it stays plain text.
+  const all = canShare && resolved.all && capabilities.has("workspace.comment");
+  // Everyone but the author (who wrote it, so isn't "mentioned").
+  const allUserIds = all ? resolved.allUserIds.filter((id) => id !== actor.userId) : [];
+  const explicitSet = new Set(explicitUserIds);
+  const userIds = Array.from(new Set([...explicitUserIds, ...allUserIds]));
 
   if (klecx) {
     assertCanCreateKlecxNote(capabilities);
@@ -207,7 +276,7 @@ export async function syncMentionsAndNotes(
   let visibility = currentVisibility;
   if (
     canShare &&
-    (klecx || userIds.length > 0) &&
+    (klecx || all || userIds.length > 0) &&
     currentVisibility === "PRIVATE"
   ) {
     visibility = "WORKSPACE";
@@ -227,6 +296,7 @@ export async function syncMentionsAndNotes(
       .filter((id): id is string => Boolean(id))
   );
   const existingHasKlecx = existingMentions.some((m) => m.isKlecx);
+  const existingHasAll = existingMentions.some((m) => m.isAll);
 
   const newUserIds = userIds.filter((id) => !existingUserIds.has(id));
   if (newUserIds.length > 0) {
@@ -242,11 +312,21 @@ export async function syncMentionsAndNotes(
     });
   }
 
+  if (all && !existingHasAll) {
+    await tx.annotationMention.create({
+      data: { messageId, userId: null, isAll: true },
+    });
+  }
+
   // On edit, drop the mentions that are no longer in the text.
   const desiredUserIds = new Set(userIds);
   const staleIds = existingMentions
     .filter((m) =>
-      m.isKlecx ? !klecx : Boolean(m.userId && !desiredUserIds.has(m.userId))
+      m.isKlecx
+        ? !klecx
+        : m.isAll
+          ? !all
+          : Boolean(m.userId && !desiredUserIds.has(m.userId))
     )
     .map((m) => m.id);
   if (staleIds.length > 0) {
@@ -304,10 +384,12 @@ export async function syncMentionsAndNotes(
     });
   }
 
+  const notifyUserIds = newUserIds.filter((id) => id !== actor.userId);
   return {
     visibility,
     userIds,
     klecx,
+    all,
     pendingNotifications: {
       workspaceId,
       annotationId,
@@ -321,7 +403,9 @@ export async function syncMentionsAndNotes(
       authorId: actor.userId,
       href: `/workspaces/${workspaceId}`,
       // New messages notify everyone mentioned; edits only the newly added.
-      userIds: newUserIds.filter((id) => id !== actor.userId),
+      // Never the author (`@all` included), never Klecx.
+      userIds: notifyUserIds,
+      everyoneUserIds: notifyUserIds.filter((id) => !explicitSet.has(id)),
     },
   };
 }
@@ -334,7 +418,8 @@ export async function syncMentionsAndNotes(
 export async function sendMentionNotifications(
   pending: SyncMentionsResult["pendingNotifications"]
 ): Promise<void> {
-  const { userIds, messageId, authorId, ...payload } = pending;
+  const { userIds, messageId, authorId, everyoneUserIds = [], ...payload } = pending;
+  const viaAll = new Set(everyoneUserIds);
   for (const userId of userIds) {
     try {
       // Step 10.1: mention spam. One author can notify one person a limited
@@ -344,7 +429,8 @@ export async function sendMentionNotifications(
         () => false
       );
       if (!allowed) continue;
-      await notify(userId, "MENTIONED", payload, {
+      // `everyone`: "mentioned everyone" instead of "mentioned you".
+      await notify(userId, "MENTIONED", { ...payload, everyone: viaAll.has(userId) }, {
         dedupeKey: `mention:${messageId}:${userId}`,
         email: true,
       });
