@@ -256,7 +256,7 @@
     "renameChat": "Rename conversation",
     "renamePlaceholder": "Enter conversation title...",
     "deleteConfirmTitle": "Delete workspace?",
-    "deleteConfirmDescription": "“{title}” moves to Recently deleted: you can restore it for 30 days, then it's erased with its answers, comments and files. Its members lose access.",
+    "deleteConfirmDescription": "“{title}” moves to Deleted & archived: you can restore it for 30 days, then it's erased with its answers, comments and files. Its members lose access.",
     "confirmDelete": "Delete",
     "renameSuccess": "Conversation renamed",
     "renameError": "Failed to rename conversation",
@@ -290,7 +290,7 @@
     "useModel": "Use {model}",
     "notEnoughCreditsForMessage": "This message needs about {needed} credits, and you have {balance}.",
     "ownerNotEnoughCredits": "The workspace owner doesn't have enough credits for this message.",
-    "deleteUndoHint": "You can restore it for 30 days from Settings → Recently deleted.",
+    "deleteUndoHint": "You can restore it for 30 days from Settings → Deleted & archived.",
     "undo": "Undo",
     "restoreSuccess": "Workspace restored",
     "restoreError": "Couldn't restore the workspace."
@@ -366,7 +366,7 @@
       "support": "Support",
       "usage": "Usage",
       "voice": "Voice",
-      "deleted": "Recently deleted"
+      "deleted": "Deleted & archived"
     },
     "errors": {
       "pageTitle": "This page couldn't load",
@@ -655,13 +655,13 @@
       "deleteError": "Couldn't delete your account. Try again.",
       "cancel": "Cancel",
       "confirmButton": "Delete my account",
-      "recentlyDeletedTitle": "Recently deleted",
-      "recentlyDeletedHint": "Workspaces and projects you deleted can be restored for 30 days.",
-      "recentlyDeletedOpen": "See recently deleted"
+      "recentlyDeletedTitle": "Deleted & archived",
+      "recentlyDeletedHint": "Workspaces and projects you deleted can be restored for 30 days. The ones you archived are listed there too.",
+      "recentlyDeletedOpen": "See deleted & archived"
     },
     "deleted": {
-      "title": "Recently deleted",
-      "description": "Workspaces and projects you deleted stay here for {days} days, then they're erased for good. Only you see them, and you can restore them until then.",
+      "title": "Deleted & archived",
+      "description": "Find what you deleted or archived. Deleted workspaces and projects stay {days} days, then they're erased for good; only you see them. Archived ones stay until you take them out of the archive.",
       "workspacesTitle": "Workspaces",
       "projectsTitle": "Projects",
       "projectsHint": "Deleting a project doesn't delete its workspaces: they stay in your sidebar. Restoring the project puts them back in it.",
@@ -681,7 +681,25 @@
       "open": "Open",
       "restoreError": "Couldn't restore it. Try again.",
       "footnote": "Members lose access while it's deleted and get it back when you restore it. After {days} days the files, answers, comments and notes are erased and can't be recovered.",
-      "privacyLink": "Privacy Policy"
+      "privacyLink": "Privacy Policy",
+      "tabsLabel": "Deleted or archived",
+      "tabDeleted": "Deleted",
+      "tabArchived": "Archived",
+      "archivedIntro": "Archiving hides a workspace or project from your sidebar and lists without deleting anything. An archived project hides its workspaces too. Take it out of the archive to bring it back.",
+      "noArchivedWorkspaces": "No archived workspaces.",
+      "noArchivedProjects": "No archived projects.",
+      "archivedLoadError": "Couldn't load what's archived. Reload the page to try again.",
+      "archivedOn": "Archived {date}",
+      "inProject": "In “{project}”",
+      "sharedWithYou": "Shared with you",
+      "projectWorkspaces": "{count, plural, =0 {No workspaces} one {# workspace} other {# workspaces}}",
+      "unarchive": "Unarchive",
+      "unarchiveNamed": "Unarchive {name}",
+      "unarchivedWorkspace": "“{name}” is back in your sidebar",
+      "unarchivedProject": "Project “{name}” is back in your sidebar",
+      "unarchiveError": "Couldn't take it out of the archive. Try again.",
+      "cannotUnarchive": "Only the owner or an admin can unarchive it.",
+      "openNamed": "Open {name}"
     }
   },
   "Email": {
@@ -1058,7 +1076,11 @@
     "usernameClaimed": "Username claimed: @{username}",
     "backTo": "Back to {title}",
     "countOverflow": "{max}+",
-    "recentlyDeleted": "Recently deleted"
+    "recentlyDeleted": "Deleted & archived",
+    "archivedHint": "Find it in Settings → Deleted & archived.",
+    "unarchivedSuccess": "Workspace taken out of the archive",
+    "archiveUndo": "Undo",
+    "unarchiveError": "Couldn't take it out of the archive. Find it in Settings → Deleted & archived."
   },
   "Home": {
     "greetingMorning": "Good morning, {name}",
@@ -2628,7 +2650,7 @@
     "renameWorkspaceTitle": "Rename workspace",
     "workspaceName": "Workspace name",
     "deleteWorkspaceTitle": "Delete workspace",
-    "deleteWorkspaceConfirm": "Delete “{title}”? It moves to Recently deleted, where you can restore it for 30 days. You and its members lose access until then.",
+    "deleteWorkspaceConfirm": "Delete “{title}”? It moves to Deleted & archived, where you can restore it for 30 days. You and its members lose access until then.",
     "searchWorkspaces": "Search workspaces…",
     "sortBy": "Sort by",
     "sortLastActivity": "Last activity",
@@ -2641,7 +2663,7 @@
     "unarchiveProject": "Unarchive project",
     "transferProject": "Transfer ownership",
     "deleteProject": "Delete project",
-    "deleteProjectConfirm": "Delete this project? Its workspaces aren't deleted: they stay in your sidebar. You can restore the project for 30 days from Settings → Recently deleted.",
+    "deleteProjectConfirm": "Delete this project? Its workspaces aren't deleted: they stay in your sidebar. You can restore the project for 30 days from Settings → Deleted & archived.",
     "shareAndPeople": "Share & people",
     "projectOptions": "Project options",
     "workspaceOptions": "Options for {title}",
@@ -2697,10 +2719,11 @@
       "workspaceUpdateFailed": "Couldn't update the workspace",
       "workspaceDeleted": "Workspace deleted",
       "workspaceDeleteFailed": "Couldn't delete the workspace",
-      "deleteUndoHint": "You can restore it for 30 days from Settings → Recently deleted.",
+      "deleteUndoHint": "You can restore it for 30 days from Settings → Deleted & archived.",
       "undo": "Undo",
       "restored": "Restored",
-      "restoreFailed": "Couldn't restore it."
+      "restoreFailed": "Couldn't restore it.",
+      "archivedHint": "Find it in Settings → Deleted & archived."
     },
     "currentlyIn": "Currently in {name}",
     "moveSearchHint": "Showing your most recent workspaces. Search to find others."

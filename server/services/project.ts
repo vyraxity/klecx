@@ -155,8 +155,22 @@ export async function updateProject(
   projectId: string,
   input: UpdateProjectInput
 ) {
-  // Always authorize first, ensuring non-members and soft-deleted resources get 404 (never 403)
-  await requireProject(actor, projectId, "workspace.rename");
+  // Always authorize first, ensuring non-members and soft-deleted resources get 404 (never 403).
+  // Pre-10.6 fix PR 8: archiving and un-archiving need "workspace.archive" only. The
+  // other fields need "workspace.rename" and are refused while the project is
+  // archived, unless the same request takes it out of the archive. (The rename check
+  // used to come first, so `{ archived: false }` always failed with 409.)
+  const access = await requireProject(
+    actor,
+    projectId,
+    input.archived !== undefined ? "workspace.archive" : "workspace.rename"
+  );
+  if (input.name !== undefined || input.description !== undefined) {
+    if (!access.capabilities.has("workspace.rename")) throw Errors.forbidden();
+    if (access.project.archivedAt && input.archived !== false) {
+      throw Errors.conflict("Project is archived");
+    }
+  }
 
   // Reject updates containing no supported fields
   const hasSupportedFields = Object.values(input).some((v) => v !== undefined);
@@ -164,9 +178,6 @@ export async function updateProject(
     throw Errors.validation({ formErrors: ["No supported update fields provided"] });
   }
 
-  if (input.archived !== undefined) {
-    await requireProject(actor, projectId, "workspace.archive");
-  }
 
   const updated = await db.project.update({
     where: { id: projectId },

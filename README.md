@@ -281,14 +281,14 @@ Every server variable is declared and validated in [`server/env.ts`](server/env.
 
 ### AI models
 
-All optional. The defaults in `server/env.ts` are older model names, so set them.
+All optional: the defaults in `server/env.ts` are the models the credits are priced for (`lib/ai/model-catalog.ts`). Change one only together with its prices.
 
 | Variable | What it does | If unset |
 | --- | --- | --- |
-| `GEMINI_TEXT_MODEL_ECONOMY` | Model of the **Fast & Efficient** tier (all plans). Credits are priced for `gemini-3.1-flash-lite` (`lib/ai/model-catalog.ts`): use that model. | `GEMINI_TEXT_MODEL`, else an old default. |
-| `GEMINI_TEXT_MODEL_STANDARD` | Model of the **Standard Reasoning** tier (paid plans). Credits are priced for `gemini-3.8-flash`: use that model. | An old default that new API keys can't use: Standard answers fail. |
-| `GEMINI_TEXT_MODEL` | Older single-model setting; only a fallback for the economy model. | Not needed when `GEMINI_TEXT_MODEL_ECONOMY` is set. |
-| `GEMINI_IMAGE_MODEL` | Image generation model. Images are off at launch (`NEXT_PUBLIC_IMAGE_GENERATION_ENABLED`). | An old default. Only matters when images are turned on. |
+| `GEMINI_TEXT_MODEL_ECONOMY` | Model of the **Fast & Efficient** tier (all plans). | `GEMINI_TEXT_MODEL`, else `gemini-3.1-flash-lite`. |
+| `GEMINI_TEXT_MODEL_STANDARD` | Model of the **Standard Reasoning** tier (paid plans). | `gemini-3.8-flash`. |
+| `GEMINI_TEXT_MODEL` | Older single-model setting; only a fallback for the economy model. | `gemini-3.1-flash-lite`. Not needed when `GEMINI_TEXT_MODEL_ECONOMY` is set. |
+| `GEMINI_IMAGE_MODEL` | Image generation model. Images are off at launch (`NEXT_PUBLIC_IMAGE_GENERATION_ENABLED`). | `gemini-nano-banana-2.1`. Only matters when images are turned on. |
 | `AI_TRANSCRIBE_MODEL` | Voice input (speech to text). Must accept audio. | The economy text model. |
 | `GEMINI_TTS_MODEL` | Natural-voice read-aloud (text to speech). | `gemini-3.8-flash-lite-tts`. |
 

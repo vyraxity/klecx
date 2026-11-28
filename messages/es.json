@@ -256,7 +256,7 @@
     "renameChat": "Renombrar conversación",
     "renamePlaceholder": "Introduce el título de la conversación...",
     "deleteConfirmTitle": "¿Eliminar el espacio de trabajo?",
-    "deleteConfirmDescription": "«{title}» pasa a Eliminados recientemente: puedes restaurarlo durante 30 días; después se borra con sus respuestas, comentarios y archivos. Sus miembros pierden el acceso.",
+    "deleteConfirmDescription": "«{title}» pasa a Eliminados y archivados: puedes restaurarlo durante 30 días; después se borra con sus respuestas, comentarios y archivos. Sus miembros pierden el acceso.",
     "confirmDelete": "Eliminar",
     "renameSuccess": "Conversación renombrada",
     "renameError": "Error al renombrar la conversación",
@@ -290,7 +290,7 @@
     "useModel": "Usar {model}",
     "notEnoughCreditsForMessage": "Este mensaje necesita unos {needed} créditos y tienes {balance}.",
     "ownerNotEnoughCredits": "El propietario del espacio de trabajo no tiene créditos suficientes para este mensaje.",
-    "deleteUndoHint": "Puedes restaurarlo durante 30 días desde Configuración → Eliminados recientemente.",
+    "deleteUndoHint": "Puedes restaurarlo durante 30 días desde Configuración → Eliminados y archivados.",
     "undo": "Deshacer",
     "restoreSuccess": "Espacio de trabajo restaurado",
     "restoreError": "No se pudo restaurar el espacio de trabajo."
@@ -366,7 +366,7 @@
       "support": "Soporte",
       "usage": "Uso",
       "voice": "Voz",
-      "deleted": "Eliminados recientemente"
+      "deleted": "Eliminados y archivados"
     },
     "errors": {
       "pageTitle": "No se pudo cargar esta página",
@@ -655,13 +655,13 @@
       "deleteError": "No se pudo eliminar tu cuenta. Inténtalo de nuevo.",
       "cancel": "Cancelar",
       "confirmButton": "Eliminar mi cuenta",
-      "recentlyDeletedTitle": "Eliminados recientemente",
-      "recentlyDeletedHint": "Los espacios de trabajo y proyectos que eliminas se pueden restaurar durante 30 días.",
-      "recentlyDeletedOpen": "Ver eliminados recientemente"
+      "recentlyDeletedTitle": "Eliminados y archivados",
+      "recentlyDeletedHint": "Los espacios de trabajo y proyectos que eliminas se pueden restaurar durante 30 días. Los que archivas también aparecen ahí.",
+      "recentlyDeletedOpen": "Ver eliminados y archivados"
     },
     "deleted": {
-      "title": "Eliminados recientemente",
-      "description": "Los espacios de trabajo y proyectos que eliminas se quedan aquí {days} días y después se borran para siempre. Solo tú los ves y puedes restaurarlos hasta entonces.",
+      "title": "Eliminados y archivados",
+      "description": "Encuentra lo que eliminaste o archivaste. Los espacios de trabajo y proyectos eliminados se quedan {days} días y después se borran para siempre; solo tú los ves. Los archivados se quedan hasta que los saques del archivo.",
       "workspacesTitle": "Espacios de trabajo",
       "projectsTitle": "Proyectos",
       "projectsHint": "Eliminar un proyecto no elimina sus espacios de trabajo: siguen en tu barra lateral. Al restaurar el proyecto vuelven a él.",
@@ -681,7 +681,25 @@
       "open": "Abrir",
       "restoreError": "No se pudo restaurar. Inténtalo de nuevo.",
       "footnote": "Los miembros pierden el acceso mientras está eliminado y lo recuperan al restaurarlo. Pasados {days} días, los archivos, respuestas, comentarios y notas se borran y no se pueden recuperar.",
-      "privacyLink": "Política de privacidad"
+      "privacyLink": "Política de privacidad",
+      "tabsLabel": "Eliminados o archivados",
+      "tabDeleted": "Eliminados",
+      "tabArchived": "Archivados",
+      "archivedIntro": "Archivar oculta un espacio de trabajo o proyecto de tu barra lateral y de las listas sin eliminar nada. Un proyecto archivado también oculta sus espacios de trabajo. Sácalo del archivo para recuperarlo.",
+      "noArchivedWorkspaces": "No hay espacios de trabajo archivados.",
+      "noArchivedProjects": "No hay proyectos archivados.",
+      "archivedLoadError": "No se pudo cargar lo archivado. Recarga la página para intentarlo de nuevo.",
+      "archivedOn": "Archivado el {date}",
+      "inProject": "En «{project}»",
+      "sharedWithYou": "Compartido contigo",
+      "projectWorkspaces": "{count, plural, =0 {Sin espacios de trabajo} one {# espacio de trabajo} other {# espacios de trabajo}}",
+      "unarchive": "Desarchivar",
+      "unarchiveNamed": "Desarchivar {name}",
+      "unarchivedWorkspace": "«{name}» vuelve a estar en tu barra lateral",
+      "unarchivedProject": "El proyecto «{name}» vuelve a estar en tu barra lateral",
+      "unarchiveError": "No se pudo sacar del archivo. Inténtalo de nuevo.",
+      "cannotUnarchive": "Solo el propietario o un administrador puede desarchivarlo.",
+      "openNamed": "Abrir {name}"
     }
   },
   "Email": {
@@ -1058,7 +1076,11 @@
     "usernameClaimed": "Nombre de usuario reservado: @{username}",
     "backTo": "Volver a {title}",
     "countOverflow": "{max}+",
-    "recentlyDeleted": "Eliminados recientemente"
+    "recentlyDeleted": "Eliminados y archivados",
+    "archivedHint": "Lo encontrarás en Configuración → Eliminados y archivados.",
+    "unarchivedSuccess": "Espacio de trabajo sacado del archivo",
+    "archiveUndo": "Deshacer",
+    "unarchiveError": "No se pudo sacar del archivo. Lo encontrarás en Configuración → Eliminados y archivados."
   },
   "Home": {
     "greetingMorning": "Buenos días, {name}",
@@ -2628,7 +2650,7 @@
     "renameWorkspaceTitle": "Renombrar espacio de trabajo",
     "workspaceName": "Nombre del espacio de trabajo",
     "deleteWorkspaceTitle": "Eliminar espacio de trabajo",
-    "deleteWorkspaceConfirm": "¿Eliminar «{title}»? Pasa a Eliminados recientemente, donde puedes restaurarlo durante 30 días. Tú y sus miembros perdéis el acceso hasta entonces.",
+    "deleteWorkspaceConfirm": "¿Eliminar «{title}»? Pasa a Eliminados y archivados, donde puedes restaurarlo durante 30 días. Tú y sus miembros perdéis el acceso hasta entonces.",
     "searchWorkspaces": "Buscar espacios de trabajo…",
     "sortBy": "Ordenar por",
     "sortLastActivity": "Última actividad",
@@ -2641,7 +2663,7 @@
     "unarchiveProject": "Desarchivar proyecto",
     "transferProject": "Transferir propiedad",
     "deleteProject": "Eliminar proyecto",
-    "deleteProjectConfirm": "¿Eliminar este proyecto? Sus espacios de trabajo no se eliminan: siguen en tu barra lateral. Puedes restaurar el proyecto durante 30 días desde Configuración → Eliminados recientemente.",
+    "deleteProjectConfirm": "¿Eliminar este proyecto? Sus espacios de trabajo no se eliminan: siguen en tu barra lateral. Puedes restaurar el proyecto durante 30 días desde Configuración → Eliminados y archivados.",
     "shareAndPeople": "Compartir y personas",
     "projectOptions": "Opciones del proyecto",
     "workspaceOptions": "Opciones de {title}",
@@ -2697,10 +2719,11 @@
       "workspaceUpdateFailed": "No se pudo actualizar el espacio de trabajo",
       "workspaceDeleted": "Espacio de trabajo eliminado",
       "workspaceDeleteFailed": "No se pudo eliminar el espacio de trabajo",
-      "deleteUndoHint": "Puedes restaurarlo durante 30 días desde Configuración → Eliminados recientemente.",
+      "deleteUndoHint": "Puedes restaurarlo durante 30 días desde Configuración → Eliminados y archivados.",
       "undo": "Deshacer",
       "restored": "Restaurado",
-      "restoreFailed": "No se pudo restaurar."
+      "restoreFailed": "No se pudo restaurar.",
+      "archivedHint": "Lo encontrarás en Configuración → Eliminados y archivados."
     },
     "currentlyIn": "Ahora en {name}",
     "moveSearchHint": "Se muestran tus espacios de trabajo más recientes. Busca para encontrar otros."

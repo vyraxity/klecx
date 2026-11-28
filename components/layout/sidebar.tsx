@@ -61,6 +61,7 @@ import { UserAvatar } from "@/components/user/user-avatar";
 import { ShareAndPeopleDialog } from "@/components/workspace/ShareAndPeopleDialog";
 import Logo from "@/components/logo/Logo";
 import AppName from "@/components/logo/AppName";
+import { DELETED_PAGE_HREF } from "@/lib/settings/deleted-tabs";
 import type {
   AppShellUser,
   SidebarProjectItem,
@@ -828,11 +829,11 @@ export function Sidebar({
                 <span>{t("settings")}</span>
               </DropdownMenuItem>
 
-              {/* Pre-10.6 fix: deleted workspaces and projects, restorable for 30 days. */}
+              {/* Pre-10.6 fixes: Settings → Deleted & archived (restorable for 30 days; archived items). */}
               <DropdownMenuItem
                 onSelect={() => {
                   onNavigate?.();
-                  router.push("/settings/deleted");
+                  router.push(DELETED_PAGE_HREF);
                 }}
               >
                 <ArchiveRestore className="h-4 w-4" strokeWidth={1.5} />
