@@ -11,7 +11,8 @@ import { useFeatureFlags } from "@/lib/api/hooks/features";
  */
 export function AiPausedBanner() {
   const t = useTranslations("FeaturePause");
-  const features = useFeatureFlags();
+  // The one place that fetches the switches; other controls read the same cache.
+  const features = useFeatureFlags({ fetch: true });
   if (features.ai) return null;
   return (
     <div

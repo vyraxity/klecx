@@ -74,6 +74,6 @@ If the database can't be read, each server keeps the last pauses it knew about.
 
 - Server: `await assertFeature("collaboration")` (503 `feature_paused` when off), `await assertAiFeature("documentReview")` (the kill switch, then the feature's own switch), `await isFeatureOn("webSearch")` to just skip something. Check **after** authorization (a stranger must still get 404) and **before** reserving credits or calling a provider.
 - Every AI call that reserves credits through `reserveForWorkspaceGeneration()` is also refused there when `ai` is paused: a safety net for new AI features.
-- Browser: `useFeatureFlags()` (`lib/api/hooks/features.ts`) gives `{ ai, webSearch, … }` from `GET /api/v1/features` (signed-in only; booleans, never reasons). Grey out a control with `<Gated reason={{ code: "paused" }}>`.
+- Browser: `useFeatureFlags()` (`lib/api/hooks/features.ts`) gives `{ ai, webSearch, … }` from `GET /api/v1/features` (signed-in only; booleans, never reasons). Only `<AiPausedBanner>` in the app shell fetches (`{ fetch: true }`); other controls read its cache. Grey out a control with `<Gated reason={{ code: "paused" }}>`.
 - A new switch: add the key to `FEATURE_KEYS` with a comment, check it in the service, list it in the table above, in `README.md` (`DISABLED_FEATURES`) and in `.env.example`.
 - Tests: under Jest the runtime pauses are read only in a test file that calls `enableRuntimePausesForTesting(true)`, because the test workers share one database. See `__tests__/step-10-6-feature-flags.test.ts`.
