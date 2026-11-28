@@ -22,6 +22,7 @@ Eight PRs, **in this order: 2, 3, 1, 4, 5, 6, 7, 8** (PR 2 done 2026-11-27, PR 3
 - **PR 8 — `fix/archived-workspaces`** (owner, 2026-11-28: after the README; found while building PR 6).
   - Archiving hides a workspace or project, but there's **no screen to find and un-archive** a standalone workspace or a project: the sidebar and `listWorkspaces()` / `listProjects()` leave out archived ones (`archivedAt: null` unless `?archived=1`), and the top bar / sidebar menus only offer "Archive". Only a project page shows its own archived workspaces with Unarchive (`components/project/project-view.tsx`), and only if you reach the project. The server already supports it: `PATCH /api/v1/workspaces/:id` and `PATCH /api/v1/projects/:id` with `{ archived: false }` (activity `workspace.unarchived` / `project.unarchived`), and `GET …?archived=1`.
   - Add a place to see archived workspaces and projects and un-archive them (probably an **Archived** section or page beside Recently deleted, reachable from the sidebar), and make the help text (`account-and-security`: "archive a workspace to hide it") say where to find them, in en/es/fr. Decide with the owner where it lives before building.
+
 Each step = one PR. Implement **only** the step you were asked for. Follow its _Update / Create / Schema / Env / i18n / Done when_ fields. If the code disagrees with a guide (paths, names), check the live code, follow its intent, and say so in the PR.
 
 ## Workflow
