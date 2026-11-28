@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/brand/klecx-mark.svg" width="96" height="96" alt="Klecx"></p>
+
 # Klecx
 
 Klecx is an AI workspace by **Vyraxity** (Lagos, Nigeria). People ask questions in **workspaces** (grouped into **projects**), keep every **version** of an answer, highlight a passage to **comment** on it or **ask** a follow-up question about it (nested without limit), add documents, invite collaborators with roles, share read-only links, and pay with monthly **credits** on the Free, Lite, Standard and Pro plans.
