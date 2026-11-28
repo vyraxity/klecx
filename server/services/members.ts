@@ -1,4 +1,5 @@
 import "server-only";
+import { ALL_MENTION_HANDLE, countAllMentionAudience } from "@/server/services/mentions";
 import { log, errInfo } from "@/server/log";
 import { db } from "@/server/db/client";
 import type { Actor } from "@/server/auth/session";
@@ -1000,6 +1001,8 @@ export async function updateProjectMemberCap(
 
 export type MentionableItem =
   | { kind: "klecx" }
+  /** Pre-10.6 fix: `@all`, with how many people it would notify. */
+  | { kind: "all"; count: number }
   | {
       kind: "user";
       id: string;
@@ -1028,7 +1031,17 @@ export async function listMentionables(
 
   const results: MentionableItem[] = [];
 
-  // Klecx is always first when the query matches "k…" or is empty,
+  // `@all` first (owner, pre-10.6 fix): for anyone who can comment, when
+  // there is someone else to notify. Typing "@a…" or "@ev…" finds it.
+  if (
+    capabilities.has("workspace.comment") &&
+    (!q || ALL_MENTION_HANDLE.startsWith(q) || "everyone".startsWith(q))
+  ) {
+    const count = await countAllMentionAudience(workspaceId, actor.userId);
+    if (count > 0) results.push({ kind: "all", count });
+  }
+
+  // Klecx comes next when the query matches "k…" or is empty,
   // hidden when the caller can neither ask nor generate
   if (canAskOrGenerate) {
     if (!q || "klecx".startsWith(q)) {

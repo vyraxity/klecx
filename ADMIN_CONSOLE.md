@@ -63,6 +63,11 @@ How to use this file:
 - **Why:** add a newly seen throwaway-inbox domain without a code change and deploy.
 - **Today:** a hard-coded list in `server/auth/disposable-email.ts`. Needed: a table (or setting) the list is read from, plus the console screen.
 
+### 24. Rename an account whose username became reserved
+- **Found:** pre-10.6 fix PR 4 (2026-11-28).
+- **Why:** usernames such as `all`, `everyone`, `owner` or the role names are now reserved for group mentions (`RESERVED_FOR_GROUP_MENTIONS` in `lib/username.ts`). An account that took one earlier keeps it, but can't be mentioned by name (`@all` means everyone in the workspace). Support renames it (and tells the person), or asks them to choose another.
+- **Today:** `node scripts/list-reserved-username-conflicts.mjs` (with that environment's `DATABASE_URL`) lists the accounts (ids and usernames only). Renaming is a database edit of `users.username` / `display_username`; the person can also change it themselves in Settings → Profile if their change limit allows (§9 resets it). Needed: a "rename username" action that checks the new name like `validateUsernameFormat()`.
+
 ## Support
 
 ### 11. Support tickets

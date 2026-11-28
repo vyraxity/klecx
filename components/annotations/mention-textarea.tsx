@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useTranslations } from "next-intl";
+import { Users } from "lucide-react";
 import Logo from "@/components/logo/Logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -12,8 +13,13 @@ import {
 import { cn } from "@/lib/utils";
 import { api } from "@/lib/api/client";
 
+/** Pre-10.6 fix: mentions everyone in the workspace (a handle, not translated). */
+const ALL_MENTION_TOKEN = "@all";
+
 export interface MentionItem {
-  kind: "klecx" | "user";
+  kind: "klecx" | "user" | "all";
+  /** `all`: how many people it would notify. */
+  count?: number;
   id?: string;
   username?: string;
   displayName?: string;
@@ -21,13 +27,13 @@ export interface MentionItem {
 }
 
 function formatMentionTestId(item: MentionItem) {
-  return item.kind === "klecx"
-    ? "mention-item-klecx"
-    : `mention-item-${item.username}`;
+  return item.kind === "user"
+    ? `mention-item-${item.username}`
+    : `mention-item-${item.kind}`;
 }
 
 function formatMentionKey(item: MentionItem) {
-  return item.kind === "klecx" ? "klecx" : item.id || item.username;
+  return item.kind === "user" ? item.id || item.username : item.kind;
 }
 
 export interface MentionTextareaProps extends Omit<
@@ -156,7 +162,11 @@ export const MentionTextarea = React.forwardRef<
     const insertMention = React.useCallback(
       (item: MentionItem) => {
         const insertText =
-          item.kind === "klecx" ? "@klecx " : `@${item.username} `;
+          item.kind === "klecx"
+            ? "@klecx "
+            : item.kind === "all"
+              ? `${ALL_MENTION_TOKEN} `
+              : `@${item.username} `;
         const textarea = textareaRef.current;
         const currentCursor = textarea?.selectionStart ?? value.length;
         const after = value.slice(currentCursor);
@@ -315,7 +325,22 @@ export const MentionTextarea = React.forwardRef<
                         : "text-fg-muted hover:bg-surface-2"
                     )}
                   >
-                    {item.kind === "klecx" ? (
+                    {item.kind === "all" ? (
+                      <>
+                        <div className="bg-accent/15 text-accent flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
+                          <Users className="h-3 w-3" aria-hidden="true" />
+                        </div>
+                        <div className="flex min-w-0 flex-col">
+                          <span className="text-fg font-medium">
+                            {t("allLabel")}{" "}
+                            <span className="text-fg-muted text-[11px] font-normal">{ALL_MENTION_TOKEN}</span>
+                          </span>
+                          <span className="text-fg-muted truncate text-[11px]">
+                            {t("allDescription", { count: item.count ?? 0 })}
+                          </span>
+                        </div>
+                      </>
+                    ) : item.kind === "klecx" ? (
                       <>
                         <div className="flex h-5 w-5 shrink-0 items-center justify-center">
                           <Logo size="small" collapsed />
@@ -494,7 +519,7 @@ function MentionChip({
 export function renderMentions(
   text: string,
   klecxNotedLabel: string,
-  options: { workspaceId?: string; focusable?: boolean } = {}
+  options: { workspaceId?: string; focusable?: boolean; allTitle?: string } = {}
 ): React.ReactNode {
   if (!text) return null;
 
@@ -512,6 +537,20 @@ export function renderMentions(
           className="bg-accent/15 text-accent border-accent/25 inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[11px] font-medium select-none"
         >
           {klecxNotedLabel}
+        </span>
+      );
+    }
+
+    // Pre-10.6 fix: `@all` (everyone in the workspace) has no profile card.
+    if (part.toLowerCase() === ALL_MENTION_TOKEN) {
+      return (
+        <span
+          key={index}
+          data-mention="all"
+          title={options.allTitle}
+          className="text-accent font-medium"
+        >
+          {part}
         </span>
       );
     }
@@ -543,7 +582,7 @@ export function RenderMentions({
   const t = useTranslations("Annotations.toolbar");
   return (
     <span className={className}>
-      {renderMentions(text, t("klecxNoted"), { workspaceId, focusable })}
+      {renderMentions(text, t("klecxNoted"), { workspaceId, focusable, allTitle: t("allChipTitle") })}
     </span>
   );
 }

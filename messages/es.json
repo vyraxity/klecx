@@ -784,7 +784,10 @@
       "greeting": "Hola,",
       "body": "{authorName} te mencionó: {excerpt}",
       "button": "Ver comentario",
-      "disclaimer": "Recibiste este correo porque alguien te mencionó en un comentario de espacio de trabajo."
+      "disclaimer": "Recibiste este correo porque alguien te mencionó en un comentario de espacio de trabajo.",
+      "subjectEveryone": "{authorName} mencionó a todos en Klecx",
+      "headingEveryone": "Se mencionó a todos en un comentario",
+      "bodyEveryone": "{authorName} mencionó a todos en el espacio de trabajo: {excerpt}"
     },
     "welcome": {
       "subject": "Bienvenido a Klecx — Tu espacio de trabajo de IA",
@@ -2674,7 +2677,10 @@
       "mentionNotMember": "No es miembro de este espacio de trabajo",
       "saveChangesFirst": "Guarda primero los cambios. Los comentarios y las preguntas solo se pueden añadir al texto guardado.",
       "capComment": "comentar",
-      "capAsk": "hacer preguntas"
+      "capAsk": "hacer preguntas",
+      "allLabel": "Todos",
+      "allDescription": "{count, plural, one {Notifica a # persona de este espacio de trabajo} other {Notifica a # personas de este espacio de trabajo}}",
+      "allChipTitle": "Todos en este espacio de trabajo"
     },
     "preview": {
       "ariaLabel": "Vista previa de la anotación",
@@ -2876,7 +2882,9 @@
       "MENTIONED": {
         "title": "Te mencionaron",
         "description": "{name} te mencionó en un comentario.",
-        "descriptionQuote": "{name} te mencionó en un comentario sobre «{quote}»."
+        "descriptionQuote": "{name} te mencionó en un comentario sobre «{quote}».",
+        "descriptionEveryone": "{name} mencionó a todos en un comentario.",
+        "descriptionQuoteEveryone": "{name} mencionó a todos en un comentario sobre «{quote}»."
       },
       "default": {
         "title": "Notificación",

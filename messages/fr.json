@@ -784,7 +784,10 @@
       "greeting": "Bonjour,",
       "body": "{authorName} vous a mentionné : {excerpt}",
       "button": "Voir le commentaire",
-      "disclaimer": "Vous recevez cet e-mail car quelqu'un vous a mentionné dans un commentaire d'espace de travail."
+      "disclaimer": "Vous recevez cet e-mail car quelqu'un vous a mentionné dans un commentaire d'espace de travail.",
+      "subjectEveryone": "{authorName} a mentionné tout le monde sur Klecx",
+      "headingEveryone": "Tout le monde a été mentionné dans un commentaire",
+      "bodyEveryone": "{authorName} a mentionné tout le monde dans l'espace de travail : {excerpt}"
     },
     "welcome": {
       "subject": "Bienvenue sur Klecx — Votre espace de travail IA",
@@ -2674,7 +2677,10 @@
       "mentionNotMember": "N’est pas membre de cet espace de travail",
       "saveChangesFirst": "Enregistrez d'abord vos modifications. Les commentaires et les questions ne peuvent porter que sur le texte enregistré.",
       "capComment": "commenter",
-      "capAsk": "poser des questions"
+      "capAsk": "poser des questions",
+      "allLabel": "Tout le monde",
+      "allDescription": "{count, plural, one {Notifie # personne de cet espace de travail} other {Notifie # personnes de cet espace de travail}}",
+      "allChipTitle": "Tout le monde dans cet espace de travail"
     },
     "preview": {
       "ariaLabel": "Aperçu de l’annotation",
@@ -2876,7 +2882,9 @@
       "MENTIONED": {
         "title": "Vous avez été mentionné",
         "description": "{name} vous a mentionné dans un commentaire.",
-        "descriptionQuote": "{name} vous a mentionné dans un commentaire sur « {quote} »."
+        "descriptionQuote": "{name} vous a mentionné dans un commentaire sur « {quote} ».",
+        "descriptionEveryone": "{name} a mentionné tout le monde dans un commentaire.",
+        "descriptionQuoteEveryone": "{name} a mentionné tout le monde dans un commentaire sur « {quote} »."
       },
       "default": {
         "title": "Notification",

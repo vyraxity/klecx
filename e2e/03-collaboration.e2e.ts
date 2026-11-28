@@ -57,6 +57,23 @@ test("invite a collaborator who generates on the owner's credits; activity and @
   await member.page.getByRole("toolbar", { name: "Annotation actions" }).getByRole("button", { name: "Save" }).click();
   await waitForEmail(owner.context.request, owner.email, "mentioned");
 
+  // Pre-10.6 fix: the owner mentions everyone with @all (first in the list);
+  // the member is told everyone was mentioned.
+  await owner.page.goto(workspaceUrl);
+  await selectText(owner.page, owner.page.locator("main").getByText("Point one: the main idea.").first());
+  await owner.page.getByRole("toolbar", { name: "Annotation actions" }).getByRole("button", { name: "Comment" }).click();
+  const ownerBox = owner.page.getByRole("textbox", { name: "Comment text" });
+  await ownerBox.pressSequentially("@");
+  const everyone = owner.page.getByRole("listbox", { name: "People you can mention" }).getByRole("option").first();
+  await expect(everyone).toContainText("Everyone");
+  await expect(everyone).toContainText("Notifies 1 person in this workspace");
+  await everyone.click();
+  await ownerBox.pressSequentially("please read this before Friday");
+  await expect(ownerBox).toHaveValue("@all please read this before Friday");
+  await owner.page.getByRole("toolbar", { name: "Annotation actions" }).getByRole("button", { name: "Save" }).click();
+  const allMail = await waitForEmail(member.context.request, member.email, "mentioned");
+  expect(allMail.subject).toContain("mentioned everyone");
+
   // The owner sees who did what in the activity.
   await owner.page.goto(workspaceUrl);
   const dialog = await openShare(owner.page);

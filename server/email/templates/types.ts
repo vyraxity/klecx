@@ -148,6 +148,8 @@ export interface MentionedData {
   quote?: string;
   excerpt: string;
   actionUrl?: string;
+  /** Pre-10.6 fix: reached through `@all` ("mentioned everyone"). */
+  everyone?: boolean;
 }
 
 export interface WelcomeEmailData {

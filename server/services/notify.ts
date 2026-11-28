@@ -298,6 +298,7 @@ function resolveDefaultEmailMapping(
           quote: (payload.quote as string) || "",
           excerpt: (payload.excerpt as string) || "",
           actionUrl: `${appUrl}/workspaces/${payload.workspaceId || ""}`,
+          everyone: payload.everyone === true,
         },
       };
     default:

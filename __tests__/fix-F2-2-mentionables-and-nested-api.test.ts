@@ -251,11 +251,13 @@ describe("Fix F2.2 — Mentionables & Nested Annotation API", () => {
   });
 
   describe("1. listMentionables", () => {
-    it("returns Klecx first and includes owner and active members (excludes suspended)", async () => {
+    it("returns @all, then Klecx, and includes owner and active members (excludes suspended)", async () => {
       const items = await listMentionables(ownerActor, workspace.id, "");
 
-      expect(items.length).toBeGreaterThanOrEqual(2);
-      expect(items[0]).toEqual({ kind: "klecx" });
+      expect(items.length).toBeGreaterThanOrEqual(3);
+      // Pre-10.6 fix: `@all` (everyone) comes first, then Klecx.
+      expect(items[0]).toMatchObject({ kind: "all" });
+      expect(items[1]).toEqual({ kind: "klecx" });
 
       const usernames = items
         .filter((i) => i.kind === "user")

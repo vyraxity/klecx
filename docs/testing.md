@@ -51,7 +51,7 @@ Load test: `npm run e2e:build`, `npm run e2e:start` (keep it running), then `k6 
 | --- | --- |
 | `01-first-answer` | register → verify (test inbox) → claim username → first answer → regenerate → edit → switch versions |
 | `02-annotations` | Comment with `@klecx` → Ask now → Asks at Level 2 and 3 → Back / Main → queue questions on two levels → Ask all → promote to the timeline and to a new workspace |
-| `03-collaboration` | invite (Standard) → the member accepts and generates → the owner's credits drop, not the member's → `@mention` email → activity shows the member |
+| `03-collaboration` | invite (Standard) → the member accepts and generates → the owner's credits drop, not the member's → `@mention` email → activity shows the member; the owner's `@all` (first in the mention list, "Notifies 1 person") emails the member that everyone was mentioned |
 | `04-share-links` | share the workspace and one response → open signed out → revoke → 404 |
 | `05-attachments` | attach a PDF and an image → the answer received both |
 | `06-export` | export as PDF, Word and Markdown (file signatures checked) |

@@ -280,7 +280,7 @@ type Msg = {
   modelKey: string | null;
   citations: unknown;
   createdAt: Date;
-  mentions: { userId: string | null; isKlecx: boolean }[];
+  mentions: { userId: string | null; isKlecx: boolean; isAll: boolean }[];
   author: { name: string } | null;
 };
 
@@ -292,14 +292,14 @@ const messageOut = (m: Msg) => ({
   model: m.modelKey,
   content: m.content,
   sources: m.citations ?? null,
-  mentions: m.mentions.map((x) => (x.isKlecx ? "@klecx" : x.userId)),
+  mentions: m.mentions.map((x) => (x.isKlecx ? "@klecx" : x.isAll ? "@all" : x.userId)),
   createdAt: iso(m.createdAt),
 });
 
 const annotationInclude = {
   messages: {
     orderBy: { createdAt: "asc" as const },
-    include: { mentions: { select: { userId: true, isKlecx: true } }, author: { select: { name: true } } },
+    include: { mentions: { select: { userId: true, isKlecx: true, isAll: true } }, author: { select: { name: true } } },
   },
   createdBy: { select: { name: true } },
 };
@@ -471,7 +471,7 @@ async function buildContributions(userId: string) {
     db.annotationMessage.findMany({
       where: { authorId: userId, annotation: { createdById: { not: userId }, deletedAt: null, ...elsewhere } },
       orderBy: { createdAt: "asc" },
-      include: { mentions: { select: { userId: true, isKlecx: true } }, author: { select: { name: true } }, annotation: { select: { id: true, workspace: { select: { title: true } } } } },
+      include: { mentions: { select: { userId: true, isKlecx: true, isAll: true } }, author: { select: { name: true } }, annotation: { select: { id: true, workspace: { select: { title: true } } } } },
     }),
     db.workspaceNote.findMany({
       where: { createdById: userId, deletedAt: null, ...elsewhere },
